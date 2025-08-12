@@ -42,6 +42,7 @@
       color: white;
       font-size: 0.9em;
       transition: background-color 0.2s ease;
+      user-select: none;
     }
     button:hover { background-color: #0056b3; }
     button.markBtn { background-color: #28a745; }
@@ -67,16 +68,25 @@
       background-color: #f8f9fa;
       border-left: 4px solid #007BFF;
       padding: 10px;
-      margin: 10px 0;
+      margin: 10px 0 5px 0;
       font-size: 0.9em;
       line-height: 1.5;
       white-space: pre-line;
     }
-    .toggle-transcript {
+    .translation {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 10px;
+      margin: 5px 0 10px 0;
+      font-size: 0.9em;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+    .toggle-transcript, .toggle-translation {
       background-color: #6c757d;
       font-size: 0.8em;
     }
-    .toggle-transcript:hover { background-color: #5a6268; }
+    .toggle-transcript:hover, .toggle-translation:hover { background-color: #5a6268; }
     #loading {
       text-align: center;
       padding: 20px;
@@ -120,6 +130,9 @@
   const collectionName = "Learn How To Talk About Your Daily Routine in English by Watching Me Act Out Mine";
   const segmentsRef = db.collection(collectionName);
 
+  // --- GOOGLE TRANSLATE API KEY ---
+  const GOOGLE_TRANSLATE_API_KEY = 'SUA_CHAVE_DE_API_AQUI';  // <--- Troque aqui
+
   // --- VARIÁVEIS ---
   let player, currentSegment = null, checkInterval = null, segments = [];
   const container = document.getElementById('segments-container');
@@ -130,18 +143,67 @@
     const p = t.split(':').map(Number);
     return p.length === 2 ? p[0]*60+p[1] : p[0]*3600+p[1]*60+p[2];
   };
+
   const updateStatus = txt => document.getElementById('play-status').textContent = txt;
+
   const saveState = (id, state) => {
     const k = 'segments_ecF1y2bI2T4';
     const all = JSON.parse(localStorage.getItem(k) || '{}');
     all[id] = {...all[id], ...state};
     localStorage.setItem(k, JSON.stringify(all));
   };
+
   const loadState = id => JSON.parse(localStorage.getItem('segments_ecF1y2bI2T4') || '{}')[id] || {};
 
-  function loadSegments() {
-    segmentsRef.orderBy("start").get().then(q => {
-      segments = q.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  async function translateText(text, target = 'pt') {
+    const url = `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`;
+    const body = {
+      q: text,
+      target: target,
+      format: 'text'
+    };
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const json = await res.json();
+      if (json.error) {
+        console.error('Erro na tradução:', json.error);
+        return null;
+      }
+      return json.data.translations[0].translatedText;
+    } catch (err) {
+      console.error('Erro ao chamar API de tradução:', err);
+      return null;
+    }
+  }
+
+  async function loadSegments() {
+    segmentsRef.orderBy("start").get().then(async q => {
+      const updates = [];
+      segments = [];
+
+      for (const doc of q.docs) {
+        const data = doc.data();
+        if (!data.translation && data.transcript) {
+          const translated = await translateText(data.transcript, 'pt');
+          if (translated) {
+            await segmentsRef.doc(doc.id).update({ translation: translated });
+            data.translation = translated;
+            updates.push(doc.id);
+          } else {
+            data.translation = '[Erro ao traduzir]';
+          }
+        }
+        segments.push({ id: doc.id, ...data });
+      }
+
+      if (updates.length > 0) {
+        console.log("Traduções criadas para:", updates);
+      }
+
       renderSegments();
       loadingEl.style.display = 'none';
     }).catch(err => {
@@ -162,7 +224,9 @@
         <button class="playBtn" data-id="${seg.id}">▶️ Tocar</button>
         <button class="markBtn" data-id="${seg.id}">${st.completed ? 'Desmarcar' : 'Concluído'}</button>
         <button class="toggle-transcript" data-id="${seg.id}">Mostrar Transcrição</button>
+        <button class="toggle-translation" data-id="${seg.id}">Mostrar Tradução</button>
         <div class="transcript" data-id="${seg.id}" style="display:none">${seg.transcript || 'Nenhuma transcrição disponível'}</div>
+        <div class="translation" data-id="${seg.id}" style="display:none">${seg.translation || 'Nenhuma tradução disponível'}</div>
         <textarea class="commentBox" data-id="${seg.id}" rows="4" placeholder="Comentários...">${st.comment || ''}</textarea>
         <input class="tagsInput" data-id="${seg.id}" type="text" placeholder="Tags (separadas por vírgula)" value="${st.tags || ''}">
       `;
@@ -175,10 +239,13 @@
     document.getElementById('pauseBtn').onclick = () => player.pauseVideo();
     document.getElementById('stopBtn').onclick = stopPlayer;
 
+    // Importante: chamar playVideo() direto no evento onclick, sem async/await
     document.querySelectorAll('.playBtn').forEach(btn => {
       btn.onclick = () => {
         const seg = segments.find(s => s.id === btn.dataset.id);
-        if (seg) playSegment(seg);
+        if (seg) {
+          playSegment(seg);
+        }
       };
     });
 
@@ -200,6 +267,15 @@
       };
     });
 
+    document.querySelectorAll('.toggle-translation').forEach(btn => {
+      btn.onclick = () => {
+        const el = document.querySelector(`.translation[data-id="${btn.dataset.id}"]`);
+        const show = el.style.display === 'none';
+        el.style.display = show ? 'block' : 'none';
+        btn.textContent = show ? 'Ocultar Tradução' : 'Mostrar Tradução';
+      };
+    });
+
     document.querySelectorAll('.commentBox').forEach(txt => {
       txt.oninput = e => saveState(e.target.dataset.id, { comment: e.target.value });
     });
@@ -213,6 +289,7 @@
     if (!player) return;
     currentSegment = { start: toSeconds(seg.start), end: toSeconds(seg.end) };
     player.seekTo(currentSegment.start);
+    // player.mute(); // Muta o vídeo para evitar bloqueio autoplay em mobile
     player.playVideo();
     updateStatus(`Tocando: ${seg.title}`);
     clearInterval(checkInterval);
@@ -238,7 +315,14 @@
     player = new YT.Player('player', {
       height: '360', width: '640',
       videoId: 'ecF1y2bI2T4',
-      playerVars: { modestbranding: 1, rel: 0, controls: 1, enablejsapi: 1, origin: window.location.origin },
+      playerVars: {
+        modestbranding: 1,
+        rel: 0,
+        controls: 1,
+        enablejsapi: 1,
+        origin: window.location.origin,
+        playsinline: 1 // ESSENCIAL para funcionar no mobile inline
+      },
       events: {
         onReady: loadSegments,
         onStateChange: e => {
