@@ -59,7 +59,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // Pega o ID do documento pela URL: ?id=<docId>
+  // ID do documento a ser carregado (pode passar via URL ?id=xxx)
   const params = new URLSearchParams(window.location.search);
   const docId = params.get("id") || "dailyRoutine"; // default
 
@@ -88,6 +88,7 @@
         renderTitles();
         loadingEl.style.display = 'none';
 
+        // Inicializar player com o videoId
         if(player && data.videoId){
           player.loadVideoById(data.videoId);
         }
@@ -130,6 +131,7 @@
     `;
     container.appendChild(div);
 
+    // Eventos
     document.getElementById('backBtn').onclick = () => { renderTitles(); document.getElementById('statusMsg').textContent = ''; };
     document.querySelector('.playBtn').onclick = e => { playSegment(segments[e.target.dataset.index]); };
     document.querySelector('.toggle-transcript').onclick = e => {
@@ -192,7 +194,7 @@
   window.onYouTubeIframeAPIReady = function(){
     player = new YT.Player('player',{
       height:'360', width:'640',
-      videoId:'', // carregado dinamicamente
+      videoId:'', // carregado dinamicamente depois
       playerVars:{ modestbranding:1, rel:0, controls:1, enablejsapi:1, origin:window.location.origin, playsinline:1 },
       events:{
         onReady: loadVideoData,
