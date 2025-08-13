@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Segmentos do Vídeo - Daily Routine</title>
   <style>
     body {
@@ -21,12 +20,25 @@
     .seg {
       background: white;
       border-radius: 5px;
-      padding: 15px;
-      margin-bottom: 15px;
+      padding: 10px 15px;
+      margin-bottom: 8px;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      user-select: none;
     }
-    .seg.completed { background-color: #d4edda; }
-    .seg h3 { margin: 0 0 8px 0; }
+    .seg h3 {
+      margin: 0;
+      font-weight: normal;
+      color: #007BFF;
+    }
+    .seg h3:hover {
+      text-decoration: underline;
+    }
+    .details {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+    }
     .times {
       color: #666;
       font-size: 0.9em;
@@ -45,9 +57,7 @@
       user-select: none;
     }
     button:hover { background-color: #0056b3; }
-    button.markBtn { background-color: #28a745; }
-    button.markBtn:hover { background-color: #1e7e34; }
-    textarea, input.tagsInput {
+    textarea {
       width: 100%;
       box-sizing: border-box;
       margin-top: 6px;
@@ -56,13 +66,7 @@
       font-size: 0.9em;
       border: 1px solid #ccc;
       border-radius: 3px;
-    }
-    #controls { text-align: center; margin-bottom: 20px; }
-    #play-status {
-      margin-top: 10px;
-      font-weight: bold;
-      text-align: center;
-      min-height: 1.2em;
+      resize: vertical;
     }
     .transcript {
       background-color: #f8f9fa;
@@ -85,6 +89,9 @@
     .toggle-transcript, .toggle-translation {
       background-color: #6c757d;
       font-size: 0.8em;
+      margin-right: 5px;
+      padding: 3px 6px;
+      border-radius: 3px;
     }
     .toggle-transcript:hover, .toggle-translation:hover { background-color: #5a6268; }
     #loading {
@@ -92,6 +99,26 @@
       padding: 20px;
       font-style: italic;
       color: #666;
+    }
+    #backBtn {
+      margin-bottom: 20px;
+      background-color: #28a745;
+    }
+    #backBtn:hover {
+      background-color: #1e7e34;
+    }
+    #saveNotesBtn {
+      background-color: #17a2b8;
+      margin-top: 4px;
+    }
+    #saveNotesBtn:hover {
+      background-color: #117a8b;
+    }
+    #statusMsg {
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: green;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -115,7 +142,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // --- CONFIGURAÇÃO FIREBASE ---
   const firebaseConfig = {
     apiKey: "AIzaSyCNgDqkqhsFQY7bfrWK2_VPtGUoEyyIBq4",
     authDomain: "trechos-c7fba.firebaseapp.com",
@@ -127,169 +153,133 @@
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+
   const collectionName = "Learn How To Talk About Your Daily Routine in English by Watching Me Act Out Mine";
   const segmentsRef = db.collection(collectionName);
 
-  // --- GOOGLE TRANSLATE API KEY ---
-  const GOOGLE_TRANSLATE_API_KEY = 'SUA_CHAVE_DE_API_AQUI';  // <--- Troque aqui
-
-  // --- VARIÁVEIS ---
   let player, currentSegment = null, checkInterval = null, segments = [];
   const container = document.getElementById('segments-container');
   const loadingEl = document.getElementById('loading');
 
-  // --- FUNÇÕES ---
   const toSeconds = t => {
     const p = t.split(':').map(Number);
-    return p.length === 2 ? p[0]*60+p[1] : p[0]*3600+p[1]*60+p[2];
+    return p.length === 2 ? p[0]*60 + p[1] : p[0]*3600 + p[1]*60 + p[2];
   };
 
   const updateStatus = txt => document.getElementById('play-status').textContent = txt;
 
-  const saveState = (id, state) => {
-    const k = 'segments_ecF1y2bI2T4';
-    const all = JSON.parse(localStorage.getItem(k) || '{}');
-    all[id] = {...all[id], ...state};
-    localStorage.setItem(k, JSON.stringify(all));
-  };
-
-  const loadState = id => JSON.parse(localStorage.getItem('segments_ecF1y2bI2T4') || '{}')[id] || {};
-
-  async function translateText(text, target = 'pt') {
-    const url = `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`;
-    const body = {
-      q: text,
-      target: target,
-      format: 'text'
-    };
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' }
+  function loadSegments() {
+    segmentsRef.orderBy("start").get()
+      .then(q => {
+        segments = q.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderTitles();
+        loadingEl.style.display = 'none';
+      })
+      .catch(err => {
+        console.error("Erro ao carregar segmentos: ", err);
+        loadingEl.textContent = "Erro ao carregar os segmentos.";
       });
-      const json = await res.json();
-      if (json.error) {
-        console.error('Erro na tradução:', json.error);
-        return null;
-      }
-      return json.data.translations[0].translatedText;
-    } catch (err) {
-      console.error('Erro ao chamar API de tradução:', err);
-      return null;
-    }
   }
 
-  async function loadSegments() {
-    segmentsRef.orderBy("start").get().then(async q => {
-      const updates = [];
-      segments = [];
-
-      for (const doc of q.docs) {
-        const data = doc.data();
-        if (!data.translation && data.transcript) {
-          const translated = await translateText(data.transcript, 'pt');
-          if (translated) {
-            await segmentsRef.doc(doc.id).update({ translation: translated });
-            data.translation = translated;
-            updates.push(doc.id);
-          } else {
-            data.translation = '[Erro ao traduzir]';
-          }
-        }
-        segments.push({ id: doc.id, ...data });
-      }
-
-      if (updates.length > 0) {
-        console.log("Traduções criadas para:", updates);
-      }
-
-      renderSegments();
-      loadingEl.style.display = 'none';
-    }).catch(err => {
-      console.error("Erro ao carregar segmentos: ", err);
-      loadingEl.textContent = "Erro ao carregar os segmentos.";
-    });
-  }
-
-  function renderSegments() {
+  function renderTitles() {
     container.innerHTML = '';
     segments.forEach((seg, i) => {
-      const st = loadState(seg.id);
       const div = document.createElement('div');
-      div.className = 'seg' + (st.completed ? ' completed' : '');
-      div.innerHTML = `
-        <h3>${i+1}. ${seg.title}</h3>
+      div.className = 'seg';
+      div.innerHTML = `<h3 data-id="${seg.id}">${i+1}. ${seg.title}</h3>`;
+      container.appendChild(div);
+    });
+    setupTitleClicks();
+  }
+
+  function renderSegmentDetails(seg) {
+    container.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'seg';
+    div.innerHTML = `
+      <button id="backBtn">← Voltar à lista</button>
+      <h3>${seg.title}</h3>
+      <div class="details">
         <div class="times">⏱️ ${seg.start} – ${seg.end}</div>
         <button class="playBtn" data-id="${seg.id}">▶️ Tocar</button>
-        <button class="markBtn" data-id="${seg.id}">${st.completed ? 'Desmarcar' : 'Concluído'}</button>
         <button class="toggle-transcript" data-id="${seg.id}">Mostrar Transcrição</button>
         <button class="toggle-translation" data-id="${seg.id}">Mostrar Tradução</button>
         <div class="transcript" data-id="${seg.id}" style="display:none">${seg.transcript || 'Nenhuma transcrição disponível'}</div>
         <div class="translation" data-id="${seg.id}" style="display:none">${seg.translation || 'Nenhuma tradução disponível'}</div>
-        <textarea class="commentBox" data-id="${seg.id}" rows="4" placeholder="Comentários...">${st.comment || ''}</textarea>
-        <input class="tagsInput" data-id="${seg.id}" type="text" placeholder="Tags (separadas por vírgula)" value="${st.tags || ''}">
-      `;
-      container.appendChild(div);
-    });
-    setupEvents();
+        <textarea id="notesArea" placeholder="Digite suas observações aqui..." rows="4">${seg.observacoes || ''}</textarea>
+        <button id="saveNotesBtn">Salvar Anotações</button>
+        <div id="statusMsg"></div>
+      </div>
+    `;
+    container.appendChild(div);
+    setupDetailEvents(seg);
+    // Voltar para lista
+    document.getElementById('backBtn').onclick = () => {
+      renderTitles();
+      document.getElementById('statusMsg').textContent = '';
+    };
   }
 
-  function setupEvents() {
-    document.getElementById('pauseBtn').onclick = () => player.pauseVideo();
-    document.getElementById('stopBtn').onclick = stopPlayer;
-
-    // Importante: chamar playVideo() direto no evento onclick, sem async/await
-    document.querySelectorAll('.playBtn').forEach(btn => {
-      btn.onclick = () => {
-        const seg = segments.find(s => s.id === btn.dataset.id);
+  function setupTitleClicks() {
+    const titles = document.querySelectorAll('.seg h3');
+    titles.forEach(title => {
+      title.onclick = () => {
+        const id = title.dataset.id;
+        const seg = segments.find(s => s.id === id);
         if (seg) {
-          playSegment(seg);
+          renderSegmentDetails(seg);
         }
       };
     });
+  }
 
-    document.querySelectorAll('.markBtn').forEach(btn => {
-      btn.onclick = () => {
-        const div = btn.closest('.seg');
-        const done = div.classList.toggle('completed');
-        btn.textContent = done ? 'Desmarcar' : 'Concluído';
-        saveState(btn.dataset.id, { completed: done });
-      };
-    });
-
-    document.querySelectorAll('.toggle-transcript').forEach(btn => {
-      btn.onclick = () => {
-        const el = document.querySelector(`.transcript[data-id="${btn.dataset.id}"]`);
-        const show = el.style.display === 'none';
-        el.style.display = show ? 'block' : 'none';
-        btn.textContent = show ? 'Ocultar Transcrição' : 'Mostrar Transcrição';
-      };
-    });
-
-    document.querySelectorAll('.toggle-translation').forEach(btn => {
-      btn.onclick = () => {
-        const el = document.querySelector(`.translation[data-id="${btn.dataset.id}"]`);
-        const show = el.style.display === 'none';
-        el.style.display = show ? 'block' : 'none';
-        btn.textContent = show ? 'Ocultar Tradução' : 'Mostrar Tradução';
-      };
-    });
-
-    document.querySelectorAll('.commentBox').forEach(txt => {
-      txt.oninput = e => saveState(e.target.dataset.id, { comment: e.target.value });
-    });
-
-    document.querySelectorAll('.tagsInput').forEach(inp => {
-      inp.oninput = e => saveState(e.target.dataset.id, { tags: e.target.value });
-    });
+  function setupDetailEvents(seg) {
+    document.querySelector('.playBtn').onclick = e => {
+      const id = e.target.dataset.id;
+      const segToPlay = segments.find(s => s.id === id);
+      if (segToPlay) playSegment(segToPlay);
+      e.stopPropagation();
+    };
+    document.querySelector('.toggle-transcript').onclick = e => {
+      const id = e.target.dataset.id;
+      const el = document.querySelector(`.transcript[data-id="${id}"]`);
+      const show = el.style.display === 'none';
+      el.style.display = show ? 'block' : 'none';
+      e.target.textContent = show ? 'Ocultar Transcrição' : 'Mostrar Transcrição';
+      e.stopPropagation();
+    };
+    document.querySelector('.toggle-translation').onclick = e => {
+      const id = e.target.dataset.id;
+      const el = document.querySelector(`.translation[data-id="${id}"]`);
+      const show = el.style.display === 'none';
+      el.style.display = show ? 'block' : 'none';
+      e.target.textContent = show ? 'Ocultar Tradução' : 'Mostrar Tradução';
+      e.stopPropagation();
+    };
+    document.getElementById('saveNotesBtn').onclick = async () => {
+      const text = document.getElementById('notesArea').value.trim();
+      const statusMsg = document.getElementById('statusMsg');
+      statusMsg.style.color = 'green';
+      statusMsg.textContent = 'Salvando...';
+      try {
+        await segmentsRef.doc(seg.id).update({ observacoes: text });
+        // Atualiza localmente também para manter sincronizado
+        const index = segments.findIndex(s => s.id === seg.id);
+        if(index !== -1) segments[index].observacoes = text;
+        statusMsg.textContent = 'Anotações salvas com sucesso!';
+      } catch (err) {
+        console.error("Erro ao salvar anotações:", err);
+        statusMsg.style.color = 'red';
+        statusMsg.textContent = 'Erro ao salvar anotações.';
+      }
+    };
   }
 
   function playSegment(seg) {
     if (!player) return;
     currentSegment = { start: toSeconds(seg.start), end: toSeconds(seg.end) };
     player.seekTo(currentSegment.start);
-    // player.mute(); // Muta o vídeo para evitar bloqueio autoplay em mobile
+    player.unMute();
     player.playVideo();
     updateStatus(`Tocando: ${seg.title}`);
     clearInterval(checkInterval);
@@ -310,18 +300,15 @@
     currentSegment = null;
   }
 
-  // --- YOUTUBE API ---
+  // YouTube API
   window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('player', {
       height: '360', width: '640',
       videoId: 'ecF1y2bI2T4',
       playerVars: {
-        modestbranding: 1,
-        rel: 0,
-        controls: 1,
-        enablejsapi: 1,
-        origin: window.location.origin,
-        playsinline: 1 // ESSENCIAL para funcionar no mobile inline
+        modestbranding: 1, rel: 0, controls: 1,
+        enablejsapi: 1, origin: window.location.origin,
+        playsinline: 1
       },
       events: {
         onReady: loadSegments,
@@ -338,10 +325,10 @@
     });
   };
 
-  // Carregar script da API YouTube
   const tag = document.createElement('script');
   tag.src = "https://www.youtube.com/iframe_api";
   document.body.appendChild(tag);
+
 </script>
 
 </body>
