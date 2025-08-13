@@ -1,218 +1,204 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Segmentos do Vídeo</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; background: #f7f7f7; }
-    h1 { text-align: center; }
-    #player { display: block; margin: 0 auto 20px auto; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
-    .seg { background: white; border-radius: 5px; padding: 10px 15px; margin-bottom: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); cursor: pointer; user-select: none; }
-    .seg h3 { margin: 0; font-weight: normal; color: #007BFF; }
-    .seg h3:hover { text-decoration: underline; }
-    .details { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; }
-    .times { color: #666; font-size: 0.9em; margin-bottom: 8px; }
-    button { margin-right: 8px; cursor: pointer; padding: 5px 10px; border: none; border-radius: 3px; background-color: #007BFF; color: white; font-size: 0.9em; transition: background-color 0.2s ease; user-select: none; }
-    button:hover { background-color: #0056b3; }
-    textarea { width: 100%; box-sizing: border-box; margin-top: 6px; margin-bottom: 10px; padding: 6px; font-size: 0.9em; border: 1px solid #ccc; border-radius: 3px; resize: vertical; }
-    .transcript { background-color: #f8f9fa; border-left: 4px solid #007BFF; padding: 10px; margin: 10px 0 5px 0; font-size: 0.9em; line-height: 1.5; white-space: pre-line; }
-    .translation { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin: 5px 0 10px 0; font-size: 0.9em; line-height: 1.5; white-space: pre-line; }
-    .toggle-transcript, .toggle-translation { background-color: #6c757d; font-size: 0.8em; margin-right: 5px; padding: 3px 6px; border-radius: 3px; }
-    .toggle-transcript:hover, .toggle-translation:hover { background-color: #5a6268; }
-    #loading { text-align: center; padding: 20px; font-style: italic; color: #666; }
-    #backBtn { margin-bottom: 20px; background-color: #28a745; }
-    #backBtn:hover { background-color: #1e7e34; }
-    #saveNotesBtn { background-color: #17a2b8; margin-top: 4px; }
-    #saveNotesBtn:hover { background-color: #117a8b; }
-    #statusMsg { margin-top: 8px; font-size: 0.9em; color: green; font-weight: bold; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Segmentos do Vídeo - Acordeão Animado</title>
+<style>
+body { font-family: Arial,sans-serif; max-width:900px; margin:auto; padding:20px; background:#f7f7f7;}
+h1{text-align:center;}
+#player{display:block;margin:0 auto 20px auto;box-shadow:0 0 10px rgba(0,0,0,0.2);}
+.seg{background:white;border-radius:5px;padding:10px;margin-bottom:5px;box-shadow:0 0 3px rgba(0,0,0,0.1);}
+.seg.completed{background-color:#d4edda;}
+.seg h3{margin:0; cursor:pointer; user-select:none;}
+.details{overflow:hidden; max-height:0; transition:max-height 0.3s ease, padding 0.3s ease;}
+.details.open{max-height:2000px; padding-top:8px;}
+.times{color:#666;font-size:0.9em;margin-bottom:8px;}
+button{margin:4px 4px 8px 0;cursor:pointer;padding:6px 10px;border:none;border-radius:3px;background-color:#007BFF;color:white;font-size:0.9em;}
+button:hover{background-color:#0056b3;}
+button.markBtn{background-color:#28a745;}
+button.markBtn:hover{background-color:#1e7e34;}
+textarea,input.tagsInput{width:100%;margin-top:6px;margin-bottom:10px;padding:6px;font-size:0.9em;border:1px solid #ccc;border-radius:3px;}
+.transcript,.translation{padding:10px;margin:10px 0;font-size:0.9em;line-height:1.5;white-space:pre-line;}
+.transcript a.time-link{color:#007BFF; text-decoration:none; cursor:pointer;}
+.transcript a.time-link:hover{ text-decoration:underline; }
+.transcript{background-color:#f8f9fa;border-left:4px solid #007BFF; display:block;}
+.translation{background-color:#fff3cd;border-left:4px solid #ffc107; display:block;}
+.toggle-transcript,.toggle-translation{background-color:#6c757d;font-size:0.8em;}
+.toggle-transcript:hover,.toggle-translation:hover{background-color:#5a6268;}
+#controls{text-align:center;margin-bottom:20px;}
+#play-status{margin-top:10px;font-weight:bold;text-align:center;min-height:1.2em;}
+#loading{text-align:center;padding:20px;font-style:italic;color:#666;}
+</style>
 </head>
 <body>
 
-<h1 id="videoTitle">Carregando título do vídeo...</h1>
+<h1>Trechos do Vídeo</h1>
+
+<div style="text-align:center; margin-bottom:15px;">
+  <input type="text" id="docName" placeholder="Digite o nome do documento (ex: ItalianoConAmore1)" style="width:70%; padding:8px;">
+  <button id="loadDocBtn">Carregar</button>
+</div>
 
 <div id="player"></div>
-
 <div id="controls">
-  <button id="pauseBtn">Pausar</button>
-  <button id="stopBtn">Parar</button>
+  <button id="pauseBtn">⏸ Pausar</button>
+  <button id="stopBtn">⏹ Parar</button>
   <div id="play-status">parado</div>
 </div>
 
-<div id="loading">Carregando segmentos do vídeo...</div>
+<div id="loading">Informe o documento para carregar os segmentos...</div>
 <div id="segments-container"></div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCNgDqkqhsFQY7bfrWK2_VPtGUoEyyIBq4",
-    authDomain: "trechos-c7fba.firebaseapp.com",
-    projectId: "trechos-c7fba",
-    storageBucket: "trechos-c7fba.appspot.com",
-    messagingSenderId: "334052038527",
-    appId: "1:334052038527:web:797e8967eaef7b198a2c4a",
-    measurementId: "G-FL2Q1KLJMT"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+const firebaseConfig = {
+  apiKey: "AIzaSyCNgDqkqhsFQY7bfrWK2_VPtGUoEyyIBq4",
+  authDomain: "trechos-c7fba.firebaseapp.com",
+  projectId: "trechos-c7fba",
+  storageBucket: "trechos-c7fba.appspot.com",
+  messagingSenderId: "334052038527",
+  appId: "1:334052038527:web:797e8967eaef7b198a2c4a",
+  measurementId: "G-FL2Q1KLJMT"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  // ID do documento a ser carregado (pode passar via URL ?id=xxx)
-  const params = new URLSearchParams(window.location.search);
-  const docId = params.get("id") || "dailyRoutine"; // default
+let player, currentSegment=null, checkInterval=null, segments=[], videoId='';
+const container = document.getElementById('segments-container');
+const loadingEl = document.getElementById('loading');
 
-  let player, currentSegment = null, checkInterval = null, segments = [];
-  const container = document.getElementById('segments-container');
-  const loadingEl = document.getElementById('loading');
-  const videoTitleEl = document.getElementById('videoTitle');
+const toSeconds = t => { const p = t.split(':').map(Number); return p.length===2?p[0]*60+p[1]:p[0]*3600+p[1]*60+p[2];};
+const updateStatus = txt => document.getElementById('play-status').textContent=txt;
+const saveState = (id,state,docName)=>{const k='segments_'+docName; const all=JSON.parse(localStorage.getItem(k)||'{}'); all[id]={...all[id],...state}; localStorage.setItem(k,JSON.stringify(all));};
+const loadState=(id,docName)=>JSON.parse(localStorage.getItem('segments_'+docName)||'{}')[id]||{};
 
-  const toSeconds = t => {
-    const p = t.split(':').map(Number);
-    return p.length === 2 ? p[0]*60 + p[1] : p[0]*3600 + p[1]*60 + p[2];
-  };
+function makeTranscriptLinks(text){
+  return text.replace(/\((\d{1,2}:\d{2})\)/g, (match,p1)=>{
+    const seconds = toSeconds(p1);
+    return `<a href="#" class="time-link" data-time="${seconds}">(${p1})</a>`;
+  });
+}
 
-  const updateStatus = txt => document.getElementById('play-status').textContent = txt;
+async function loadSegments(docName){
+  loadingEl.textContent="Carregando segmentos...";
+  container.innerHTML='';
+  try{
+    const docSnap=await db.collection('videos_temp').doc(docName).get();
+    if(!docSnap.exists){loadingEl.textContent="Documento não encontrado."; return;}
+    const data = docSnap.data();
+    videoId = data.videoId;
+    segments = data.segments || [];
+    if(!segments.length){loadingEl.textContent="Nenhum segmento encontrado."; return;}
+    if(!player) createPlayer(videoId, ()=>renderSegments(docName));
+    else{ player.loadVideoById(videoId); renderSegments(docName); }
+  }catch(err){console.error(err); loadingEl.textContent="Erro ao carregar.";}
+}
 
-  function loadVideoData() {
-    db.collection("videos_temp").doc(docId).get()
-      .then(doc => {
-        if(!doc.exists){
-          loadingEl.textContent = "Documento não encontrado.";
-          return;
-        }
-        const data = doc.data();
-        videoTitleEl.textContent = data.titulodovideo || "Vídeo sem título";
-        segments = data.segments || [];
-        renderTitles();
-        loadingEl.style.display = 'none';
-
-        // Inicializar player com o videoId
-        if(player && data.videoId){
-          player.loadVideoById(data.videoId);
-        }
-      })
-      .catch(err => {
-        console.error("Erro ao carregar vídeo:", err);
-        loadingEl.textContent = "Erro ao carregar dados.";
-      });
-  }
-
-  function renderTitles() {
-    container.innerHTML = '';
-    segments.forEach((seg, i) => {
-      const div = document.createElement('div');
-      div.className = 'seg';
-      div.innerHTML = `<h3 data-index="${i}">${i+1}. ${seg.title}</h3>`;
-      container.appendChild(div);
-    });
-    setupTitleClicks();
-  }
-
-  function renderSegmentDetails(seg, index) {
-    container.innerHTML = '';
-    const div = document.createElement('div');
-    div.className = 'seg';
-    div.innerHTML = `
-      <button id="backBtn">← Voltar à lista</button>
-      <h3>${seg.title}</h3>
+function renderSegments(docName){
+  loadingEl.style.display='none'; container.innerHTML='';
+  segments.forEach((seg,i)=>{
+    const st=loadState(seg.start+'_'+i,docName);
+    const div=document.createElement('div');
+    div.className='seg'+(st.completed?' completed':'');
+    div.innerHTML=`
+      <h3 data-id="${i}">${seg.title || ''}</h3>
       <div class="details">
         <div class="times">⏱️ ${seg.start} – ${seg.end}</div>
-        <button class="playBtn" data-index="${index}">▶️ Tocar</button>
-        <button class="toggle-transcript" data-index="${index}">Mostrar Transcrição</button>
-        <button class="toggle-translation" data-index="${index}">Mostrar Tradução</button>
-        <div class="transcript" data-index="${index}" style="display:none">${seg.transcription || 'Nenhuma transcrição disponível'}</div>
-        <div class="translation" data-index="${index}" style="display:none">${seg.translation || 'Nenhuma tradução disponível'}</div>
-        <textarea id="notesArea" placeholder="Digite suas observações aqui..." rows="4">${seg.notes || ''}</textarea>
-        <button id="saveNotesBtn">Salvar Anotações</button>
-        <div id="statusMsg"></div>
+        <button class="playBtn" data-id="${i}">▶️ Tocar</button>
+        <button class="markBtn" data-id="${i}">${st.completed?'Desmarcar':'Concluído'}</button>
+        <button class="toggle-transcript" data-id="${i}">Mostrar Transcrição</button>
+        <button class="toggle-translation" data-id="${i}">Mostrar Tradução</button>
+        <div class="transcript" data-id="${i}">${seg.transcription ? makeTranscriptLinks(seg.transcription) : 'Nenhuma transcrição'}</div>
+        <div class="translation" data-id="${i}">${seg.translation||'Nenhuma tradução'}</div>
+        <textarea class="commentBox" data-id="${i}" rows="2" placeholder="Comentários...">${st.comment||''}</textarea>
+        <input class="tagsInput" data-id="${i}" type="text" placeholder="Tags" value="${st.tags||''}">
       </div>
     `;
     container.appendChild(div);
+  });
+  setupEvents(docName,true);
+}
 
-    // Eventos
-    document.getElementById('backBtn').onclick = () => { renderTitles(); document.getElementById('statusMsg').textContent = ''; };
-    document.querySelector('.playBtn').onclick = e => { playSegment(segments[e.target.dataset.index]); };
-    document.querySelector('.toggle-transcript').onclick = e => {
-      const el = document.querySelector(`.transcript[data-index="${e.target.dataset.index}"]`);
-      const show = el.style.display === 'none';
-      el.style.display = show ? 'block' : 'none';
-      e.target.textContent = show ? 'Ocultar Transcrição' : 'Mostrar Transcrição';
-    };
-    document.querySelector('.toggle-translation').onclick = e => {
-      const el = document.querySelector(`.translation[data-index="${e.target.dataset.index}"]`);
-      const show = el.style.display === 'none';
-      el.style.display = show ? 'block' : 'none';
-      e.target.textContent = show ? 'Ocultar Tradução' : 'Mostrar Tradução';
-    };
-    document.getElementById('saveNotesBtn').onclick = async () => {
-      const text = document.getElementById('notesArea').value.trim();
-      const statusMsg = document.getElementById('statusMsg');
-      statusMsg.style.color = 'green';
-      statusMsg.textContent = 'Salvando...';
-      try {
-        segments[e.target.dataset.index].notes = text;
-        await db.collection("videos_temp").doc(docId).update({ segments });
-        statusMsg.textContent = 'Anotações salvas com sucesso!';
-      } catch (err) {
-        console.error("Erro ao salvar anotações:", err);
-        statusMsg.style.color = 'red';
-        statusMsg.textContent = 'Erro ao salvar anotações.';
-      }
-    };
-  }
+function setupEvents(docName,isAccordion=false){
+  const addEvents=(el,fn)=>{el.addEventListener('click',fn); el.addEventListener('touchstart',fn);};
 
-  function setupTitleClicks() {
-    const titles = document.querySelectorAll('.seg h3');
-    titles.forEach(title => {
-      title.onclick = () => renderSegmentDetails(segments[title.dataset.index], title.dataset.index);
+  addEvents(document.getElementById('pauseBtn'),()=>player.pauseVideo());
+  addEvents(document.getElementById('stopBtn'),stopPlayer);
+
+  if(isAccordion){
+    container.querySelectorAll('.seg h3').forEach(title=>{
+      addEvents(title,()=>{
+        // fecha todos
+        container.querySelectorAll('.details').forEach(d=>{if(d!==title.nextElementSibling)d.classList.remove('open');});
+        // abre o clicado
+        const detail=title.nextElementSibling;
+        detail.classList.toggle('open');
+      });
     });
   }
 
-  function playSegment(seg) {
-    if(!player) return;
-    currentSegment = { start: toSeconds(seg.start), end: toSeconds(seg.end) };
-    player.seekTo(currentSegment.start);
-    player.unMute();
-    player.playVideo();
-    updateStatus(`Tocando: ${seg.title}`);
-    clearInterval(checkInterval);
-    checkInterval = setInterval(() => {
-      if(player.getCurrentTime() >= currentSegment.end){
-        player.pauseVideo();
-        updateStatus(`Trecho concluído: ${seg.title}`);
-        clearInterval(checkInterval);
-        currentSegment = null;
-      }
-    }, 300);
-  }
+  container.querySelectorAll('.playBtn').forEach(btn=>addEvents(btn,()=>{
+    const seg=segments[btn.dataset.id]; if(seg) playSegment(seg);
+  }));
 
-  function stopPlayer() { player.stopVideo(); updateStatus('Vídeo parado'); clearInterval(checkInterval); currentSegment=null; }
+  container.querySelectorAll('.markBtn').forEach(btn=>addEvents(btn,()=>{
+    const div=btn.closest('.seg'); const done=div.classList.toggle('completed'); btn.textContent=done?'Desmarcar':'Concluído';
+    saveState(btn.dataset.id,{completed:done},docName);
+  }));
 
-  // YouTube API
-  window.onYouTubeIframeAPIReady = function(){
-    player = new YT.Player('player',{
-      height:'360', width:'640',
-      videoId:'', // carregado dinamicamente depois
-      playerVars:{ modestbranding:1, rel:0, controls:1, enablejsapi:1, origin:window.location.origin, playsinline:1 },
-      events:{
-        onReady: loadVideoData,
-        onStateChange:e=>{
-          if(e.data==YT.PlayerState.PLAYING) updateStatus('Tocando');
-          if(e.data==YT.PlayerState.PAUSED) updateStatus('Pausado');
-          if(e.data==YT.PlayerState.ENDED){ updateStatus('Vídeo terminado'); clearInterval(checkInterval); currentSegment=null; }
-        }
-      }
-    });
-  };
+  container.querySelectorAll('.toggle-transcript').forEach(btn=>addEvents(btn,()=>{
+    const el=document.querySelector(`.transcript[data-id="${btn.dataset.id}"]`);
+    el.style.display=el.style.display==='block'?'none':'block';
+    btn.textContent=el.style.display==='block'?'Ocultar Transcrição':'Mostrar Transcrição';
+  }));
 
-  document.getElementById('pauseBtn').onclick = () => player.pauseVideo();
-  document.getElementById('stopBtn').onclick = stopPlayer;
+  container.querySelectorAll('.toggle-translation').forEach(btn=>addEvents(btn,()=>{
+    const el=document.querySelector(`.translation[data-id="${btn.dataset.id}"]`);
+    el.style.display=el.style.display==='block'?'none':'block';
+    btn.textContent=el.style.display==='block'?'Ocultar Tradução':'Mostrar Tradução';
+  }));
 
-  const tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  document.body.appendChild(tag);
+  container.querySelectorAll('.commentBox').forEach(txt=>txt.oninput=e=>saveState(e.target.dataset.id,{comment:e.target.value},docName));
+  container.querySelectorAll('.tagsInput').forEach(inp=>inp.oninput=e=>saveState(e.target.dataset.id,{tags:e.target.value},docName));
+
+  // links de tempo
+  container.addEventListener('click', e => {
+    if(e.target.classList.contains('time-link')){
+      e.preventDefault();
+      const t = Number(e.target.dataset.time);
+      if(player){ player.seekTo(t); player.playVideo(); }
+    }
+  });
+}
+
+function playSegment(seg){
+  if(!player)return;
+  currentSegment={start:toSeconds(seg.start),end:toSeconds(seg.end)};
+  player.seekTo(currentSegment.start); player.playVideo();
+  updateStatus(`Tocando: ${seg.title}`);
+  clearInterval(checkInterval);
+  checkInterval=setInterval(()=>{
+    if(player.getCurrentTime()>=currentSegment.end){
+      player.pauseVideo(); updateStatus(`Trecho concluído: ${seg.title}`);
+      clearInterval(checkInterval); currentSegment=null;
+    }
+  },300);
+}
+
+function stopPlayer(){player.stopVideo(); updateStatus('Vídeo parado'); clearInterval(checkInterval); currentSegment=null;}
+
+function createPlayer(videoId,onReadyFn){
+  player=new YT.Player('player',{height:'360',width:'640',videoId:videoId,
+  playerVars:{modestbranding:1,rel:0,controls:1,playsinline:1},
+  events:{onReady:onReadyFn,onStateChange:e=>{if(e.data==YT.PlayerState.PLAYING)updateStatus('Tocando');if(e.data==YT.PlayerState.PAUSED)updateStatus('Pausado');}}});
+}
+
+document.getElementById('loadDocBtn').onclick=()=>{const name=document.getElementById('docName').value.trim();if(name)loadSegments(name);};
+const params=new URLSearchParams(location.search);
+if(params.has('doc')){document.getElementById('docName').value=params.get('doc'); loadSegments(params.get('doc'));}
+const tag=document.createElement('script'); tag.src="https://www.youtube.com/iframe_api"; document.body.appendChild(tag);
 </script>
 </body>
 </html>
