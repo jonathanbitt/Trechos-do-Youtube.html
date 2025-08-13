@@ -31,9 +31,7 @@
       font-weight: normal;
       color: #007BFF;
     }
-    .seg h3:hover {
-      text-decoration: underline;
-    }
+    .seg h3:hover { text-decoration: underline; }
     .details {
       margin-top: 10px;
       padding-top: 10px;
@@ -104,16 +102,12 @@
       margin-bottom: 20px;
       background-color: #28a745;
     }
-    #backBtn:hover {
-      background-color: #1e7e34;
-    }
+    #backBtn:hover { background-color: #1e7e34; }
     #saveNotesBtn {
       background-color: #17a2b8;
       margin-top: 4px;
     }
-    #saveNotesBtn:hover {
-      background-color: #117a8b;
-    }
+    #saveNotesBtn:hover { background-color: #117a8b; }
     #statusMsg {
       margin-top: 8px;
       font-size: 0.9em;
@@ -126,7 +120,7 @@
 
 <h1>Trechos do Vídeo: Daily Routine</h1>
 
-<div id="player"></div>
+<div id="player" allow="autoplay; encrypted-media" playsinline></div>
 
 <div id="controls">
   <button id="pauseBtn">Pausar</button>
@@ -213,7 +207,6 @@
     `;
     container.appendChild(div);
     setupDetailEvents(seg);
-    // Voltar para lista
     document.getElementById('backBtn').onclick = () => {
       renderTitles();
       document.getElementById('statusMsg').textContent = '';
@@ -226,36 +219,51 @@
       title.onclick = () => {
         const id = title.dataset.id;
         const seg = segments.find(s => s.id === id);
-        if (seg) {
-          renderSegmentDetails(seg);
-        }
+        if (seg) renderSegmentDetails(seg);
       };
     });
   }
 
   function setupDetailEvents(seg) {
+    // Play direto no clique para evitar bloqueio no mobile
     document.querySelector('.playBtn').onclick = e => {
-      const id = e.target.dataset.id;
-      const segToPlay = segments.find(s => s.id === id);
-      if (segToPlay) playSegment(segToPlay);
+      const segToPlay = segments.find(s => s.id === seg.id);
+      if (segToPlay && player && player.playVideo) {
+        currentSegment = { start: toSeconds(segToPlay.start), end: toSeconds(segToPlay.end) };
+        player.seekTo(currentSegment.start, true);
+        player.unMute();
+        player.playVideo(); // CHAMADA DIRETA
+        updateStatus(`Tocando: ${segToPlay.title}`);
+
+        clearInterval(checkInterval);
+        checkInterval = setInterval(() => {
+          if (player.getCurrentTime() >= currentSegment.end) {
+            player.pauseVideo();
+            updateStatus(`Trecho concluído: ${segToPlay.title}`);
+            clearInterval(checkInterval);
+            currentSegment = null;
+          }
+        }, 300);
+      }
       e.stopPropagation();
     };
+
     document.querySelector('.toggle-transcript').onclick = e => {
-      const id = e.target.dataset.id;
-      const el = document.querySelector(`.transcript[data-id="${id}"]`);
+      const el = document.querySelector(`.transcript[data-id="${seg.id}"]`);
       const show = el.style.display === 'none';
       el.style.display = show ? 'block' : 'none';
       e.target.textContent = show ? 'Ocultar Transcrição' : 'Mostrar Transcrição';
       e.stopPropagation();
     };
+
     document.querySelector('.toggle-translation').onclick = e => {
-      const id = e.target.dataset.id;
-      const el = document.querySelector(`.translation[data-id="${id}"]`);
+      const el = document.querySelector(`.translation[data-id="${seg.id}"]`);
       const show = el.style.display === 'none';
       el.style.display = show ? 'block' : 'none';
       e.target.textContent = show ? 'Ocultar Tradução' : 'Mostrar Tradução';
       e.stopPropagation();
     };
+
     document.getElementById('saveNotesBtn').onclick = async () => {
       const text = document.getElementById('notesArea').value.trim();
       const statusMsg = document.getElementById('statusMsg');
@@ -263,7 +271,6 @@
       statusMsg.textContent = 'Salvando...';
       try {
         await segmentsRef.doc(seg.id).update({ observacoes: text });
-        // Atualiza localmente também para manter sincronizado
         const index = segments.findIndex(s => s.id === seg.id);
         if(index !== -1) segments[index].observacoes = text;
         statusMsg.textContent = 'Anotações salvas com sucesso!';
@@ -275,24 +282,6 @@
     };
   }
 
-  function playSegment(seg) {
-    if (!player) return;
-    currentSegment = { start: toSeconds(seg.start), end: toSeconds(seg.end) };
-    player.seekTo(currentSegment.start);
-    player.unMute();
-    player.playVideo();
-    updateStatus(`Tocando: ${seg.title}`);
-    clearInterval(checkInterval);
-    checkInterval = setInterval(() => {
-      if (player.getCurrentTime() >= currentSegment.end) {
-        player.pauseVideo();
-        updateStatus(`Trecho concluído: ${seg.title}`);
-        clearInterval(checkInterval);
-        currentSegment = null;
-      }
-    }, 300);
-  }
-
   function stopPlayer() {
     player.stopVideo();
     updateStatus('Vídeo parado');
@@ -300,14 +289,15 @@
     currentSegment = null;
   }
 
-  // YouTube API
   window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('player', {
-      height: '360', width: '640',
+      height: '360',
+      width: '640',
       videoId: 'ecF1y2bI2T4',
       playerVars: {
-        modestbranding: 1, rel: 0, controls: 1,
-        enablejsapi: 1, origin: window.location.origin,
+        modestbranding: 1,
+        rel: 0,
+        controls: 1,
         playsinline: 1
       },
       events: {
@@ -328,7 +318,6 @@
   const tag = document.createElement('script');
   tag.src = "https://www.youtube.com/iframe_api";
   document.body.appendChild(tag);
-
 </script>
 
 </body>
