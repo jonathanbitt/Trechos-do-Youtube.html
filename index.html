@@ -18,6 +18,8 @@ button{margin:4px 4px 8px 0;cursor:pointer;padding:6px 10px;border:none;border-r
 button:hover{background-color:#0056b3;}
 button.markBtn{background-color:#28a745;}
 button.markBtn:hover{background-color:#1e7e34;}
+button.saveCommentBtn{background-color:#17a2b8; margin-bottom: 10px;}
+button.saveCommentBtn:hover{background-color:#138496;}
 textarea,input.tagsInput{width:100%;margin-top:6px;margin-bottom:10px;padding:6px;font-size:0.9em;border:1px solid #ccc;border-radius:3px;}
 .transcript,.translation{padding:10px;margin:10px 0;font-size:0.9em;line-height:1.5;white-space:pre-line;}
 .transcript a.time-link{color:#007BFF; text-decoration:none; cursor:pointer;}
@@ -65,7 +67,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-let player, currentSegment=null, checkInterval=null, segments=[], videoId='';
+let player, currentSegment=null, checkInterval=null, segments=[], videoId='', currentDocName='';
 const container = document.getElementById('segments-container');
 const loadingEl = document.getElementById('loading');
 
@@ -81,7 +83,37 @@ function makeTranscriptLinks(text){
   });
 }
 
+async function saveCommentToFirebase(segmentIndex, comment, docName) {
+  if (!docName) return;
+  try {
+    const docRef = db.collection('videos_temp').doc(docName);
+    // Primeiro obtemos o documento atual para preservar os outros campos
+    const doc = await docRef.get();
+    const currentData = doc.data();
+    const updatedSegments = [...currentData.segments];
+    
+    // Atualiza apenas o campo observacoes do segmento específico
+    updatedSegments[segmentIndex] = {
+      ...updatedSegments[segmentIndex],
+      observacoes: comment
+    };
+    
+    // Atualiza o documento completo com os segmentos modificados
+    await docRef.update({
+      segments: updatedSegments
+    });
+    
+    // Atualiza o localStorage também para manter a sincronia
+    saveState(segments[segmentIndex].start+'_'+segmentIndex, {comment: comment}, docName);
+    alert('Comentário salvo com sucesso no Firebase!');
+  } catch (err) {
+    console.error("Erro ao salvar comentário no Firebase:", err);
+    alert('Erro ao salvar comentário. Tente novamente.');
+  }
+}
+
 async function loadSegments(docName){
+  currentDocName = docName;
   loadingEl.textContent="Carregando segmentos...";
   container.innerHTML='';
   try{
@@ -112,7 +144,8 @@ function renderSegments(docName){
         <button class="toggle-translation" data-id="${i}">Mostrar Tradução</button>
         <div class="transcript" data-id="${i}">${seg.transcription ? makeTranscriptLinks(seg.transcription) : 'Nenhuma transcrição'}</div>
         <div class="translation" data-id="${i}">${seg.translation||'Nenhuma tradução'}</div>
-        <textarea class="commentBox" data-id="${i}" rows="2" placeholder="Comentários...">${st.comment||''}</textarea>
+        <textarea class="commentBox" data-id="${i}" rows="2" placeholder="Comentários...">${st.comment||seg.observacoes||''}</textarea>
+        <button class="saveCommentBtn" data-id="${i}">💾 Salvar Comentário</button>
         <input class="tagsInput" data-id="${i}" type="text" placeholder="Tags" value="${st.tags||''}">
       </div>
     `;
@@ -130,9 +163,7 @@ function setupEvents(docName,isAccordion=false){
   if(isAccordion){
     container.querySelectorAll('.seg h3').forEach(title=>{
       addEvents(title,()=>{
-        // fecha todos
         container.querySelectorAll('.details').forEach(d=>{if(d!==title.nextElementSibling)d.classList.remove('open');});
-        // abre o clicado
         const detail=title.nextElementSibling;
         detail.classList.toggle('open');
       });
@@ -160,10 +191,20 @@ function setupEvents(docName,isAccordion=false){
     btn.textContent=el.style.display==='block'?'Ocultar Tradução':'Mostrar Tradução';
   }));
 
-  container.querySelectorAll('.commentBox').forEach(txt=>txt.oninput=e=>saveState(e.target.dataset.id,{comment:e.target.value},docName));
+  container.querySelectorAll('.commentBox').forEach(txt=>{
+    txt.oninput=e=>saveState(e.target.dataset.id,{comment:e.target.value},docName);
+  });
+  
   container.querySelectorAll('.tagsInput').forEach(inp=>inp.oninput=e=>saveState(e.target.dataset.id,{tags:e.target.value},docName));
 
-  // links de tempo
+  container.querySelectorAll('.saveCommentBtn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const commentBox = document.querySelector(`.commentBox[data-id="${btn.dataset.id}"]`);
+      const comment = commentBox.value;
+      saveCommentToFirebase(parseInt(btn.dataset.id), comment, docName);
+    });
+  });
+
   container.addEventListener('click', e => {
     if(e.target.classList.contains('time-link')){
       e.preventDefault();
