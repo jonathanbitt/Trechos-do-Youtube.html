@@ -3,34 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Segmentos do Vídeo - Acordeão Animado</title>
+<title>Segmentos do Vídeo - Acordeão Animado + Dicionário</title>
 <style>
-body { font-family: Arial,sans-serif; max-width:900px; margin:auto; padding:20px; background:#f7f7f7;}
-h1{text-align:center;}
-#player{display:block;margin:0 auto 20px auto;box-shadow:0 0 10px rgba(0,0,0,0.2);}
-.seg{background:white;border-radius:5px;padding:10px;margin-bottom:5px;box-shadow:0 0 3px rgba(0,0,0,0.1);}
-.seg.completed{background-color:#d4edda;}
-.seg h3{margin:0; cursor:pointer; user-select:none;}
-.details{overflow:hidden; max-height:0; transition:max-height 0.3s ease, padding 0.3s ease;}
-.details.open{max-height:2000px; padding-top:8px;}
-.times{color:#666;font-size:0.9em;margin-bottom:8px;}
-button{margin:4px 4px 8px 0;cursor:pointer;padding:6px 10px;border:none;border-radius:3px;background-color:#007BFF;color:white;font-size:0.9em;}
-button:hover{background-color:#0056b3;}
-button.markBtn{background-color:#28a745;}
-button.markBtn:hover{background-color:#1e7e34;}
-button.saveCommentBtn{background-color:#17a2b8; margin-bottom: 10px;}
-button.saveCommentBtn:hover{background-color:#138496;}
-textarea,input.tagsInput{width:100%;margin-top:6px;margin-bottom:10px;padding:6px;font-size:0.9em;border:1px solid #ccc;border-radius:3px;}
-.transcript,.translation{padding:10px;margin:10px 0;font-size:0.9em;line-height:1.5;white-space:pre-line;}
-.transcript a.time-link{color:#007BFF; text-decoration:none; cursor:pointer;}
-.transcript a.time-link:hover{ text-decoration:underline; }
-.transcript{background-color:#f8f9fa;border-left:4px solid #007BFF; display:block;}
-.translation{background-color:#fff3cd;border-left:4px solid #ffc107; display:block;}
-.toggle-transcript,.toggle-translation{background-color:#6c757d;font-size:0.8em;}
-.toggle-transcript:hover,.toggle-translation:hover{background-color:#5a6268;}
-#controls{text-align:center;margin-bottom:20px;}
-#play-status{margin-top:10px;font-weight:bold;text-align:center;min-height:1.2em;}
-#loading{text-align:center;padding:20px;font-style:italic;color:#666;}
+  body { font-family: Arial,sans-serif; max-width:900px; margin:auto; padding:20px; background:#f7f7f7;}
+  h1{text-align:center;}
+  #player{display:block;margin:0 auto 20px auto;box-shadow:0 0 10px rgba(0,0,0,0.2);}
+  .seg{background:white;border-radius:5px;padding:10px;margin-bottom:5px;box-shadow:0 0 3px rgba(0,0,0,0.1);}
+  .seg.completed{background-color:#d4edda;}
+  .seg h3{margin:0; cursor:pointer; user-select:none;}
+  .details{overflow:hidden; max-height:0; transition:max-height 0.3s ease, padding 0.3s ease;}
+  .details.open{max-height:2000px; padding-top:8px;}
+  .times{color:#666;font-size:0.9em;margin-bottom:8px;}
+  button{margin:4px 4px 8px 0;cursor:pointer;padding:6px 10px;border:none;border-radius:3px;background-color:#007BFF;color:white;font-size:0.9em;}
+  button:hover{background-color:#0056b3;}
+  button.markBtn{background-color:#28a745;}
+  button.markBtn:hover{background-color:#1e7e34;}
+  button.saveCommentBtn{background-color:#17a2b8; margin-bottom: 10px;}
+  button.saveCommentBtn:hover{background-color:#138496;}
+  textarea,input.tagsInput{width:100%;margin-top:6px;margin-bottom:10px;padding:6px;font-size:0.9em;border:1px solid #ccc;border-radius:3px;}
+  .transcript,.translation{padding:10px;margin:10px 0;font-size:0.95em;line-height:1.6;white-space:pre-line;}
+  .transcript a.time-link{color:#007BFF; text-decoration:none; cursor:pointer;}
+  .transcript a.time-link:hover{ text-decoration:underline; }
+  .transcript{background-color:#f8f9fa;border-left:4px solid #007BFF; display:block;}
+  .translation{background-color:#fff3cd;border-left:4px solid #ffc107; display:block;}
+  .toggle-transcript,.toggle-translation{background-color:#6c757d;font-size:0.8em;}
+  .toggle-transcript:hover,.toggle-translation:hover{background-color:#5a6268;}
+  #controls{text-align:center;margin-bottom:20px;}
+  #play-status{margin-top:10px;font-weight:bold;text-align:center;min-height:1.2em;}
+  #loading{text-align:center;padding:20px;font-style:italic;color:#666;}
+
+  /* Botão flutuante de “Criar definição” */
+  #defineBtn {
+    position: absolute;
+    display: none;
+    z-index: 9999;
+    padding: 8px 10px;
+    border-radius: 999px;
+    font-size: 14px;
+    background: #343a40;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    touch-action: manipulation;
+    user-select: none;
+  }
+  #defineBtn:active { transform: scale(0.98); }
+  /* Evitar que conteúdos linkados pareçam editáveis */
+  a.dict-link { text-decoration: underline dotted; }
 </style>
 </head>
 <body>
@@ -52,9 +70,13 @@ textarea,input.tagsInput{width:100%;margin-top:6px;margin-bottom:10px;padding:6p
 <div id="loading">Informe o documento para carregar os segmentos...</div>
 <div id="segments-container"></div>
 
+<!-- Botão flutuante -->
+<button id="defineBtn">📚 Criar definição</button>
+
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 <script>
+/* =================== Firebase =================== */
 const firebaseConfig = {
   apiKey: "AIzaSyCNgDqkqhsFQY7bfrWK2_VPtGUoEyyIBq4",
   authDomain: "trechos-c7fba.firebaseapp.com",
@@ -67,43 +89,42 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+/* =================== Estado geral =================== */
 let player, currentSegment=null, checkInterval=null, segments=[], videoId='', currentDocName='';
 const container = document.getElementById('segments-container');
 const loadingEl = document.getElementById('loading');
+const defineBtn = document.getElementById('defineBtn');
+let pendingSelectedWord = null; // guarda a palavra selecionada (não linkada)
 
+/* =================== Utils =================== */
 const toSeconds = t => { const p = t.split(':').map(Number); return p.length===2?p[0]*60+p[1]:p[0]*3600+p[1]*60+p[2];};
 const updateStatus = txt => document.getElementById('play-status').textContent=txt;
 const saveState = (id,state,docName)=>{const k='segments_'+docName; const all=JSON.parse(localStorage.getItem(k)||'{}'); all[id]={...all[id],...state}; localStorage.setItem(k,JSON.stringify(all));};
 const loadState=(id,docName)=>JSON.parse(localStorage.getItem('segments_'+docName)||'{}')[id]||{};
 
+/* Torna (MM:SS) ou (HH:MM:SS) em links clicáveis para pular o vídeo */
 function makeTranscriptLinks(text){
-  return text.replace(/\((\d{1,2}:\d{2})\)/g, (match,p1)=>{
+  return text.replace(/\((\d{1,2}:\d{2}(?::\d{2})?)\)/g, (match,p1)=>{
     const seconds = toSeconds(p1);
     return `<a href="#" class="time-link" data-time="${seconds}">(${p1})</a>`;
   });
 }
 
+/* =================== Salvar comentários =================== */
 async function saveCommentToFirebase(segmentIndex, comment, docName) {
   if (!docName) return;
   try {
     const docRef = db.collection('videos_temp').doc(docName);
-    // Primeiro obtemos o documento atual para preservar os outros campos
     const doc = await docRef.get();
     const currentData = doc.data();
-    const updatedSegments = [...currentData.segments];
-    
-    // Atualiza apenas o campo observacoes do segmento específico
+    const updatedSegments = [...(currentData.segments || [])];
+
     updatedSegments[segmentIndex] = {
       ...updatedSegments[segmentIndex],
       observacoes: comment
     };
-    
-    // Atualiza o documento completo com os segmentos modificados
-    await docRef.update({
-      segments: updatedSegments
-    });
-    
-    // Atualiza o localStorage também para manter a sincronia
+
+    await docRef.update({ segments: updatedSegments });
     saveState(segments[segmentIndex].start+'_'+segmentIndex, {comment: comment}, docName);
     alert('Comentário salvo com sucesso no Firebase!');
   } catch (err) {
@@ -112,6 +133,7 @@ async function saveCommentToFirebase(segmentIndex, comment, docName) {
   }
 }
 
+/* =================== Carregar e renderizar segmentos =================== */
 async function loadSegments(docName){
   currentDocName = docName;
   loadingEl.textContent="Carregando segmentos...";
@@ -134,6 +156,8 @@ function renderSegments(docName){
     const st=loadState(seg.start+'_'+i,docName);
     const div=document.createElement('div');
     div.className='seg'+(st.completed?' completed':'');
+    const transcriptHTML = seg.transcription ? makeTranscriptLinks(seg.transcription) : 'Nenhuma transcrição';
+    const translationHTML = seg.translation ? seg.translation : 'Nenhuma tradução';
     div.innerHTML=`
       <h3 data-id="${i}">${seg.title || ''}</h3>
       <div class="details">
@@ -142,8 +166,8 @@ function renderSegments(docName){
         <button class="markBtn" data-id="${i}">${st.completed?'Desmarcar':'Concluído'}</button>
         <button class="toggle-transcript" data-id="${i}">Mostrar Transcrição</button>
         <button class="toggle-translation" data-id="${i}">Mostrar Tradução</button>
-        <div class="transcript" data-id="${i}">${seg.transcription ? makeTranscriptLinks(seg.transcription) : 'Nenhuma transcrição'}</div>
-        <div class="translation" data-id="${i}">${seg.translation||'Nenhuma tradução'}</div>
+        <div class="transcript" data-id="${i}">${transcriptHTML}</div>
+        <div class="translation" data-id="${i}">${translationHTML}</div>
         <textarea class="commentBox" data-id="${i}" rows="2" placeholder="Comentários...">${st.comment||seg.observacoes||''}</textarea>
         <button class="saveCommentBtn" data-id="${i}">💾 Salvar Comentário</button>
         <input class="tagsInput" data-id="${i}" type="text" placeholder="Tags" value="${st.tags||''}">
@@ -152,10 +176,14 @@ function renderSegments(docName){
     container.appendChild(div);
   });
   setupEvents(docName,true);
+
+  // Após montar no DOM, processa “linkificação” pelo dicionário:
+  linkifyAllSegmentsWithDictionary();
 }
 
+/* =================== Eventos UI =================== */
 function setupEvents(docName,isAccordion=false){
-  const addEvents=(el,fn)=>{el.addEventListener('click',fn); el.addEventListener('touchstart',fn);};
+  const addEvents=(el,fn)=>{ el.addEventListener('click',fn,{passive:true}); el.addEventListener('touchstart',fn,{passive:true}); };
 
   addEvents(document.getElementById('pauseBtn'),()=>player.pauseVideo());
   addEvents(document.getElementById('stopBtn'),stopPlayer);
@@ -170,9 +198,7 @@ function setupEvents(docName,isAccordion=false){
     });
   }
 
-  container.querySelectorAll('.playBtn').forEach(btn=>addEvents(btn,()=>{
-    const seg=segments[btn.dataset.id]; if(seg) playSegment(seg);
-  }));
+  container.querySelectorAll('.playBtn').forEach(btn=>addEvents(btn,()=>{ const seg=segments[btn.dataset.id]; if(seg) playSegment(seg); }));
 
   container.querySelectorAll('.markBtn').forEach(btn=>addEvents(btn,()=>{
     const div=btn.closest('.seg'); const done=div.classList.toggle('completed'); btn.textContent=done?'Desmarcar':'Concluído';
@@ -194,7 +220,7 @@ function setupEvents(docName,isAccordion=false){
   container.querySelectorAll('.commentBox').forEach(txt=>{
     txt.oninput=e=>saveState(e.target.dataset.id,{comment:e.target.value},docName);
   });
-  
+
   container.querySelectorAll('.tagsInput').forEach(inp=>inp.oninput=e=>saveState(e.target.dataset.id,{tags:e.target.value},docName));
 
   container.querySelectorAll('.saveCommentBtn').forEach(btn=>{
@@ -214,6 +240,7 @@ function setupEvents(docName,isAccordion=false){
   });
 }
 
+/* =================== Player =================== */
 function playSegment(seg){
   if(!player)return;
   currentSegment={start:toSeconds(seg.start),end:toSeconds(seg.end)};
@@ -227,18 +254,212 @@ function playSegment(seg){
     }
   },300);
 }
-
-function stopPlayer(){player.stopVideo(); updateStatus('Vídeo parado'); clearInterval(checkInterval); currentSegment=null;}
-
+function stopPlayer(){ if(player){ player.stopVideo(); } updateStatus('Vídeo parado'); clearInterval(checkInterval); currentSegment=null; }
 function createPlayer(videoId,onReadyFn){
   player=new YT.Player('player',{height:'360',width:'640',videoId:videoId,
   playerVars:{modestbranding:1,rel:0,controls:1,playsinline:1},
   events:{onReady:onReadyFn,onStateChange:e=>{if(e.data==YT.PlayerState.PLAYING)updateStatus('Tocando');if(e.data==YT.PlayerState.PAUSED)updateStatus('Pausado');}}});
 }
 
-document.getElementById('loadDocBtn').onclick=()=>{const name=document.getElementById('docName').value.trim();if(name)loadSegments(name);};
+/* =================== DICIONÁRIO: linkificação dinâmica =================== */
+
+/**
+ * Percorre todos os elementos .transcript e .translation,
+ * coleta palavras únicas em nós de texto (fora de <a>),
+ * verifica no Firestore e transforma as que existirem em <a>.
+ */
+async function linkifyAllSegmentsWithDictionary(){
+  const blocks = Array.from(document.querySelectorAll('.transcript, .translation'));
+  // Para evitar leituras repetidas ao trocar de aba de segmento, processamos bloco a bloco:
+  for (const el of blocks) {
+    await linkifyElementByDictionary(el);
+  }
+}
+
+/** Extrai palavras (texto puro) de um container DOM, ignorando nós <a> já existentes */
+function collectWordsFromElement(el){
+  const words = new Set();
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){
+      // Ignora textos dentro de links e scripts/styles
+      if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      if (node.parentElement && (node.parentElement.closest('a'))) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const wordRegex = /\p{L}+(?:'\p{L}+)?/gu; // letras unicode, permite apóstrofo interno
+  let n;
+  while ((n = walker.nextNode())) {
+    const text = n.nodeValue;
+    const matches = text.match(wordRegex);
+    if (matches) {
+      matches.forEach(w => words.add(w.toLowerCase()));
+    }
+  }
+  return words;
+}
+
+/** Verifica no Firestore se cada palavra (id = minúscula) existe */
+async function checkExistingWordsInFirestore(wordSet){
+  const words = Array.from(wordSet);
+  if (words.length === 0) return new Set();
+  // Limita paralelismo para suavizar (opcional)
+  const chunkSize = 50;
+  const existing = new Set();
+  for (let i=0;i<words.length;i+=chunkSize){
+    const chunk = words.slice(i,i+chunkSize);
+    const promises = chunk.map(w =>
+      db.collection('palavras').doc(w).get().then(snap => ({w, exists: snap.exists})).catch(()=>({w,exists:false}))
+    );
+    const results = await Promise.all(promises);
+    results.forEach(r => { if (r.exists) existing.add(r.w); });
+  }
+  return existing;
+}
+
+/** Converte nós de texto em fragmentos com <a> para palavras existentes (preserva pontuação) */
+function linkifyTextNode(node, existingSet){
+  const text = node.nodeValue;
+  if (!text) return;
+
+  const frag = document.createDocumentFragment();
+  // Divide mantendo as palavras em grupos capturados
+  const parts = text.split(/(\p{L}+(?:'\p{L}+)*)/gu);
+  for (let i=0;i<parts.length;i++){
+    const token = parts[i];
+    if (!token) continue;
+    if (/^\p{L}+(?:'\p{L}+)?$/u.test(token)) {
+      const key = token.toLowerCase();
+      if (existingSet.has(key)) {
+        const a = document.createElement('a');
+        a.href = `detalhe.html?palavra=${encodeURIComponent(key)}`;
+        a.className = 'dict-link';
+        a.textContent = token;
+        frag.appendChild(a);
+      } else {
+        frag.appendChild(document.createTextNode(token));
+      }
+    } else {
+      frag.appendChild(document.createTextNode(token));
+    }
+  }
+  node.replaceWith(frag);
+}
+
+/** Processa um container individual: coleta → consulta Firestore → substitui */
+async function linkifyElementByDictionary(el){
+  // Cria um container temporário para preservar os links de tempo já existentes
+  const tmp = document.createElement('div');
+  tmp.innerHTML = el.innerHTML;
+
+  const words = collectWordsFromElement(tmp);
+  const existingSet = await checkExistingWordsInFirestore(words);
+
+  // Segunda passada: linkificar nós de texto
+  const walker = document.createTreeWalker(tmp, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){
+      if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      if (node.parentElement && (node.parentElement.closest('a'))) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+
+  const textNodes = [];
+  let n;
+  while ((n = walker.nextNode())) textNodes.push(n);
+  textNodes.forEach(node => linkifyTextNode(node, existingSet));
+
+  // Renderiza de volta no elemento original
+  el.innerHTML = '';
+  while (tmp.firstChild) el.appendChild(tmp.firstChild);
+}
+
+/* =================== Seleção e botão flutuante =================== */
+function isSelectionInsideLink(range){
+  if (!range) return false;
+  const common = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
+  if (!common) return false;
+  const startLink = range.startContainer && (range.startContainer.nodeType===1 ? range.startContainer : range.startContainer.parentElement)?.closest('a');
+  const endLink = range.endContainer && (range.endContainer.nodeType===1 ? range.endContainer : range.endContainer.parentElement)?.closest('a');
+  return !!(startLink || endLink || (common && common.closest && common.closest('a')));
+}
+
+function getSelectedWord(){
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount===0) return null;
+  const text = (sel.toString() || '').trim();
+  if (!text) return null;
+
+  // Deve ser uma única palavra (com acentos; aceita apóstrofo interno)
+  const isWord = /^\p{L}+(?:'\p{L}+)?$/u.test(text);
+  if (!isWord) return null;
+
+  const range = sel.getRangeAt(0);
+  if (isSelectionInsideLink(range)) return null; // não mostrar se já for link
+
+  return { text, range };
+}
+
+function positionDefineButton(range){
+  const rect = range.getBoundingClientRect();
+  const top = rect.top + window.scrollY - 10; // um pouco acima
+  const left = rect.left + window.scrollX + rect.width/2;
+  defineBtn.style.top = `${top}px`;
+  defineBtn.style.left = `${left}px`;
+}
+
+function hideDefineButton(){
+  defineBtn.style.display = 'none';
+  pendingSelectedWord = null;
+}
+
+function showDefineButtonFor(word, range){
+  pendingSelectedWord = word;
+  positionDefineButton(range);
+  defineBtn.style.display = 'inline-block';
+}
+
+/* Ouvinte central: funciona em desktop e mobile */
+document.addEventListener('selectionchange', ()=>{
+  const selWord = getSelectedWord();
+  if (!selWord) { hideDefineButton(); return; }
+  showDefineButtonFor(selWord.text, selWord.range);
+});
+
+/* Reposiciona ao rolar/dimensionar (caso botão esteja visível) */
+window.addEventListener('scroll', ()=>{
+  if (!pendingSelectedWord) return;
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount===0) { hideDefineButton(); return; }
+  positionDefineButton(sel.getRangeAt(0));
+}, {passive:true});
+
+window.addEventListener('resize', ()=>{
+  if (!pendingSelectedWord) return;
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount===0) { hideDefineButton(); return; }
+  positionDefineButton(sel.getRangeAt(0));
+});
+
+/* Clique no botão → abre cadastrar-verbete com a palavra */
+defineBtn.addEventListener('click', ()=>{
+  if (!pendingSelectedWord) return;
+  const palavra = pendingSelectedWord.toLowerCase();
+  const url = `cadastrar-verbete.html?palavra=${encodeURIComponent(palavra)}`;
+  // Em mobile, abrir na mesma aba costuma ser melhor:
+  window.location.href = url;
+  hideDefineButton();
+});
+
+/* =================== Bootstrapping =================== */
+document.getElementById('loadDocBtn').onclick=()=>{
+  const name=document.getElementById('docName').value.trim();
+  if(name) loadSegments(name);
+};
 const params=new URLSearchParams(location.search);
 if(params.has('doc')){document.getElementById('docName').value=params.get('doc'); loadSegments(params.get('doc'));}
+
+// YouTube Iframe API
 const tag=document.createElement('script'); tag.src="https://www.youtube.com/iframe_api"; document.body.appendChild(tag);
 </script>
 </body>

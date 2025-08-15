@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cadastrar Verbete</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width:700px; margin:auto; padding:20px; background:#f7f7f7;}
+  h1{text-align:center;}
+  label{display:block;margin-top:15px;font-weight:bold;}
+  input, textarea{width:100%;padding:8px;margin-top:5px;border:1px solid #ccc;border-radius:4px;font-size:0.95em;}
+  button{margin-top:15px;padding:10px 15px;border:none;border-radius:5px;background:#007BFF;color:white;font-size:1em;cursor:pointer;}
+  button:hover{background:#0056b3;}
+</style>
+</head>
+<body>
+
+<h1>Cadastrar / Editar Verbete</h1>
+
+<label for="palavraInput">Palavra:</label>
+<input type="text" id="palavraInput" placeholder="Palavra" readonly>
+
+<label for="definicaoInput">Definição:</label>
+<textarea id="definicaoInput" rows="5" placeholder="Digite a definição"></textarea>
+
+<label for="exemploInput">Exemplo:</label>
+<textarea id="exemploInput" rows="3" placeholder="Exemplo de uso"></textarea>
+
+<button id="saveBtn">💾 Salvar Verbete</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+<script>
+  /* =================== Firebase =================== */
+  const firebaseConfig = {
+    apiKey: "AIzaSyCNgDqkqhsFQY7bfrWK2_VPtGUoEyyIBq4",
+    authDomain: "trechos-c7fba.firebaseapp.com",
+    projectId: "trechos-c7fba",
+    storageBucket: "trechos-c7fba.appspot.com",
+    messagingSenderId: "334052038527",
+    appId: "1:334052038527:web:797e8967eaef7b198a2c4a",
+    measurementId: "G-FL2Q1KLJMT"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  /* =================== Utils =================== */
+  const params = new URLSearchParams(location.search);
+  const palavra = params.get('palavra') || '';
+  const palavraInput = document.getElementById('palavraInput');
+  const definicaoInput = document.getElementById('definicaoInput');
+  const exemploInput = document.getElementById('exemploInput');
+  palavraInput.value = palavra;
+
+  // Carrega verbete existente
+  if(palavra){
+    db.collection('palavras').doc(palavra.toLowerCase()).get().then(doc=>{
+      if(doc.exists){
+        const data = doc.data();
+        definicaoInput.value = data.definicao || '';
+        exemploInput.value = data.exemplo || '';
+      }
+    }).catch(err=>console.error("Erro ao carregar verbete:", err));
+  }
+
+  // Salvar/atualizar verbete
+  document.getElementById('saveBtn').addEventListener('click', async ()=>{
+    const definicao = definicaoInput.value.trim();
+    const exemplo = exemploInput.value.trim();
+    if(!palavra){ alert('Palavra inválida!'); return; }
+    try{
+      await db.collection('palavras').doc(palavra.toLowerCase()).set({
+        definicao,
+        exemplo
+      }, { merge:true });
+      alert('Verbete salvo com sucesso!');
+    }catch(err){
+      console.error("Erro ao salvar verbete:", err);
+      alert('Erro ao salvar. Tente novamente.');
+    }
+  });
+</script>
+
+</body>
+</html>
