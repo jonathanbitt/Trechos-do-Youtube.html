@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detalhe do Verbete</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f7f7f7; }
+  h1 { text-align: center; }
+  label { display: block; margin-top: 15px; font-weight: bold; }
+  input, textarea { width: 100%; padding: 8px; margin-top: 5px; font-size: 1em; border-radius: 4px; border: 1px solid #ccc; }
+  button { margin-top: 15px; padding: 10px 15px; font-size: 1em; border: none; border-radius: 5px; cursor: pointer; background-color: #007bff; color: white; }
+  button:hover { background-color: #0056b3; }
+  #status { margin-top: 15px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>Detalhe do Verbete</h1>
+
+<div>
+  <label>Palavra</label>
+  <input type="text" id="palavra" disabled>
+
+  <label>Definição</label>
+  <textarea id="definicao" rows="6" placeholder="Digite a definição..."></textarea>
+
+  <label>Exemplo (opcional)</label>
+  <textarea id="exemplo" rows="3" placeholder="Digite um exemplo..."></textarea>
+
+  <button id="saveBtn">💾 Salvar Verbete</button>
+  <div id="status"></div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // Configurações do Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCNgDqkqhsFQY7bfrWK2_VPtGUoEyyIBq4",
+    authDomain: "trechos-c7fba.firebaseapp.com",
+    projectId: "trechos-c7fba",
+    storageBucket: "trechos-c7fba.appspot.com",
+    messagingSenderId: "334052038527",
+    appId: "1:334052038527:web:797e8967eaef7b198a2c4a",
+    measurementId: "G-FL2Q1KLJMT"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Captura a palavra da URL
+  const params = new URLSearchParams(window.location.search);
+  const palavraParam = params.get('palavra');
+  const palavraInput = document.getElementById('palavra');
+  const definicaoInput = document.getElementById('definicao');
+  const exemploInput = document.getElementById('exemplo');
+  const statusDiv = document.getElementById('status');
+  const saveBtn = document.getElementById('saveBtn');
+
+  if (!palavraParam) {
+    statusDiv.textContent = "Nenhuma palavra informada na URL.";
+    saveBtn.disabled = true;
+  } else {
+    palavraInput.value = palavraParam;
+
+    // Carrega verbete existente
+    db.collection('palavras').doc(palavraParam.toLowerCase()).get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        definicaoInput.value = data.definicao || '';
+        exemploInput.value = data.exemplo || '';
+      } else {
+        statusDiv.textContent = "Novo verbete. Preencha os campos e salve.";
+      }
+    }).catch(err => {
+      console.error(err);
+      statusDiv.textContent = "Erro ao carregar verbete.";
+    });
+  }
+
+  // Salvar verbete
+  saveBtn.addEventListener('click', async () => {
+    const definicao = definicaoInput.value.trim();
+    const exemplo = exemploInput.value.trim();
+
+    if (!definicao) {
+      alert("A definição não pode ficar vazia!");
+      return;
+    }
+
+    try {
+      await db.collection('palavras').doc(palavraParam.toLowerCase()).set({
+        definicao,
+        exemplo
+      });
+      statusDiv.textContent = "✅ Verbete salvo com sucesso!";
+    } catch(err) {
+      console.error(err);
+      statusDiv.textContent = "❌ Erro ao salvar verbete.";
+    }
+  });
+</script>
+
+</body>
+</html>
