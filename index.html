@@ -402,7 +402,8 @@ function getSelectedWord(){
 
 function positionDefineButton(range){
   const rect = range.getBoundingClientRect();
-  const top = rect.top + window.scrollY - 10; // um pouco acima
+  const top = rect.top + window.scrollY + 12; // um pouco acima
+  const offsetX = 15; // novo deslocamento à direita (px)
   const left = rect.left + window.scrollX + rect.width/2;
   defineBtn.style.top = `${top}px`;
   defineBtn.style.left = `${left}px`;
