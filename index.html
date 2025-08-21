@@ -57,6 +57,17 @@ user-select: none;
 #defineBtn:active { transform: scale(0.98); }
 /* Evitar que conteúdos linkados pareçam editáveis */
 a.dict-link { text-decoration: underline dotted; }
+
+/* Botão Cadastrar Vídeo */
+#cadastrarVideoBtn {
+    background-color: #6610f2;
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 1em;
+}
+#cadastrarVideoBtn:hover {
+    background-color: #4d08c1;
+}
 </style>
 </head>
 <body>
@@ -82,6 +93,11 @@ a.dict-link { text-decoration: underline dotted; }
 
 <!-- Botão flutuante -->
 <button id="defineBtn">📚 Criar definição</button>
+
+<!-- Botão Cadastrar Vídeo -->
+<div style="text-align:center; margin-top:30px;">
+    <button id="cadastrarVideoBtn" onclick="window.location.href='CadastrarVideo.html'">Cadastrar Vídeo</button>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
@@ -197,7 +213,6 @@ const st=loadState(seg.start+'_'+i,docName);
 const div=document.createElement('div');
 div.className='seg'+(st.completed?' completed':'');
 const transcriptHTML = seg.transcription ? makeTranscriptLinks(seg.transcription) : 'Nenhuma transcrição';
-const translationHTML = seg.translation ? seg.translation : 'Nenhuma tradução';
 div.innerHTML=`
 <h3 data-id="${i}">${seg.title || ''}</h3>
 <div class="details">
@@ -205,12 +220,7 @@ div.innerHTML=`
 <button class="playBtn" data-id="${i}">▶️ Tocar</button>
 <button class="markBtn" data-id="${i}">${st.completed?'Desmarcar':'Concluído'}</button>
 <button class="toggle-transcript" data-id="${i}">Mostrar Transcrição</button>
-<button class="toggle-translation" data-id="${i}">Mostrar Tradução</button>
 <div class="transcript" data-id="${i}">${transcriptHTML}</div>
-<div class="translation" data-id="${i}">${translationHTML}</div>
-<textarea class="commentBox" data-id="${i}" rows="2" placeholder="Comentários...">${st.comment||seg.observacoes||''}</textarea>
-<button class="saveCommentBtn" data-id="${i}">💾 Salvar Comentário</button>
-<input class="tagsInput" data-id="${i}" type="text" placeholder="Tags" value="${st.tags||''}">
 </div>
 `;
 container.appendChild(div);
@@ -251,26 +261,6 @@ el.style.display=el.style.display==='block'?'none':'block';
 btn.textContent=el.style.display==='block'?'Ocultar Transcrição':'Mostrar Transcrição';
 }));
 
-container.querySelectorAll('.toggle-translation').forEach(btn=>addEvents(btn,()=>{
-const el=document.querySelector(`.translation[data-id="${btn.dataset.id}"]`);
-el.style.display=el.style.display==='block'?'none':'block';
-btn.textContent=el.style.display==='block'?'Ocultar Tradução':'Mostrar Tradução';
-}));
-
-container.querySelectorAll('.commentBox').forEach(txt=>{
-txt.oninput=e=>saveState(e.target.dataset.id,{comment:e.target.value},docName);
-});
-
-container.querySelectorAll('.tagsInput').forEach(inp=>inp.oninput=e=>saveState(e.target.dataset.id,{tags:e.target.value},docName));
-
-container.querySelectorAll('.saveCommentBtn').forEach(btn=>{
-btn.addEventListener('click',()=>{
-const commentBox = document.querySelector(`.commentBox[data-id="${btn.dataset.id}"]`);
-const comment = commentBox.value;
-saveCommentToFirebase(parseInt(btn.dataset.id), comment, docName);
-});
-});
-
 container.addEventListener('click', e => {
 if(e.target.classList.contains('time-link')){
 e.preventDefault();
@@ -304,12 +294,12 @@ events:{onReady:onReadyFn,onStateChange:e=>{if(e.data==YT.PlayerState.PLAYING)up
 /* =================== DICIONÁRIO: linkificação dinâmica =================== */
 
 /**
-* Percorre todos os elementos .transcript e .translation,
+* Percorre todos os elementos .transcript,
 * coleta palavras únicas em nós de texto (fora de <a>),
 * verifica no Firestore e transforma as que existirem em <a>.
 */
 async function linkifyAllSegmentsWithDictionary(){
-const blocks = Array.from(document.querySelectorAll('.transcript, .translation'));
+const blocks = Array.from(document.querySelectorAll('.transcript'));
 // Para evitar leituras repetidas ao trocar de aba de segmento, processamos bloco a bloco:
 for (const el of blocks) {
 await linkifyElementByDictionary(el);

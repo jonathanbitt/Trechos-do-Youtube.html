@@ -1,0 +1,195 @@
+<!DOCTYPE html>    
+<html lang="pt-BR">    
+<head>    
+<meta charset="UTF-8">    
+<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+<title>Cadastro + Preview de Legendas</title>    
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>    
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>    
+<style>    
+  body { font-family: Arial, sans-serif; margin: 15px; background: #f5f5f5; }    
+  h2 { text-align: center; }    
+  input, textarea, button { display: block; margin-bottom: 12px; width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }    
+  textarea { min-height: 70px; resize: vertical; }    
+  fieldset { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #ddd; }    
+  legend { font-weight: bold; }    
+  button { background: #007BFF; color: white; border: none; cursor: pointer; }    
+  button:hover { background: #0056b3; }    
+  .remove-btn { background: #dc3545; margin-top: 8px; }    
+  .remove-btn:hover { background: #a71d2a; }    
+  .add-btn { background: #28a745; }    
+  .add-btn:hover { background: #1e7e34; }    
+
+  /* Editor de Legendas */ 
+  #editorContainer { margin-top: 30px; border-top: 2px solid #ccc; padding-top: 20px; } 
+  .line { display: flex; align-items: center; margin-bottom: 6px; gap: 6px; flex-wrap: wrap; } 
+  .time-input { width: 80px; } 
+  .play-btn { background: #007BFF; color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 6px; } 
+  .play-btn:hover { background: #0056b3; } 
+</style>    
+</head>    
+<body>    
+
+<h2>Cadastro de Vídeo com Trechos</h2>    
+
+<form id="videoForm">    
+  <label>ID do Documento; Título do Vídeo; Video ID (YouTube)</label>    
+  <input type="text" id="mainData" placeholder="dailyRoutine;Vídeo sobre rotina;ecsdsdsdsd" required>    
+
+  <h3>Trechos</h3>    
+  <div id="segmentsContainer"></div>    
+
+  <button type="button" class="add-btn" onclick="addSegment()">+ Adicionar Trecho</button> 
+  <button type="submit">💾 Salvar no Firestore</button> 
+  <button type="button" style="background:#17a2b8;" onclick="previewEditor()">👁 Preview</button>    
+</form>    
+
+<!-- Editor de Legendas -->    
+<div id="editorContainer" style="display:none;">    
+  <h2>Editor de Legendas</h2>    
+  <div id="linesContainer"></div>    
+  <h3>Preview do Vídeo</h3>    
+  <div id="player"></div>    
+</div>    
+
+<script>    
+  // Firebase    
+  const firebaseConfig = {    
+    apiKey: "SUA_API_KEY",    
+    authDomain: "trechos-c7fba.firebaseapp.com",    
+    projectId: "trechos-c7fba",    
+    storageBucket: "trechos-c7fba.appspot.com",    
+    messagingSenderId: "334052038527",    
+    appId: "SEU_APP_ID"    
+  };    
+  firebase.initializeApp(firebaseConfig);    
+  const db = firebase.firestore();    
+
+  // --- Cadastro de trechos ---    
+  function addSegment(title = "", transcription = "") {    
+    const container = document.getElementById('segmentsContainer');    
+    const fieldset = document.createElement('fieldset');    
+    fieldset.innerHTML = `    
+      <legend>Trecho</legend>    
+      <label>Título</label>    
+      <input type="text" name="title" placeholder="Título do trecho" value="${title}" required>    
+      <label>Transcrição</label>    
+      <textarea name="transcription" placeholder="Texto original">${transcription}</textarea>    
+      <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remover Trecho</button>    
+    `;    
+    container.appendChild(fieldset);    
+  }    
+
+  // --- Salvar no Firestore ---    
+  document.getElementById("videoForm").addEventListener("submit", async function(e) {    
+    e.preventDefault();    
+
+    // Captura e separa os dados principais
+    const mainData = document.getElementById("mainData").value.trim().split(";");    
+    if(mainData.length < 3) {    
+      alert("⚠️ Digite no formato: ID;Título;VideoID");    
+      return;    
+    }    
+    const docId = mainData[0].trim();    
+    const titulodovideo = mainData[1].trim();    
+    const videoId = mainData[2].trim();    
+
+    const segmentElements = document.querySelectorAll("#segmentsContainer fieldset");    
+    const segments = [];    
+    segmentElements.forEach(fieldset => {    
+      const title = fieldset.querySelector('[name="title"]').value;    
+      const transcription = fieldset.querySelector('[name="transcription"]').value;    
+      segments.push({ title, transcription });    
+    });    
+
+    // --- Montar a transcrição única do editor ---    
+    const editorLines = document.querySelectorAll("#linesContainer .line");    
+    let fullTranscription = "";    
+    editorLines.forEach(div => {    
+      const time = div.querySelector('.time-input').value.trim();    
+      const text = div.querySelector('textarea').value.trim();    
+      if(time && text) {    
+        fullTranscription += `(${time}) ${text}\n`;    
+      }    
+    });    
+
+    try {    
+      await db.collection("videos_temp").doc(docId).set({    
+        titulodovideo,    
+        videoId,    
+        segments,    
+        transcription: fullTranscription.trim()    
+      });    
+      alert("✅ Vídeo, trechos e transcrição salvos com sucesso!");    
+    } catch (error) {    
+      console.error(error);    
+      alert("❌ Erro ao salvar, veja o console.");    
+    }    
+  });    
+
+  addSegment(); // inicia com um trecho vazio    
+
+  // --- Preview / Editor ---    
+  let player;    
+  function loadPlayer(videoId) {    
+    if(player) player.loadVideoById(videoId);    
+    else {    
+      const tag = document.createElement('script');    
+      tag.src = "https://www.youtube.com/iframe_api";    
+      document.body.appendChild(tag);    
+      window.onYouTubeIframeAPIReady = function() {    
+        player = new YT.Player('player', { height: '360', width: '640', videoId: videoId });    
+      };    
+    }    
+  }    
+
+  function timeToSeconds(time) {    
+    const parts = time.split(':').map(Number);    
+    if(parts.length === 2) return parts[0]*60 + parts[1];    
+    if(parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];    
+    return 0;    
+  }    
+
+  function previewEditor() {    
+    const linesContainer = document.getElementById('linesContainer');    
+    linesContainer.innerHTML = '';    
+
+    // pega o videoId da caixa de dados principal
+    const mainData = document.getElementById("mainData").value.trim().split(";");    
+    if(mainData.length >= 3) {    
+      loadPlayer(mainData[2].trim());    
+    }    
+
+    document.getElementById('editorContainer').style.display = 'block';    
+
+    const segmentElements = document.querySelectorAll("#segmentsContainer fieldset");    
+    segmentElements.forEach(fieldset => {    
+      const transcription = fieldset.querySelector('[name="transcription"]').value;    
+      const lines = transcription.split('\n');    
+      lines.forEach(line => {    
+        const match = line.match(/\((.*?)\)\s*(.*)/);    
+        if(match) addLine(match[1], match[2]);    
+      });    
+    });    
+  }    
+
+  function addLine(time = "", text = "") {    
+    const container = document.getElementById('linesContainer');    
+    const div = document.createElement('div');    
+    div.className = 'line';    
+    div.innerHTML = `    
+      <input type="text" class="time-input" value="${time}" placeholder="00:00">    
+      <textarea placeholder="Legenda">${text}</textarea>    
+      <button type="button" class="play-btn">▶️ Tocar</button>    
+    `;    
+    container.appendChild(div);    
+
+    div.querySelector('.play-btn').addEventListener('click', () => {    
+      const sec = timeToSeconds(div.querySelector('.time-input').value);    
+      if(player) player.seekTo(sec, true);    
+    });    
+  }    
+</script>    
+
+</body>    
+</html>
