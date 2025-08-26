@@ -1,105 +1,135 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Segmentos do Vídeo - Acordeão Animado + Dicionário</title>
+
 <style>
-body { font-family: Arial,sans-serif; max-width:900px; margin:auto; padding:20px; background:#f7f7f7;}
-h1{text-align:center;}
-#player{display:block;margin:0 auto 20px auto;box-shadow:0 0 10px rgba(0,0,0,0.2);}
-.seg{background:white;border-radius:5px;padding:10px;margin-bottom:5px;box-shadow:0 0 3px rgba(0,0,0,0.1);}
-.seg.completed{background-color:#d4edda;}
-.seg h3{margin:0; cursor:pointer; user-select:none;}
-.details{overflow:hidden; max-height:0; transition:max-height 0.3s ease, padding 0.3s ease;}
-.details.open{max-height:2000px; padding-top:8px;}
-.times{color:#666;font-size:0.9em;margin-bottom:8px;}
-button{margin:4px 4px 8px 0;cursor:pointer;padding:6px 10px;border:none;border-radius:3px;background-color:#007BFF;color:white;font-size:0.9em;}
-button:hover{background-color:#0056b3;}
-button.markBtn{background-color:#28a745;}
-button.markBtn:hover{background-color:#1e7e34;}
-button.saveCommentBtn{background-color:#17a2b8; margin-bottom: 10px;}
-button.saveCommentBtn:hover{background-color:#138496;}
-textarea,input.tagsInput{width:100%;margin-top:6px;margin-bottom:10px;padding:6px;font-size:0.9em;border:1px solid #ccc;border-radius:3px;}
-select {
-  width:70%; 
-  padding:8px;
-  margin-bottom:15px;
-  border:1px solid #ccc;
-  border-radius:3px;
-  font-size:0.9em;
-}
-.transcript,.translation{padding:10px;margin:10px 0;font-size:0.95em;line-height:1.6;white-space:pre-line;}
-.transcript a.time-link{color:#007BFF; text-decoration:none; cursor:pointer;}
-.transcript a.time-link:hover{ text-decoration:underline; }
-.transcript{background-color:#f8f9fa;border-left:4px solid #007BFF; display:block;}
-.translation{background-color:#fff3cd;border-left:4px solid #ffc107; display:block;}
-.toggle-transcript,.toggle-translation{background-color:#6c757d;font-size:0.8em;}
-.toggle-transcript:hover,.toggle-translation:hover{background-color:#5a6268;}
-#controls{text-align:center;margin-bottom:20px;}
-#play-status{margin-top:10px;font-weight:bold;text-align:center;min-height:1.2em;}
-#loading{text-align:center;padding:20px;font-style:italic;color:#666;}
+  /* ===== Layout básico ===== */
+  body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; background: #f7f7f7; }
+  h1 { text-align: center; }
+  #player { display: block; margin: 0 auto 20px auto; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
 
-/* Botão flutuante de "Criar definição" */
-#defineBtn {
-  position: absolute;
-  display: none;
-  z-index: 9999;
-  padding: 8px 10px;
-  border-radius: 999px;
-  font-size: 14px;
-  background: #343a40;
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-  touch-action: manipulation;
-  user-select: none;
-}
-#defineBtn:active { transform: scale(0.98); }
-/* Evitar que conteúdos linkados pareçam editáveis */
-a.dict-link { text-decoration: underline dotted; }
+  /* ===== Cards de segmentos ===== */
+  .seg { background: #fff; border-radius: 6px; padding: 10px; margin-bottom: 8px; box-shadow: 0 0 3px rgba(0,0,0,0.08); }
+  .seg.completed { background-color: #d4edda; }
+  .seg h3 { margin: 0; cursor: pointer; user-select: none; font-size: 1.05rem; }
+  .details { overflow: hidden; max-height: 0; transition: max-height 0.25s ease, padding 0.25s ease; }
+  .details.open { max-height: 2000px; padding-top: 6px; }
+  .times { color: #666; font-size: 0.9em; margin-bottom: 6px; }
 
-/* Botão Cadastrar Vídeo */
-#cadastrarVideoBtn {
-  background-color: #6610f2;
-  padding: 10px 20px;
-  margin-top: 20px;
-  font-size: 1em;
-}
-#cadastrarVideoBtn:hover {
-  background-color: #4d08c1;
-}
+  /* ===== Botões gerais ===== */
+  button { cursor: pointer; border: none; border-radius: 4px; }
+  .btn { padding: 6px 10px; font-size: 0.9em; }
+  .btn-primary { background: #007bff; color: #fff; }
+  .btn-primary:hover { background: #0056b3; }
+  .btn-success { background: #28a745; color: #fff; }
+  .btn-success:hover { background: #1e7e34; }
+  .btn-secondary { background: #6c757d; color: #fff; }
+  .btn-secondary:hover { background: #5a6268; }
 
-/* Bloco onde ficam input + botões por par de linhas */
-.link-block{
-  margin:6px 0; padding:8px;
-  background:#eef5ff; border-left:4px solid #007BFF; border-radius:6px;
-}
-.link-block input[type="text"]{ width:70%; max-width:560px; }
-.link-list{ margin:6px 0 0 0; padding-left:18px; }
-.link-list li{ margin:4px 0; }
-button.editLinkBtn{ background:#ffc107; color:#212529;}
-button.editLinkBtn:hover{ background:#e0a800;}
-button.saveEditedLinkBtn{ background:#28a745;}
-button.saveEditedLinkBtn:hover{ background:#218838;}
-button.deleteLinkBtn{ background:#dc3545;}
-button.deleteLinkBtn:hover{ background:#c82333;}
+  #controls { text-align: center; margin-bottom: 16px; }
+  #play-status { margin-top: 8px; font-weight: bold; text-align: center; min-height: 1.2em; }
+  #loading { text-align: center; padding: 18px; font-style: italic; color: #666; }
+
+  /* ===== Transcrição / Tradução ===== */
+  .transcript, .translation {
+    padding: 10px; margin: 10px 0; font-size: 0.95em; line-height: 1.6; white-space: pre-line;
+    max-height: 300px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #007bff #f1f1f1;
+  }
+  .transcript::-webkit-scrollbar { width: 8px; }
+  .transcript::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+  .transcript::-webkit-scrollbar-thumb { background: #007bff; border-radius: 4px; }
+  .transcript::-webkit-scrollbar-thumb:hover { background: #0056b3; }
+  .transcript a.time-link { color: #007bff; text-decoration: none; cursor: pointer; }
+  .transcript a.time-link:hover { text-decoration: underline; }
+  .transcript { background: #f8f9fa; border-left: 4px solid #007bff; display: none; }
+  .toggle-transcript { background: #6c757d; color: #fff; font-size: 0.8em; padding: 6px 9px; }
+  .toggle-transcript:hover { background: #5a6268; }
+
+  /* ===== Botão flutuante "Criar definição" ===== */
+  #defineBtn {
+    position: absolute; display: none; z-index: 9999; padding: 8px 10px; border-radius: 999px; font-size: 14px;
+    background: #343a40; color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.25); touch-action: manipulation; user-select: none;
+  }
+  #defineBtn:active { transform: scale(0.98); }
+  a.dict-link { text-decoration: underline dotted; }
+
+  /* ===== Botão "Cadastrar Vídeo" ===== */
+  #cadastrarVideoBtn { background: #6610f2; color: #fff; padding: 10px 20px; margin-top: 20px; font-size: 1em; }
+  #cadastrarVideoBtn:hover { background: #4d08c1; }
+
+  /* ===== Blocos de link (compactos) ===== */
+  .link-block {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 6px; margin: 6px 0;
+  }
+
+  /* Cabeçalho da área de links (toggle) */
+  .link-header {
+    display: flex; align-items: center; justify-content: flex-start; gap: 6px; margin-bottom: 4px;
+  }
+  .link-toggle-btn {
+    background: #f3f4f6; color: #111827; border: 1px solid #d1d5db; padding: 3px 8px; font-size: 0.8em; border-radius: 999px;
+  }
+  .link-toggle-btn:hover { background: #e5e7eb; }
+
+  /* Linha com input + botão (fica escondida até clicar no toggle) */
+  .link-inline {
+    display: none; align-items: center; gap: 6px; margin: 4px 0 2px 0;
+  }
+  .link-inline input[type="text"] {
+    flex: 1; min-width: 120px; padding: 5px 6px; font-size: 0.9em; border: 1px solid #d1d5db; border-radius: 6px;
+  }
+  .link-inline .saveLinkBtn {
+    padding: 5px 8px; font-size: 0.8em; background: #007bff; color:#fff; border: 1px solid #0d6efd; border-radius: 6px;
+  }
+  .link-inline .saveLinkBtn:hover { background: #0056b3; }
+
+  /* Lista de links: pílulas ultra compactas */
+  .link-list {
+    list-style: none; padding: 0; margin: 4px 0 0 0; display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .link-list li {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 8px; border: 1px solid #c6dafc; background: #eef5ff; border-radius: 999px; font-size: 0.82em;
+  }
+  .link-display {
+    color: #0066cc; text-decoration: underline; cursor: pointer; white-space: nowrap;
+  }
+  .editLinkInput {
+    display: none; padding: 3px 6px; font-size: 0.82em; border: 1px solid #ced4da; border-radius: 6px; min-width: 140px;
+  }
+
+  /* Botões mini (✏️ 💾 🗑️) */
+  .link-btn {
+    padding: 2px 6px; font-size: 0.78em; line-height: 1; border: 1px solid #d1d5db; border-radius: 6px; background: #f3f4f6;
+  }
+  .link-btn:hover { background: #e5e7eb; }
+
+  /* placeholders/estados vazios */
+  .link-empty {
+    font-size: 0.78em; color: #6b7280; padding: 2px 4px;
+  }
 </style>
 </head>
+
 <body>
 
 <h1>Trechos do Vídeo</h1>
 
-<div style="text-align:center; margin-bottom:15px;">
+<div style="text-align:center; margin-bottom: 15px;">
   <select id="docSelect">
     <option value="">Selecione um documento</option>
   </select>
-  <button id="loadDocBtn">Carregar</button>
+  <button id="loadDocBtn" class="btn btn-primary">Carregar</button>
 </div>
 
 <div id="player"></div>
+
 <div id="controls">
-  <button id="pauseBtn">⏸ Pausar</button>
-  <button id="stopBtn">⏹ Parar</button>
+  <button id="pauseBtn" class="btn btn-secondary">⏸ Pausar</button>
+  <button id="stopBtn" class="btn btn-secondary">⏹ Parar</button>
   <div id="play-status">parado</div>
 </div>
 
@@ -110,10 +140,11 @@ button.deleteLinkBtn:hover{ background:#c82333;}
 <button id="defineBtn">📚 Criar definição</button>
 
 <!-- Botão Cadastrar Vídeo -->
-<div style="text-align:center; margin-top:30px;">
+<div style="text-align:center; margin-top: 28px;">
   <button id="cadastrarVideoBtn" onclick="window.location.href='CasdastrarVideo.html'">Cadastrar Vídeo</button>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 
@@ -136,7 +167,7 @@ let player, currentSegment=null, checkInterval=null, segments=[], videoId='', cu
 const container = document.getElementById('segments-container');
 const loadingEl = document.getElementById('loading');
 const defineBtn = document.getElementById('defineBtn');
-let pendingSelectedWord = null; // guarda a palavra selecionada (não linkada)
+let pendingSelectedWord = null;
 
 /* =================== Utils =================== */
 const toSeconds = t => { const p = t.split(':').map(Number); return p.length===2?p[0]*60+p[1]:p[0]*3600+p[1]*60+p[2];};
@@ -158,10 +189,7 @@ async function loadAvailableDocuments() {
     const querySnapshot = await db.collection('videos_temp').get();
     const select = document.getElementById('docSelect');
 
-    // Limpa opções existentes (exceto a primeira)
-    while (select.options.length > 1) {
-      select.remove(1);
-    }
+    while (select.options.length > 1) select.remove(1);
 
     querySnapshot.forEach((doc) => {
       const option = document.createElement('option');
@@ -170,7 +198,6 @@ async function loadAvailableDocuments() {
       select.appendChild(option);
     });
 
-    // Se houver parâmetro 'doc' na URL, seleciona automaticamente
     const params = new URLSearchParams(location.search);
     if (params.has('doc')) {
       select.value = params.get('doc');
@@ -181,204 +208,184 @@ async function loadAvailableDocuments() {
   }
 }
 
-/* =================== Salvar comentários =================== */
-async function saveCommentToFirebase(segmentIndex, comment, docName) {
-  if (!docName) return;
-  try {
-    const docRef = db.collection('videos_temp').doc(docName);
-    const doc = await docRef.get();
-    const currentData = doc.data();
-    const updatedSegments = [...(currentData.segments || [])];
-
-    updatedSegments[segmentIndex] = {
-      ...updatedSegments[segmentIndex],
-      observacoes: comment
-    };
-
-    await docRef.update({ segments: updatedSegments });
-    saveState(segments[segmentIndex].start+'_'+segmentIndex, {comment: comment}, docName);
-    alert('Comentário salvo com sucesso no Firebase!');
-  } catch (err) {
-    console.error("Erro ao salvar comentário no Firebase:", err);
-    alert('Erro ao salvar comentário. Tente novamente.');
-  }
-}
-
 /* =================== Carregar e renderizar segmentos =================== */
 async function loadSegments(docName){
   currentDocName = docName;
-  loadingEl.textContent="Carregando segmentos...";
-  container.innerHTML='';
+  loadingEl.style.display = 'block';
+  loadingEl.textContent = "Carregando segmentos...";
+  container.innerHTML = '';
   try{
-    const docSnap=await db.collection('videos_temp').doc(docName).get();
-    if(!docSnap.exists){loadingEl.textContent="Documento não encontrado."; return;}
+    const docSnap = await db.collection('videos_temp').doc(docName).get();
+    if(!docSnap.exists){ loadingEl.textContent="Documento não encontrado."; return; }
     const data = docSnap.data();
     videoId = data.videoId;
     segments = data.segments || [];
-    if(!segments.length){loadingEl.textContent="Nenhum segmento encontrado."; return;}
+    if(!segments.length){ loadingEl.textContent="Nenhum segmento encontrado."; return; }
     if(!player) createPlayer(videoId, ()=>renderSegments(docName));
-    else{ player.loadVideoById(videoId); renderSegments(docName); }
-  }catch(err){console.error(err); loadingEl.textContent="Erro ao carregar.";}
+    else { player.loadVideoById(videoId); renderSegments(docName); }
+  }catch(err){ console.error(err); loadingEl.textContent="Erro ao carregar."; }
 }
 
-/* ======== Constrói o HTML da transcrição + inputs/botões a cada 2 linhas ======== */
+/* ======== Constrói transcrição + blocos de link compactos nos marcadores "##" ======== */
 function buildTranscriptWithControls(transcriptHTML, seg, segIndex){
-  const lines = transcriptHTML.split(/\r?\n/); // preserva pares
+  const parts = transcriptHTML.split('##');
   let finalHTML = '';
-  for (let idx=0; idx<lines.length; idx++){
-    const line = lines[idx];
-    if (line && line.trim().length>0){
-      finalHTML += line + '<br>';
-    }else{
-      // mesmo linhas vazias contam no índice para manter o par (caso existam)
-      finalHTML += '<br>';
+  if (parts.length > 0) finalHTML += parts[0];
+
+  for (let i = 1; i < parts.length; i++) {
+    const lineIndex = i - 1; // 0,1,2... -> cada '##' vira um "ponto" onde há bloco de links
+
+    const allLinks = Array.isArray(seg.links) ? seg.links : [];
+    const linksForThisLine = allLinks.filter(link => Number(link.line) === lineIndex);
+
+    let linksHTML = '';
+    if (linksForThisLine.length > 0) {
+      linksHTML += '<ul class="link-list">';
+      linksForThisLine.forEach((linkObj, linkIndex) => {
+        const safeUrl = linkObj?.url ?? '';
+        linksHTML += `
+          <li>
+            <a href="${safeUrl}" target="_blank" class="link-display">Link</a>
+            <input type="text" value="${safeUrl}" class="editLinkInput"
+                   data-seg="${segIndex}" data-line="${lineIndex}" data-link="${linkIndex}">
+            <button class="link-btn editLinkBtn"
+                    data-seg="${segIndex}" data-line="${lineIndex}" data-link="${linkIndex}">✏️</button>
+            <button class="link-btn saveEditedLinkBtn"
+                    data-seg="${segIndex}" data-line="${lineIndex}" data-link="${linkIndex}" style="display:none;">💾</button>
+            <button class="link-btn deleteLinkBtn"
+                    data-seg="${segIndex}" data-line="${lineIndex}" data-link="${linkIndex}">🗑️</button>
+          </li>
+        `;
+      });
+      linksHTML += '</ul>';
+    } else {
+      linksHTML = '<div class="link-empty">Nenhum link ainda.</div>';
     }
 
-    // Após cada 2 linhas (2ª, 4ª, 6ª, ...) insere bloco com input/botões
-    if ((idx+1) % 2 === 0){
-      const allLinks = Array.isArray(seg.links) ? seg.links : [];
-      // Índices reais no array 'seg.links' que pertencem a esta linha específica
-      const indicesForThisLine = [];
-      for (let k=0;k<allLinks.length;k++){
-        if (Number(allLinks[k].line) === idx) indicesForThisLine.push(k);
-      }
-
-      let linksHTML = '';
-      if (indicesForThisLine.length>0){
-        linksHTML += '<ul class="link-list">';
-        indicesForThisLine.forEach((linkArrIndex)=>{
-          const linkObj = allLinks[linkArrIndex];
-          const safeUrl = linkObj?.url ?? '';
-          linksHTML += `
-            <li>
-              <a href="${safeUrl}" target="_blank" class="link-display">${safeUrl}</a>
-              <input type="text" value="${safeUrl}" class="editLinkInput" data-seg="${segIndex}" data-line="${idx}" data-link="${linkArrIndex}" style="display:none; width:70%; margin-left:6px;">
-              <button class="editLinkBtn" data-seg="${segIndex}" data-line="${idx}" data-link="${linkArrIndex}">Editar</button>
-              <button class="saveEditedLinkBtn" data-seg="${segIndex}" data-line="${idx}" data-link="${linkArrIndex}" style="display:none;">Salvar</button>
-              <button class="deleteLinkBtn" data-seg="${segIndex}" data-line="${idx}" data-link="${linkArrIndex}">Excluir</button>
-            </li>
-          `;
-        });
-        linksHTML += '</ul>';
-      }
-
-      finalHTML += `
-        <div class="link-block">
-          <input type="text" placeholder="Digite um link" class="linkInput" data-seg="${segIndex}" data-line="${idx}">
-          <button class="saveLinkBtn" data-seg="${segIndex}" data-line="${idx}">Cadastrar Link</button>
-          ${linksHTML}
+    finalHTML += `
+      <div class="link-block" id="link-block-${segIndex}-${lineIndex}">
+        <div class="link-header">
+          <button class="link-toggle-btn" data-seg="${segIndex}" data-line="${lineIndex}">➕ Adicionar link</button>
         </div>
-      `;
-    }
+
+        <div class="link-inline" data-seg="${segIndex}" data-line="${lineIndex}">
+          <input type="text" placeholder="Cole o link" class="linkInput"
+                 data-seg="${segIndex}" data-line="${lineIndex}">
+          <button class="saveLinkBtn link-btn" data-seg="${segIndex}" data-line="${lineIndex}">Cadastrar</button>
+        </div>
+
+        ${linksHTML}
+      </div>
+    `;
+
+    finalHTML += parts[i];
   }
   return finalHTML;
 }
 
 function renderSegments(docName){
-  loadingEl.style.display='none'; container.innerHTML='';
-  segments.forEach((seg,i)=>{
-    const st=loadState(seg.start+'_'+i,docName);
-    const div=document.createElement('div');
-    div.className='seg'+(st.completed?' completed':'');
+  loadingEl.style.display = 'none';
+  container.innerHTML = '';
 
-    // Transcrição com links de tempo
+  segments.forEach((seg, i) => {
+    const st = loadState(seg.start + '_' + i, docName);
+    const div = document.createElement('div');
+    div.className = 'seg' + (st.completed ? ' completed' : '');
+
     const baseTranscriptHTML = seg.transcription ? makeTranscriptLinks(seg.transcription) : 'Nenhuma transcrição';
-    // Aplica inserção de caixas + botões dentro do container .transcript
     const transcriptWithControls = buildTranscriptWithControls(baseTranscriptHTML, seg, i);
 
-    div.innerHTML=`
+    div.innerHTML = `
       <h3 data-id="${i}">${seg.title || ''}</h3>
       <div class="details">
         <div class="times">⏱️ ${seg.start} – ${seg.end}</div>
-        <button class="playBtn" data-id="${i}">▶️ Tocar</button>
-        <button class="markBtn" data-id="${i}">${st.completed?'Desmarcar':'Concluído'}</button>
-        <button class="toggle-transcript" data-id="${i}">Mostrar Transcrição</button>
+        <button class="btn btn-primary playBtn" data-id="${i}">▶️ Tocar</button>
+        <button class="btn btn-success markBtn" data-id="${i}">${st.completed ? 'Desmarcar' : 'Concluído'}</button>
+        <button class="toggle-transcript btn-secondary" data-id="${i}">Mostrar Transcrição</button>
         <div class="transcript" data-id="${i}">${transcriptWithControls}</div>
       </div>
     `;
     container.appendChild(div);
   });
 
-  setupEvents(docName,true);
-  setupLinkEventDelegation();      // eventos (salvar/editar/excluir) com delegação
+  setupEvents(docName, true);
+  setupLinkEventDelegation();
   linkifyAllSegmentsWithDictionary();
 }
 
 /* =================== Eventos UI =================== */
-function setupEvents(docName,isAccordion=false){
-  const addEvents=(el,fn)=>{ el.addEventListener('click',fn,{passive:true}); el.addEventListener('touchstart',fn,{passive:true}); };
+function setupEvents(docName, isAccordion=false){
+  const add = (el, fn)=>{ el.addEventListener('click',fn,{passive:true}); el.addEventListener('touchstart',fn,{passive:true}); };
 
-  addEvents(document.getElementById('pauseBtn'),()=>player.pauseVideo());
-  addEvents(document.getElementById('stopBtn'),stopPlayer);
+  add(document.getElementById('pauseBtn'), ()=>player.pauseVideo());
+  add(document.getElementById('stopBtn'), stopPlayer);
 
-  if(isAccordion){
+  if (isAccordion){
     container.querySelectorAll('.seg h3').forEach(title=>{
-      addEvents(title,()=>{
-        container.querySelectorAll('.details').forEach(d=>{if(d!==title.nextElementSibling)d.classList.remove('open');});
-        const detail=title.nextElementSibling;
+      add(title, ()=>{
+        container.querySelectorAll('.details').forEach(d=>{ if(d!==title.nextElementSibling) d.classList.remove('open'); });
+        const detail = title.nextElementSibling;
         detail.classList.toggle('open');
       });
     });
   }
 
-  container.querySelectorAll('.playBtn').forEach(btn=>addEvents(btn,()=>{ const seg=segments[btn.dataset.id]; if(seg) playSegment(seg); }));
-
-  container.querySelectorAll('.markBtn').forEach(btn=>addEvents(btn,()=>{
-    const div=btn.closest('.seg'); const done=div.classList.toggle('completed'); btn.textContent=done?'Desmarcar':'Concluído';
-    saveState(btn.dataset.id,{completed:done},docName);
+  container.querySelectorAll('.playBtn').forEach(btn => add(btn, ()=>{
+    const seg = segments[btn.dataset.id];
+    if (seg) playSegment(seg);
   }));
 
-  container.querySelectorAll('.toggle-transcript').forEach(btn=>addEvents(btn,()=>{
-    const el=document.querySelector(`.transcript[data-id="${btn.dataset.id}"]`);
-    el.style.display=el.style.display==='block'?'none':'block';
-    btn.textContent=el.style.display==='block'?'Ocultar Transcrição':'Mostrar Transcrição';
+  container.querySelectorAll('.markBtn').forEach(btn => add(btn, ()=>{
+    const div = btn.closest('.seg');
+    const done = div.classList.toggle('completed');
+    btn.textContent = done ? 'Desmarcar' : 'Concluído';
+    saveState(btn.dataset.id, {completed: done}, docName);
+  }));
+
+  container.querySelectorAll('.toggle-transcript').forEach(btn => add(btn, ()=>{
+    const el = document.querySelector(`.transcript[data-id="${btn.dataset.id}"]`);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    btn.textContent = el.style.display === 'block' ? 'Ocultar Transcrição' : 'Mostrar Transcrição';
   }));
 
   container.addEventListener('click', e => {
-    if(e.target.classList.contains('time-link')){
+    if (e.target.classList.contains('time-link')){
       e.preventDefault();
       const t = Number(e.target.dataset.time);
-      if(player){ player.seekTo(t); player.playVideo(); }
+      if (player){ player.seekTo(t); player.playVideo(); }
     }
   });
 }
 
 /* =================== Player =================== */
 function playSegment(seg){
-  if(!player)return;
-  currentSegment={start:toSeconds(seg.start),end:toSeconds(seg.end)};
+  if(!player) return;
+  currentSegment = { start: toSeconds(seg.start), end: toSeconds(seg.end) };
   player.seekTo(currentSegment.start); player.playVideo();
   updateStatus(`Tocando: ${seg.title}`);
   clearInterval(checkInterval);
-  checkInterval=setInterval(()=>{
-    if(player.getCurrentTime()>=currentSegment.end){
+  checkInterval = setInterval(()=>{
+    if(player.getCurrentTime() >= currentSegment.end){
       player.pauseVideo(); updateStatus(`Trecho concluído: ${seg.title}`);
-      clearInterval(checkInterval); currentSegment=null;
+      clearInterval(checkInterval); currentSegment = null;
     }
-  },300);
+  }, 300);
 }
 function stopPlayer(){ if(player){ player.stopVideo(); } updateStatus('Vídeo parado'); clearInterval(checkInterval); currentSegment=null; }
-function createPlayer(videoId,onReadyFn){
+function createPlayer(videoId, onReadyFn){
   player=new YT.Player('player',{height:'360',width:'640',videoId:videoId,
     playerVars:{modestbranding:1,rel:0,controls:1,playsinline:1},
-    events:{onReady:onReadyFn,onStateChange:e=>{if(e.data==YT.PlayerState.PLAYING)updateStatus('Tocando');if(e.data==YT.PlayerState.PAUSED)updateStatus('Pausado');}}});
+    events:{onReady:onReadyFn,onStateChange:e=>{
+      if(e.data==YT.PlayerState.PLAYING) updateStatus('Tocando');
+      if(e.data==YT.PlayerState.PAUSED) updateStatus('Pausado');
+    }}} );
 }
 
 /* =================== DICIONÁRIO: linkificação dinâmica =================== */
-
-/**
-* Percorre todos os elementos .transcript,
-* coleta palavras únicas em nós de texto (fora de <a>),
-* verifica no Firestore e transforma as que existirem em <a>.
-*/
 async function linkifyAllSegmentsWithDictionary(){
   const blocks = Array.from(document.querySelectorAll('.transcript'));
-  for (const el of blocks) {
-    await linkifyElementByDictionary(el);
-  }
+  for (const el of blocks) await linkifyElementByDictionary(el);
 }
-
-/** Extrai palavras (texto puro) de um container DOM, ignorando nós <a> já existentes */
 function collectWordsFromElement(el){
   const words = new Set();
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
@@ -393,14 +400,10 @@ function collectWordsFromElement(el){
   while ((n = walker.nextNode())) {
     const text = n.nodeValue;
     const matches = text.match(wordRegex);
-    if (matches) {
-      matches.forEach(w => words.add(w.toLowerCase()));
-    }
+    if (matches) matches.forEach(w => words.add(w.toLowerCase()));
   }
   return words;
 }
-
-/** Verifica no Firestore se cada palavra (id = minúscula) existe */
 async function checkExistingWordsInFirestore(wordSet){
   const words = Array.from(wordSet);
   if (words.length === 0) return new Set();
@@ -416,17 +419,12 @@ async function checkExistingWordsInFirestore(wordSet){
   }
   return existing;
 }
-
-/** Converte nós de texto em fragmentos com <a> para palavras existentes (preserva pontuação) */
 function linkifyTextNode(node, existingSet){
-  const text = node.nodeValue;
-  if (!text) return;
-
+  const text = node.nodeValue; if (!text) return;
   const frag = document.createDocumentFragment();
   const parts = text.split(/(\p{L}+(?:'\p{L}+)*)/gu);
   for (let i=0;i<parts.length;i++){
-    const token = parts[i];
-    if (!token) continue;
+    const token = parts[i]; if (!token) continue;
     if (/^\p{L}+(?:'\p{L}+)?$/u.test(token)) {
       const key = token.toLowerCase();
       if (existingSet.has(key)) {
@@ -444,8 +442,6 @@ function linkifyTextNode(node, existingSet){
   }
   node.replaceWith(frag);
 }
-
-/** Processa um container individual: coleta → consulta Firestore → substitui */
 async function linkifyElementByDictionary(el){
   const tmp = document.createElement('div');
   tmp.innerHTML = el.innerHTML;
@@ -470,7 +466,7 @@ async function linkifyElementByDictionary(el){
   while (tmp.firstChild) el.appendChild(tmp.firstChild);
 }
 
-/* =================== Seleção e botão flutuante =================== */
+/* =================== Seleção e botão flutuante (Criar definição) =================== */
 function isSelectionInsideLink(range){
   if (!range) return false;
   const common = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
@@ -479,7 +475,6 @@ function isSelectionInsideLink(range){
   const endLink = range.endContainer && (range.endContainer.nodeType===1 ? range.endContainer : range.endContainer.parentElement)?.closest('a');
   return !!(startLink || endLink || (common && common.closest && common.closest('a')));
 }
-
 function getSelectedWord(){
   const sel = window.getSelection();
   if (!sel || sel.rangeCount===0) return null;
@@ -491,7 +486,6 @@ function getSelectedWord(){
   if (isSelectionInsideLink(range)) return null;
   return { text, range };
 }
-
 function positionDefineButton(range){
   const rect = range.getBoundingClientRect();
   const top = rect.top + window.scrollY + 12;
@@ -499,38 +493,21 @@ function positionDefineButton(range){
   defineBtn.style.top = `${top}px`;
   defineBtn.style.left = `${left}px`;
 }
-
-function hideDefineButton(){
-  defineBtn.style.display = 'none';
-  pendingSelectedWord = null;
-}
-
-function showDefineButtonFor(word, range){
-  pendingSelectedWord = word;
-  positionDefineButton(range);
-  defineBtn.style.display = 'inline-block';
-}
-
+function hideDefineButton(){ defineBtn.style.display = 'none'; pendingSelectedWord = null; }
+function showDefineButtonFor(word, range){ pendingSelectedWord = word; positionDefineButton(range); defineBtn.style.display = 'inline-block'; }
 document.addEventListener('selectionchange', ()=>{
   const selWord = getSelectedWord();
   if (!selWord) { hideDefineButton(); return; }
   showDefineButtonFor(selWord.text, selWord.range);
 });
-
-window.addEventListener('scroll', ()=>{
-  if (!pendingSelectedWord) return;
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount===0) { hideDefineButton(); return; }
-  positionDefineButton(sel.getRangeAt(0));
-}, {passive:true});
-
-window.addEventListener('resize', ()=>{
-  if (!pendingSelectedWord) return;
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount===0) { hideDefineButton(); return; }
-  positionDefineButton(sel.getRangeAt(0));
+['scroll','resize'].forEach(ev=>{
+  window.addEventListener(ev, ()=>{
+    if (!pendingSelectedWord) return;
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount===0) { hideDefineButton(); return; }
+    positionDefineButton(sel.getRangeAt(0));
+  }, {passive:true});
 });
-
 defineBtn.addEventListener('click', ()=>{
   if (!pendingSelectedWord) return;
   const palavra = pendingSelectedWord.toLowerCase();
@@ -545,14 +522,26 @@ function setupLinkEventDelegation(){
   if (linkEventsBound) return;
   linkEventsBound = true;
 
+  // Toggle mostrar/ocultar input + botão "Cadastrar"
+  container.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.link-toggle-btn');
+    if (!btn) return;
+    const seg = btn.dataset.seg, line = btn.dataset.line;
+    const inline = container.querySelector(`.link-inline[data-seg="${seg}"][data-line="${line}"]`);
+    if (!inline) return;
+    const showing = inline.style.display === 'flex';
+    inline.style.display = showing ? 'none' : 'flex';
+    btn.textContent = showing ? '➕ Adicionar link' : '— Fechar';
+  });
+
   // Salvar novo link
   container.addEventListener('click', async (e)=>{
     const btn = e.target.closest('.saveLinkBtn');
     if (!btn) return;
     const segIndex = Number(btn.dataset.seg);
     const lineIndex = Number(btn.dataset.line);
-    const block = btn.closest('.link-block');
-    const input = block.querySelector(`.linkInput[data-seg="${segIndex}"][data-line="${lineIndex}"]`);
+    const inline = btn.closest('.link-inline');
+    const input = inline.querySelector(`.linkInput[data-seg="${segIndex}"][data-line="${lineIndex}"]`);
     const url = (input?.value || '').trim();
     if (!url){ alert('Digite um link antes de salvar.'); return; }
 
@@ -560,12 +549,11 @@ function setupLinkEventDelegation(){
       const docRef = db.collection('videos_temp').doc(currentDocName);
       const docSnap = await docRef.get();
       const data = docSnap.data();
-      const updatedSegments = [...(data.segments || [])];
-      if (!Array.isArray(updatedSegments[segIndex].links)) updatedSegments[segIndex].links = [];
-      updatedSegments[segIndex].links.push({ line: lineIndex, url });
-      await docRef.update({ segments: updatedSegments });
+      const updated = [...(data.segments || [])];
+      if (!Array.isArray(updated[segIndex].links)) updated[segIndex].links = [];
+      updated[segIndex].links.push({ line: lineIndex, url });
+      await docRef.update({ segments: updated });
       input.value = '';
-      // Re-renderiza para exibir na lista
       await loadSegments(currentDocName);
     }catch(err){
       console.error(err); alert('Erro ao salvar link.');
@@ -577,9 +565,10 @@ function setupLinkEventDelegation(){
     const btn = e.target.closest('.editLinkBtn');
     if (!btn) return;
     const seg = btn.dataset.seg, line = btn.dataset.line, link = btn.dataset.link;
-    const input = container.querySelector(`.editLinkInput[data-seg="${seg}"][data-line="${line}"][data-link="${link}"]`);
-    const saveBtn = container.querySelector(`.saveEditedLinkBtn[data-seg="${seg}"][data-line="${line}"][data-link="${link}"]`);
-    const displayLink = input?.closest('li')?.querySelector('.link-display');
+    const li = btn.closest('li');
+    const input = li.querySelector(`.editLinkInput[data-seg="${seg}"][data-line="${line}"][data-link="${link}"]`);
+    const saveBtn = li.querySelector(`.saveEditedLinkBtn[data-seg="${seg}"][data-line="${line}"][data-link="${link}"]`);
+    const displayLink = li.querySelector('.link-display');
     if (!input || !saveBtn || !displayLink) return;
 
     input.style.display='inline-block';
@@ -595,7 +584,9 @@ function setupLinkEventDelegation(){
     const segIndex = Number(btn.dataset.seg);
     const lineIndex = Number(btn.dataset.line);
     const linkIndex = Number(btn.dataset.link);
-    const input = container.querySelector(`.editLinkInput[data-seg="${segIndex}"][data-line="${lineIndex}"][data-link="${linkIndex}"]`);
+
+    const li = btn.closest('li');
+    const input = li.querySelector(`.editLinkInput[data-seg="${segIndex}"][data-line="${lineIndex}"][data-link="${linkIndex}"]`);
     const newValue = (input?.value || '').trim();
     if (!newValue){ alert('Digite um link válido.'); return; }
 
@@ -603,12 +594,11 @@ function setupLinkEventDelegation(){
       const docRef = db.collection('videos_temp').doc(currentDocName);
       const docSnap = await docRef.get();
       const data = docSnap.data();
-      const updatedSegments = [...(data.segments || [])];
-      if (updatedSegments[segIndex]?.links?.[linkIndex]){
-        updatedSegments[segIndex].links[linkIndex].url = newValue;
+      const updated = [...(data.segments || [])];
+      if (updated[segIndex]?.links?.[linkIndex]){
+        updated[segIndex].links[linkIndex].url = newValue;
       }
-      await docRef.update({ segments: updatedSegments });
-      alert('Link atualizado com sucesso!');
+      await docRef.update({ segments: updated });
       await loadSegments(currentDocName);
     }catch(err){
       console.error(err); alert('Erro ao atualizar link.');
@@ -628,11 +618,11 @@ function setupLinkEventDelegation(){
       const docRef = db.collection('videos_temp').doc(currentDocName);
       const docSnap = await docRef.get();
       const data = docSnap.data();
-      const updatedSegments = [...(data.segments || [])];
-      if (Array.isArray(updatedSegments[segIndex]?.links)){
-        updatedSegments[segIndex].links.splice(linkIndex, 1);
+      const updated = [...(data.segments || [])];
+      if (Array.isArray(updated[segIndex]?.links)){
+        updated[segIndex].links.splice(linkIndex, 1);
       }
-      await docRef.update({ segments: updatedSegments });
+      await docRef.update({ segments: updated });
       await loadSegments(currentDocName);
     }catch(err){
       console.error(err); alert('Erro ao excluir link.');
@@ -655,7 +645,8 @@ const tag=document.createElement('script'); tag.src="https://www.youtube.com/ifr
 
 <!-- ===== Player API callback ===== -->
 <script>
-function onYouTubeIframeAPIReady(){ /* noop: criado em createPlayer */ }
+  function onYouTubeIframeAPIReady(){ /* noop: criado em createPlayer */ }
 </script>
+
 </body>
 </html>
