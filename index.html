@@ -709,30 +709,44 @@ function showLinkInput(word, range){
     };
 }
 
-/* =================== DETECTAR PALAVRA SELECIONADA =================== */
-document.addEventListener('selectionchange', ()=>{
-    const sel = window.getSelection();
-    if(!sel || sel.rangeCount===0){ defineBtn.style.display='none'; return; }
-    const text = sel.toString().trim();
-    if(!/^\p{L}+(?:'\p{L}+)?$/u.test(text)){ defineBtn.style.display='none'; return; }
 
-    // não mostrar se dentro de link
-    const range = sel.getRangeAt(0);
-    if(range.startContainer.parentElement.closest('a') || range.endContainer.parentElement.closest('a')){
-        defineBtn.style.display='none';
+
+
+document.addEventListener('selectionchange', () => {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) {
+        defineBtn.style.display = 'none';
         return;
     }
 
-    // palavra válida
-    defineBtn.style.display='inline-block';
+    const text = sel.toString().trim();
+
+    // Nova regex: permite letras, números, parênteses, hífen e até + se necessário
+    if (!/^[\p{L}0-9()\-\+\[\]]+$/u.test(text)) {
+        defineBtn.style.display = 'none';
+        return;
+    }
+
+    const range = sel.getRangeAt(0);
+
+    // Evita mostrar botão se a seleção já é um link
+    if (range.startContainer.parentElement.closest('a') || range.endContainer.parentElement.closest('a')) {
+        defineBtn.style.display = 'none';
+        return;
+    }
+
+    // Mostra o botão
+    defineBtn.style.display = 'inline-block';
     pendingWord = text;
     pendingRange = range;
 
-    // posiciona botão flutuante
+    // Calcula posição do botão
     const rect = range.getBoundingClientRect();
     defineBtn.style.top = `${rect.top + window.scrollY - 30}px`;
     defineBtn.style.left = `${rect.left + window.scrollX}px`;
 });
+
+
 
 /* =================== CLIQUE NO BOTÃO =================== */
 defineBtn.onclick = ()=>{
