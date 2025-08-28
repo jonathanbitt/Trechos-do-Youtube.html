@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Vídeo com Trechos</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+  body { font-family: Arial, sans-serif; margin: 15px; background: #f5f5f5; }
+  h2 { text-align: center; }
+  input, textarea, select, button {
+    display: block; margin-bottom: 12px; width: 100%;
+    padding: 12px; font-size: 16px; border-radius: 8px;
+    border: 1px solid #ccc; box-sizing: border-box;
+  }
+  textarea { min-height: 70px; resize: vertical; }
+  fieldset {
+    margin-bottom: 20px; padding: 15px; background: #fff;
+    border-radius: 8px; border: 1px solid #ddd;
+  }
+  legend { font-weight: bold; }
+  button { background: #007BFF; color: white; border: none; cursor: pointer; }
+  button:hover { background: #0056b3; }
+  .remove-btn { background: #dc3545; margin-top: 8px; }
+  .remove-btn:hover { background: #a71d2a; }
+  .add-btn { background: #28a745; }
+  .add-btn:hover { background: #1e7e34; }
+</style>
+</head>
+<body>
+
+<h2>Cadastro de Vídeo com Trechos</h2>
+
+<!-- Seleção de canal e vídeo existentes -->
+<label>Escolher Canal</label>
+<select id="canalSelect">
+  <option value="">-- Selecione um canal --</option>
+</select>
+
+<label>Escolher Vídeo</label>
+<select id="videoSelect">
+  <option value="">-- Selecione um vídeo --</option>
+</select>
+
+<hr>
+
+<form id="videoForm">
+  <label>Canal; Título do Vídeo; Video ID (YouTube)</label>
+  <input type="text" id="mainData" placeholder="Canal X;Vídeo sobre rotina;ecsdsdsdsd" required>
+
+  <h3>Trechos</h3>
+  <div id="segmentsContainer"></div>
+
+  <button type="button" class="add-btn" onclick="addSegment()">+ Adicionar Trecho</button>
+  <button type="submit">💾 Salvar no Firestore</button>
+</form>
+
+<script>
+  // --- Firebase ---
+  const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+    authDomain: "trechos-c7fba.firebaseapp.com",
+    projectId: "trechos-c7fba",
+    storageBucket: "trechos-c7fba.appspot.com",
+    messagingSenderId: "334052038527",
+    appId: "SEU_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // --- Adicionar trecho ---
+  function addSegment(title = "", transcription = "") {
+    const container = document.getElementById('segmentsContainer');
+    const fieldset = document.createElement('fieldset');
+    fieldset.innerHTML = `
+      <legend>Trecho</legend>
+      <label>Título (ex: Parte 1)</label>
+      <input type="text" name="title" placeholder="Título do trecho" value="${title}" required>
+      <label>Transcrição</label>
+      <textarea name="transcription" placeholder="Texto original">${transcription}</textarea>
+      <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remover Trecho</button>
+    `;
+    container.appendChild(fieldset);
+  }
+
+  // --- Salvar no Firestore preservando partes antigas ---
+  document.getElementById("videoForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const mainData = document.getElementById("mainData").value.trim().split(";");
+    if(mainData.length < 3) {
+      alert("⚠️ Digite no formato: Canal;Título;VideoID");
+      return;
+    }
+
+    const canal = mainData[0].trim();
+    const videoTitle = mainData[1].trim();
+    const videoId = mainData[2].trim();
+
+    const segmentElements = document.querySelectorAll("#segmentsContainer fieldset");
+    const newSegments = [];
+    segmentElements.forEach(fieldset => {
+      const title = fieldset.querySelector('[name="title"]').value;
+      const transcription = fieldset.querySelector('[name="transcription"]').value;
+      newSegments.push({ title, transcription });
+    });
+
+    try {
+      const videoRef = db.collection(canal).doc(videoTitle);
+
+      // 1️⃣ Ler segmentos existentes
+      const docSnap = await videoRef.get();
+      let existingSegments = [];
+      if(docSnap.exists && Array.isArray(docSnap.data().segments)) {
+        existingSegments = docSnap.data().segments;
+      }
+
+      // 2️⃣ Concatenar novos trechos sem apagar os antigos
+      const updatedSegments = existingSegments.concat(newSegments);
+
+      // 3️⃣ Salvar tudo de volta
+      await videoRef.set({ videoId, segments: updatedSegments }, { merge: true });
+
+      // 4️⃣ Garantir que canal exista no índice auxiliar
+      await db.collection("canais").doc(canal).set({ exists: true }, { merge: true });
+
+      alert("✅ Trechos adicionados com sucesso!");
+      carregarCanais(); // recarregar lista de canais
+    } catch(err) {
+      console.error(err);
+      alert("❌ Erro ao salvar, veja console.");
+    }
+  });
+
+  // --- Carregar canais ---
+  async function carregarCanais() {
+    const canalSelect = document.getElementById("canalSelect");
+    canalSelect.innerHTML = '<option value="">-- Selecione um canal --</option>';
+
+    const snapshot = await db.collection("canais").get();
+    snapshot.forEach(doc => {
+      const option = document.createElement("option");
+      option.value = doc.id;
+      option.textContent = doc.id;
+      canalSelect.appendChild(option);
+    });
+  }
+
+  // --- Carregar vídeos de um canal ---
+  async function carregarVideos(canal) {
+    const videoSelect = document.getElementById("videoSelect");
+    videoSelect.innerHTML = '<option value="">-- Selecione um vídeo --</option>';
+    if(!canal) return;
+
+    const snapshot = await db.collection(canal).get();
+    snapshot.forEach(doc => {
+      const option = document.createElement("option");
+      option.value = doc.id;
+      option.textContent = doc.id;
+      videoSelect.appendChild(option);
+    });
+  }
+
+  // --- Ao selecionar canal, carregar vídeos ---
+  document.getElementById("canalSelect").addEventListener("change", function() {
+    carregarVideos(this.value);
+  });
+
+  // --- Ao selecionar vídeo, carregar dados no formulário ---
+  document.getElementById("videoSelect").addEventListener("change", async function() {
+    const canal = document.getElementById("canalSelect").value;
+    const video = this.value;
+    if(!canal || !video) return;
+
+    const docSnap = await db.collection(canal).doc(video).get();
+    if(docSnap.exists) {
+      const data = docSnap.data();
+      document.getElementById("mainData").value = `${canal};${video};${data.videoId}`;
+      const container = document.getElementById("segmentsContainer");
+      container.innerHTML = "";
+      data.segments.forEach(seg => addSegment(seg.title, seg.transcription));
+    }
+  });
+
+  // Inicia carregando canais e adiciona trecho inicial
+  carregarCanais();
+  addSegment();
+</script>
+
+</body>
+</html>

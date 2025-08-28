@@ -3,757 +3,321 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Segmentos do Vídeo - Acordeão Animado + Dicionário</title>
+<title>Visualizador de Vídeos por Canal</title>
 <style>
-body { font-family: Arial,sans-serif; max-width:900px; margin:auto; padding:20px; background:#f7f7f7;}
-h1{text-align:center;}
-#player{display:block;margin:0 auto 20px auto;box-shadow:0 0 10px rgba(0,0,0,0.2);}
-.seg{background:white;border-radius:5px;padding:10px;margin-bottom:5px;box-shadow:0 0 3px rgba(0,0,0,0.1);}
-.seg.completed{background-color:#d4edda;}
-.seg h3{margin:0; cursor:pointer; user-select:none;}
-.details{overflow:hidden; max-height:0; transition:max-height 0.3s ease, padding 0.3s ease;}
-.details.open{max-height:2000px; padding-top:8px;}
-.times{color:#666;font-size:0.9em;margin-bottom:8px;}
-button{margin:4px 4px 8px 0;cursor:pointer;padding:6px 10px;border:none;border-radius:3px;background-color:#007BFF;color:white;font-size:0.9em;}
-button:hover{background-color:#0056b3;}
-button.markBtn{background-color:#28a745;}
-button.markBtn:hover{background-color:#1e7e34;}
-button.saveCommentBtn{background-color:#17a2b8; margin-bottom: 10px;}
-button.saveCommentBtn:hover{background-color:#138496;}
-textarea,input.tagsInput{width:100%;margin-top:6px;margin-bottom:10px;padding:6px;font-size:0.9em;border:1px solid #ccc;border-radius:3px;}
-select {
-    width:70%; 
-    padding:8px;
-    margin-bottom:15px;
-    border:1px solid #ccc;
-    border-radius:3px;
-    font-size:0.9em;
-}
-.transcript,.translation{padding:10px;margin:10px 0;font-size:0.95em;line-height:1.6;white-space:pre-line;}
-.transcript a.time-link{color:#007BFF; text-decoration:none; cursor:pointer;}
-.transcript a.time-link:hover{ text-decoration:underline; }
-.transcript{background-color:#f8f9fa;border-left:4px solid #007BFF; display:block;}
-.translation{background-color:#fff3cd;border-left:4px solid #ffc107; display:block;}
-.toggle-transcript,.toggle-translation{background-color:#6c757d;font-size:0.8em;}
-.toggle-transcript:hover,.toggle-translation:hover{background-color:#5a6268;}
-#controls{text-align:center;margin-bottom:20px;}
-#play-status{margin-top:10px;font-weight:bold;text-align:center;min-height:1.2em;}
-#loading{text-align:center;padding:20px;font-style:italic;color:#666;}
-
-/* Botão flutuante de "Criar definição" */
-#defineBtn {
-position: absolute;
-display: none;
-z-index: 9999;
-padding: 8px 10px;
-border-radius: 999px;
-font-size: 14px;
-background: #343a40;
-color: #fff;
-box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-touch-action: manipulation;
-user-select: none;
-}
-#defineBtn:active { transform: scale(0.98); }
-/* Evitar que conteúdos linkados pareçam editáveis */
-a.dict-link { text-decoration: underline dotted; }
-
-/* Botão Cadastrar Vídeo */
-#cadastrarVideoBtn {
-    background-color: #6610f2;
-    padding: 10px 20px;
-    margin-top: 20px;
-    font-size: 1em;
-}
-#cadastrarVideoBtn:hover {
-    background-color: #4d08c1;
-}
+body { font-family: Arial,sans-serif; max-width:1000px; margin:auto; padding:20px; background:#f7f7f7; line-height:1.6; }
+h1 { text-align:center; color:#333; margin-bottom:20px; }
+.section { background:white; border-radius:8px; padding:15px; margin-bottom:20px; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+select, button { padding:10px; margin:5px; border-radius:4px; border:1px solid #ddd; font-size:1em; }
+button { background-color:#007BFF; color:white; cursor:pointer; border:none; transition:background-color 0.3s; }
+button:hover { background-color:#0056b3; }
+button:disabled { background-color:#cccccc; cursor:not-allowed; }
+#player-container { display:flex; justify-content:center; margin:20px 0; }
+#player { width:100%; max-width:640px; height:360px; box-shadow:0 0 10px rgba(0,0,0,0.2);}
+#controls { text-align:center; margin-bottom:20px; }
+#play-status { margin-top:10px; font-weight:bold; text-align:center; min-height:1.2em; color:#333; }
+.loading { text-align:center; padding:20px; font-style:italic; color:#666; }
+.error { text-align:center; padding:20px; color:#dc3545; background-color:#f8d7da; border-radius:5px; }
+.part { background:white; border-radius:5px; padding:15px; margin-bottom:15px; box-shadow:0 2px 4px rgba(0,0,0,0.05);}
+.part-title { font-size:1.2em; font-weight:bold; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #eee; color:#444; }
+.segment { background:#f9f9f9; border-radius:5px; padding:10px; margin-bottom:8px; }
+.segment-header { display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; }
+.segment-title { font-weight:bold; margin:0; flex-grow:1; }
+.segment-times { color:#666; font-size:0.9em; margin-right:10px; }
+.segment-details { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
+.segment-details.open { max-height:1000px; }
+.transcription { margin-top:10px; padding:10px; background:#f0f0f0; border-radius:4px; white-space:pre-line; }
+.play-segment-btn { background-color:#28a745; margin-top:8px; }
+.play-segment-btn:hover { background-color:#1e7e34; }
+#linkBtn { position:absolute; display:none; z-index:9999; padding:8px 12px; border-radius:20px; font-size:14px; background:#343a40; color:#fff; box-shadow:0 4px 14px rgba(0,0,0,0.25); border:none; cursor:pointer; }
+#linkBtn:hover { background:#23272b; }
+#linkBtn:active { transform:scale(0.98); }
+#linkModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border-radius:8px; box-shadow:0 5px 25px rgba(0,0,0,0.3); z-index:10000; width:90%; max-width:500px; }
+#linkModal h3 { margin-top:0; color:#333; }
+#linkModal input { width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:1em; }
+#modalOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; }
+a.time-link { color:#007BFF; text-decoration:underline; cursor:pointer; }
 </style>
 </head>
 <body>
+<h1>Visualizador de Vídeos por Canal</h1>
 
-<h1>Trechos do Vídeo</h1>
-
-<div style="text-align:center; margin-bottom:15px;">
-<select id="docSelect">
-    <option value="">Selecione um documento</option>
-</select>
-<button id="loadDocBtn">Carregar</button>
+<div class="section">
+    <h2>Selecionar Vídeo</h2>
+    <div>
+        <select id="channelSelect"><option value="">Selecione um canal</option></select>
+        <select id="videoSelect" disabled><option value="">Selecione um vídeo</option></select>
+        <button id="loadBtn" disabled>Carregar Vídeo</button>
+    </div>
 </div>
 
-<div id="player"></div>
+<div id="player-container"><div id="player"></div></div>
+
 <div id="controls">
-<button id="pauseBtn">⏸ Pausar</button>
-<button id="stopBtn">⏹ Parar</button>
-<div id="play-status">parado</div>
+    <button id="pauseBtn" disabled>⏸ Pausar</button>
+    <button id="stopBtn" disabled>⏹ Parar</button>
+    <div id="play-status">Parado</div>
 </div>
 
-<div id="loading">Selecione um documento para carregar os segmentos...</div>
-<div id="segments-container"></div>
+<div id="content">
+    <div id="loading" class="loading">Selecione um vídeo para carregar os segmentos...</div>
+    <div id="error" class="error" style="display:none;"></div>
+    <div id="parts-container"></div>
+</div>
 
-<!-- Botão flutuante -->
-<button id="defineBtn">📚 Criar definição</button>
-
-<!-- Botão Cadastrar Vídeo -->
-<div style="text-align:center; margin-top:30px;">
-    <button id="cadastrarVideoBtn" onclick="window.location.href='CasdastrarVideo.html'">Cadastrar Vídeo</button>
+<!-- Botão flutuante e modal -->
+<button id="linkBtn">📎 Criar Link</button>
+<div id="modalOverlay"></div>
+<div id="linkModal">
+    <h3>Criar Link</h3>
+    <input type="text" id="wordInputLink" placeholder="Palavra" readonly>
+    <input type="text" id="urlInput" placeholder="URL do link">
+    <div>
+        <button id="saveLinkBtn">Salvar</button>
+        <button id="cancelLinkBtn" style="background-color:#6c757d;">Cancelar</button>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 
+<div style="text-align:center; margin:30px 0;">
+    <button id="cadastrarVideoBtn" style="padding:12px 20px; font-size:16px; background:#17a2b8; color:white; border:none; border-radius:5px; cursor:pointer;">
+        Cadastrar Vídeo
+    </button>
+</div>
+
+
 <script>
-/* =================== Firebase =================== */
+// Config Firebase
 const firebaseConfig = {
-apiKey: "AIzaSyCNgDqkqhsFQY7bfrWK2_VPtGUoEyyIBq4",
-authDomain: "trechos-c7fba.firebaseapp.com",
-projectId: "trechos-c7fba",
-storageBucket: "trechos-c7fba.appspot.com",
-messagingSenderId: "334052038527",
-appId: "1:334052038527:web:797e8967eaef7b198a2c4a",
-measurementId: "G-FL2Q1KLJMT"
+    apiKey: "AIzaSyCNgDqkqhsFQY7bfrWK2_VPtGUoEyyIBq4",
+    authDomain: "trechos-c7fba.firebaseapp.com",
+    projectId: "trechos-c7fba",
+    storageBucket: "trechos-c7fba.appspot.com",
+    messagingSenderId: "334052038527",
+    appId: "1:334052038527:web:797e8967eaef7b198a2c4a",
+    measurementId: "G-FL2Q1KLJMT"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* =================== Estado geral =================== */
-let player, currentSegment=null, checkInterval=null, segments=[], videoId='', currentDocName='';
-const container = document.getElementById('segments-container');
+// Variáveis globais
+let player, currentVideoData=null, currentSegment=null, checkInterval=null, currentVideoId='';
+let selectedWord='', selectedRange=null;
+
+// DOM
+const channelSelect = document.getElementById('channelSelect');
+const videoSelect = document.getElementById('videoSelect');
+const loadBtn = document.getElementById('loadBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const stopBtn = document.getElementById('stopBtn');
+const playStatus = document.getElementById('play-status');
 const loadingEl = document.getElementById('loading');
-const defineBtn = document.getElementById('defineBtn');
-let pendingSelectedWord = null; // guarda a palavra selecionada (não linkada)
+const errorEl = document.getElementById('error');
+const partsContainer = document.getElementById('parts-container');
 
-/* =================== Utils =================== */
-const toSeconds = t => { const p = t.split(':').map(Number); return p.length===2?p[0]*60+p[1]:p[0]*3600+p[1]*60+p[2];};
-const updateStatus = txt => document.getElementById('play-status').textContent=txt;
-const saveState = (id,state,docName)=>{const k='segments_'+docName; const all=JSON.parse(localStorage.getItem(k)||'{}'); all[id]={...all[id],...state}; localStorage.setItem(k,JSON.stringify(all));};
-const loadState=(id,docName)=>JSON.parse(localStorage.getItem('segments_'+docName)||'{}')[id]||{};
+const linkBtn = document.getElementById('linkBtn');
+const linkModal = document.getElementById('linkModal');
+const modalOverlay = document.getElementById('modalOverlay');
+const wordInputLink = document.getElementById('wordInputLink');
+const urlInput = document.getElementById('urlInput');
+const saveLinkBtn = document.getElementById('saveLinkBtn');
+const cancelLinkBtn = document.getElementById('cancelLinkBtn');
 
-/* Torna (MM:SS) ou (HH:MM:SS) em links clicáveis para pular o vídeo */
+// Util
+const toSeconds = (timeStr)=>{
+    const parts=timeStr.split(':').map(Number);
+    if(parts.length===2) return parts[0]*60+parts[1];
+    if(parts.length===3) return parts[0]*3600+parts[1]*60+parts[2];
+    return 0;
+};
+
+
 function makeTranscriptLinks(text){
-return text.replace(/\((\d{1,2}:\d{2}(?::\d{2})?)\)/g, (match,p1)=>{
-const seconds = toSeconds(p1);
-return `<a href="#" class="time-link" data-time="${seconds}">(${p1})</a>`;
-});
+    return text.replace(/\((\d{1,2}:\d{2}(?::\d{2})?)\)/g, (match,p1)=>{
+        const seconds = toSeconds(p1);
+        return `<a href="javascript:void(0)" class="time-link" data-time="${seconds}">(${p1})</a>`;
+    });
 }
 
-/* =================== Carregar documentos disponíveis =================== */
-async function loadAvailableDocuments() {
-    try {
-        const querySnapshot = await db.collection('videos_temp').get();
-        const select = document.getElementById('docSelect');
-        
-        // Limpa opções existentes (exceto a primeira)
-        while (select.options.length > 1) {
-            select.remove(1);
+
+const updateStatus=text=>playStatus.textContent=text;
+
+function showLoading(msg){ loadingEl.textContent=msg; loadingEl.style.display='block'; partsContainer.style.display='none'; }
+function hideLoading(){ loadingEl.style.display='none'; partsContainer.style.display='block'; }
+function showError(msg){ errorEl.textContent=msg; errorEl.style.display='block'; }
+function hideError(){ errorEl.style.display='none'; }
+
+
+// Listener para links de tempo (0:00, 0:01, etc.)
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('time-link')) {
+        e.preventDefault(); // evita o "#" padrão
+        const t = Number(e.target.dataset.time);
+        if (player) {
+            player.seekTo(t, true); // ir para o tempo exato
+            player.playVideo();
         }
-        
-        querySnapshot.forEach((doc) => {
-            const option = document.createElement('option');
-            option.value = doc.id;
-            option.textContent = doc.id;
-            select.appendChild(option);
-        });
-        
-        // Se houver parâmetro 'doc' na URL, seleciona automaticamente
-        const params = new URLSearchParams(location.search);
-        if (params.has('doc')) {
-            select.value = params.get('doc');
-            loadSegments(params.get('doc'));
-        }
-    } catch (err) {
-        console.error("Erro ao carregar documentos:", err);
     }
-}
-
-/* =================== Salvar comentários =================== */
-async function saveCommentToFirebase(segmentIndex, comment, docName) {
-if (!docName) return;
-try {
-const docRef = db.collection('videos_temp').doc(docName);
-const doc = await docRef.get();
-const currentData = doc.data();
-const updatedSegments = [...(currentData.segments || [])];
-
-updatedSegments[segmentIndex] = {
-...updatedSegments[segmentIndex],
-observacoes: comment
-};
-
-await docRef.update({ segments: updatedSegments });
-saveState(segments[segmentIndex].start+'_'+segmentIndex, {comment: comment}, docName);
-alert('Comentário salvo com sucesso no Firebase!');
-} catch (err) {
-console.error("Erro ao salvar comentário no Firebase:", err);
-alert('Erro ao salvar comentário. Tente novamente.');
-}
-}
-
-/* =================== Carregar e renderizar segmentos =================== */
-async function loadSegments(docName){
-currentDocName = docName;
-loadingEl.textContent="Carregando segmentos...";
-container.innerHTML='';
-try{
-const docSnap=await db.collection('videos_temp').doc(docName).get();
-if(!docSnap.exists){loadingEl.textContent="Documento não encontrado."; return;}
-const data = docSnap.data();
-videoId = data.videoId;
-segments = data.segments || [];
-if(!segments.length){loadingEl.textContent="Nenhum segmento encontrado."; return;}
-if(!player) createPlayer(videoId, ()=>renderSegments(docName));
-else{ player.loadVideoById(videoId); renderSegments(docName); }
-}catch(err){console.error(err); loadingEl.textContent="Erro ao carregar.";}
-}
-
-
-
-
-function renderSegments(docName){
-    loadingEl.style.display='none';
-    container.innerHTML='';
-
-    segments.forEach((seg,i)=>{
-        const st = loadState(seg.start+'_'+i, docName);
-        const div = document.createElement('div');
-        div.className = 'seg' + (st.completed ? ' completed' : '');
-
-        // Transcrição com tempos convertidos em links
-        let transcriptHTML = seg.transcription ? makeTranscriptLinks(seg.transcription) : 'Nenhuma transcrição';
-
-        // Adiciona links salvos no Firebase
-        if(seg.links && seg.links.length){
-            seg.links.forEach(l=>{
-                const regex = new RegExp(`\\b${l.palavra}\\b`, 'gi'); // procura palavra exata
-                transcriptHTML = transcriptHTML.replace(regex, `<a href="${l.url}" target="_blank" class="dict-link">${l.palavra}</a>`);
-            });
-        }
-
-        div.innerHTML = `
-            <h3 data-id="${i}">${seg.title || ''}</h3>
-            <div class="details">
-                <div class="times">⏱️ ${seg.start} – ${seg.end}</div>
-                <button class="playBtn" data-id="${i}">▶️ Tocar</button>
-                <button class="markBtn" data-id="${i}">${st.completed ? 'Desmarcar' : 'Concluído'}</button>
-                <button class="toggle-transcript" data-id="${i}">Mostrar Transcrição</button>
-                <div class="transcript" data-id="${i}">${transcriptHTML}</div>
-            </div>
-        `;
-
-        container.appendChild(div);
-    });
-
-    // Configura eventos dos botões (play, concluir, mostrar transcrição, links de tempo)
-    setupEvents(docName, true);
-
-    // Após montar no DOM, processa linkificação do dicionário para palavras já cadastradas
-    linkifyAllSegmentsWithDictionary();
-}
-
-
-
-
-
-
-/* =================== Eventos UI =================== */
-function setupEvents(docName,isAccordion=false){
-const addEvents=(el,fn)=>{ el.addEventListener('click',fn,{passive:true}); el.addEventListener('touchstart',fn,{passive:true}); };
-
-addEvents(document.getElementById('pauseBtn'),()=>player.pauseVideo());
-addEvents(document.getElementById('stopBtn'),stopPlayer);
-
-if(isAccordion){
-container.querySelectorAll('.seg h3').forEach(title=>{
-addEvents(title,()=>{
-container.querySelectorAll('.details').forEach(d=>{if(d!==title.nextElementSibling)d.classList.remove('open');});
-const detail=title.nextElementSibling;
-detail.classList.toggle('open');
-});
-});
-}
-
-container.querySelectorAll('.playBtn').forEach(btn=>addEvents(btn,()=>{ const seg=segments[btn.dataset.id]; if(seg) playSegment(seg); }));
-
-container.querySelectorAll('.markBtn').forEach(btn=>addEvents(btn,()=>{
-const div=btn.closest('.seg'); const done=div.classList.toggle('completed'); btn.textContent=done?'Desmarcar':'Concluído';
-saveState(btn.dataset.id,{completed:done},docName);
-}));
-
-container.querySelectorAll('.toggle-transcript').forEach(btn=>addEvents(btn,()=>{
-const el=document.querySelector(`.transcript[data-id="${btn.dataset.id}"]`);
-el.style.display=el.style.display==='block'?'none':'block';
-btn.textContent=el.style.display==='block'?'Ocultar Transcrição':'Mostrar Transcrição';
-}));
-
-container.addEventListener('click', e => {
-if(e.target.classList.contains('time-link')){
-e.preventDefault();
-const t = Number(e.target.dataset.time);
-if(player){ player.seekTo(t); player.playVideo(); }
-}
-});
-}
-
-/* =================== Player =================== */
-function playSegment(seg){
-if(!player)return;
-currentSegment={start:toSeconds(seg.start),end:toSeconds(seg.end)};
-player.seekTo(currentSegment.start); player.playVideo();
-updateStatus(`Tocando: ${seg.title}`);
-clearInterval(checkInterval);
-checkInterval=setInterval(()=>{
-if(player.getCurrentTime()>=currentSegment.end){
-player.pauseVideo(); updateStatus(`Trecho concluído: ${seg.title}`);
-clearInterval(checkInterval); currentSegment=null;
-}
-},300);
-}
-function stopPlayer(){ if(player){ player.stopVideo(); } updateStatus('Vídeo parado'); clearInterval(checkInterval); currentSegment=null; }
-function createPlayer(videoId,onReadyFn){
-player=new YT.Player('player',{height:'360',width:'640',videoId:videoId,
-playerVars:{modestbranding:1,rel:0,controls:1,playsinline:1},
-events:{onReady:onReadyFn,onStateChange:e=>{if(e.data==YT.PlayerState.PLAYING)updateStatus('Tocando');if(e.data==YT.PlayerState.PAUSED)updateStatus('Pausado');}}});
-}
-
-/* =================== DICIONÁRIO: linkificação dinâmica =================== */
-
-/**
-* Percorre todos os elementos .transcript,
-* coleta palavras únicas em nós de texto (fora de <a>),
-* verifica no Firestore e transforma as que existirem em <a>.
-*/
-async function linkifyAllSegmentsWithDictionary(){
-const blocks = Array.from(document.querySelectorAll('.transcript'));
-// Para evitar leituras repetidas ao trocar de aba de segmento, processamos bloco a bloco:
-for (const el of blocks) {
-await linkifyElementByDictionary(el);
-}
-}
-
-/** Extrai palavras (texto puro) de um container DOM, ignorando nós <a> já existentes */
-function collectWordsFromElement(el){
-const words = new Set();
-const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
-acceptNode(node){
-// Ignora textos dentro de links e scripts/styles
-if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-if (node.parentElement && (node.parentElement.closest('a'))) return NodeFilter.FILTER_REJECT;
-return NodeFilter.FILTER_ACCEPT;
-}
-});
-const wordRegex = /\p{L}+(?:'\p{L}+)?/gu; // letras unicode, permite apóstrofo interno
-let n;
-while ((n = walker.nextNode())) {
-const text = n.nodeValue;
-const matches = text.match(wordRegex);
-if (matches) {
-matches.forEach(w => words.add(w.toLowerCase()));
-}
-}
-return words;
-}
-
-/** Verifica no Firestore se cada palavra (id = minúscula) existe */
-async function checkExistingWordsInFirestore(wordSet){
-const words = Array.from(wordSet);
-if (words.length === 0) return new Set();
-// Limita paralelismo para suavizar (opcional)
-const chunkSize = 50;
-const existing = new Set();
-for (let i=0;i<words.length;i+=chunkSize){
-const chunk = words.slice(i,i+chunkSize);
-const promises = chunk.map(w =>
-db.collection('palavras').doc(w).get().then(snap => ({w, exists: snap.exists})).catch(()=>({w,exists:false}))
-);
-const results = await Promise.all(promises);
-results.forEach(r => { if (r.exists) existing.add(r.w); });
-}
-return existing;
-}
-
-/** Converte nós de texto em fragmentos com <a> para palavras existentes (preserva pontuação) */
-function linkifyTextNode(node, existingSet){
-const text = node.nodeValue;
-if (!text) return;
-
-const frag = document.createDocumentFragment();
-// Divide mantendo as palavras em grupos capturados
-const parts = text.split(/(\p{L}+(?:'\p{L}+)*)/gu);
-for (let i=0;i<parts.length;i++){
-const token = parts[i];
-if (!token) continue;
-if (/^\p{L}+(?:'\p{L}+)?$/u.test(token)) {
-const key = token.toLowerCase();
-if (existingSet.has(key)) {
-const a = document.createElement('a');
-a.href = `detalhe.html?palavra=${encodeURIComponent(key)}`;
-a.className = 'dict-link';
-a.textContent = token;
-frag.appendChild(a);
-} else {
-frag.appendChild(document.createTextNode(token));
-}
-} else {
-frag.appendChild(document.createTextNode(token));
-}
-}
-node.replaceWith(frag);
-}
-
-/** Processa um container individual: coleta → consulta Firestore → substitui */
-async function linkifyElementByDictionary(el){
-// Cria um container temporário para preservar os links de tempo já existentes
-const tmp = document.createElement('div');
-tmp.innerHTML = el.innerHTML;
-
-const words = collectWordsFromElement(tmp);
-const existingSet = await checkExistingWordsInFirestore(words);
-
-// Segunda passada: linkificar nós de texto
-const walker = document.createTreeWalker(tmp, NodeFilter.SHOW_TEXT, {
-acceptNode(node){
-if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-if (node.parentElement && (node.parentElement.closest('a'))) return NodeFilter.FILTER_REJECT;
-return NodeFilter.FILTER_ACCEPT;
-}
 });
 
-const textNodes = [];
-let n;
-while ((n = walker.nextNode())) textNodes.push(n);
-textNodes.forEach(node => linkifyTextNode(node, existingSet));
-
-// Renderiza de volta no elemento original
-el.innerHTML = '';
-while (tmp.firstChild) el.appendChild(tmp.firstChild);
+// Carregar canais
+async function loadChannels(){
+    try{
+        loadingEl.textContent="Carregando canais...";
+        const snap=await db.collection('canais').get();
+        channelSelect.innerHTML='<option value="">Selecione um canal</option>';
+        snap.forEach(doc=>{
+            const opt=document.createElement('option');
+            opt.value=doc.id; opt.textContent=doc.id;
+            channelSelect.appendChild(opt);
+        });
+        loadingEl.textContent="Selecione um canal para carregar os vídeos...";
+    }catch(e){ showError("Erro ao carregar canais"); console.error(e);}
 }
 
-/* =================== Seleção e botão flutuante =================== */
-function isSelectionInsideLink(range){
-if (!range) return false;
-const common = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
-if (!common) return false;
-const startLink = range.startContainer && (range.startContainer.nodeType===1 ? range.startContainer : range.startContainer.parentElement)?.closest('a');
-const endLink = range.endContainer && (range.endContainer.nodeType===1 ? range.endContainer : range.endContainer.parentElement)?.closest('a');
-return !!(startLink || endLink || (common && common.closest && common.closest('a')));
+// Carregar vídeos de um canal
+async function loadVideosFromChannel(channelId){
+    videoSelect.disabled=true; loadBtn.disabled=true; videoSelect.innerHTML='<option value="">Selecione um vídeo</option>';
+    try{
+        const snap=await db.collection(channelId).get();
+        if(snap.empty){ videoSelect.innerHTML='<option value="">Nenhum vídeo encontrado</option>'; return; }
+        snap.forEach(doc=>{
+            const opt=document.createElement('option');
+            opt.value=doc.id; opt.textContent=doc.data().title||doc.id;
+            videoSelect.appendChild(opt);
+        });
+        videoSelect.disabled=false;
+    }catch(e){ showError("Erro ao carregar vídeos"); console.error(e);}
 }
 
-function getSelectedWord(){
-const sel = window.getSelection();
-if (!sel || sel.rangeCount===0) return null;
-const text = (sel.toString() || '').trim();
-if (!text) return null;
-
-// Deve ser uma única palavra (com acentos; aceita apóstrofo interno)
-const isWord = /^\p{L}+(?:'\p{L}+)?$/u.test(text);
-if (!isWord) return null;
-
-const range = sel.getRangeAt(0);
-if (isSelectionInsideLink(range)) return null; // não mostrar se já for link
-
-return { text, range };
+// Carregar dados do vídeo
+async function loadVideoData(channelId,videoId){
+    showLoading("Carregando partes do vídeo..."); partsContainer.innerHTML=''; hideError();
+    try{
+        const docSnap=await db.collection(channelId).doc(videoId).get();
+        if(!docSnap.exists){ showLoading("Nenhum dado encontrado"); return; }
+        currentVideoData=docSnap.data(); hideLoading(); renderVideoParts();
+        if(currentVideoData.videoId) loadYouTubePlayer(currentVideoData.videoId);
+    }catch(e){ showError("Erro ao carregar dados do vídeo"); console.error(e);}
 }
 
-function positionDefineButton(range){
-const rect = range.getBoundingClientRect();
-const top = rect.top + window.scrollY + 12; // um pouco acima
-const offsetX = 15; // novo deslocamento à direita (px)
-const left = rect.left + window.scrollX + rect.width/2;
-defineBtn.style.top = `${top}px`;
-defineBtn.style.left = `${left}px`;
-}
-
-function hideDefineButton(){
-defineBtn.style.display = 'none';
-pendingSelectedWord = null;
-}
-
-function showDefineButtonFor(word, range){
-pendingSelectedWord = word;
-positionDefineButton(range);
-defineBtn.style.display = 'inline-block';
-}
-
-/* Ouvinte central: funciona em desktop e mobile */
-document.addEventListener('selectionchange', ()=>{
-const selWord = getSelectedWord();
-if (!selWord) { hideDefineButton(); return; }
-showDefineButtonFor(selWord.text, selWord.range);
-});
-
-/* Reposiciona ao rolar/dimensionar (caso botão esteja visível) */
-window.addEventListener('scroll', ()=>{
-if (!pendingSelectedWord) return;
-const sel = window.getSelection();
-if (!sel || sel.rangeCount===0) { hideDefineButton(); return; }
-positionDefineButton(sel.getRangeAt(0));
-}, {passive:true});
-
-window.addEventListener('resize', ()=>{
-if (!pendingSelectedWord) return;
-const sel = window.getSelection();
-if (!sel || sel.rangeCount===0) { hideDefineButton(); return; }
-positionDefineButton(sel.getRangeAt(0));
-});
-
-defineBtn.addEventListener('click', async ()=>{
-    if (!pendingSelectedWord || !currentDocName || currentSegment === null) return;
-
-    // Descobre o índice do segmento atualmente aberto
-    let segIndex = null;
-    const details = Array.from(document.querySelectorAll('.details'));
-    details.forEach((d,i)=>{
-        if(d.classList.contains('open')) segIndex = i;
-    });
-    if(segIndex === null){
-        alert("Abra o segmento onde deseja criar o link.");
+async function renderVideoParts() {
+    partsContainer.innerHTML = '';
+    if(!currentVideoData || !currentVideoData.segments || currentVideoData.segments.length === 0){
+        const div = document.createElement('div'); div.className = 'part'; div.textContent = 'Nenhum segmento encontrado'; partsContainer.appendChild(div); 
         return;
     }
 
-    // Cria caixa de input flutuante
-    const existingBox = document.getElementById('linkInputBox');
-    if(existingBox) existingBox.remove();
-
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0) return;
-    const range = sel.getRangeAt(0);
-
-    const box = document.createElement('div');
-    box.id = 'linkInputBox';
-    box.style.position = 'absolute';
-    box.style.background = '#fff';
-    box.style.border = '1px solid #ccc';
-    box.style.padding = '8px';
-    box.style.borderRadius = '6px';
-    box.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-    box.style.zIndex = 10000;
-    box.style.display = 'flex';
-    box.style.gap = '6px';
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Digite o link...';
-    input.style.flex = '1';
-    input.value = '';
-
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = 'Salvar';
-    saveBtn.style.background = '#28a745';
-    saveBtn.style.color = '#fff';
-    saveBtn.style.border = 'none';
-    saveBtn.style.padding = '6px 10px';
-    saveBtn.style.borderRadius = '3px';
-    saveBtn.style.cursor = 'pointer';
-
-    box.appendChild(input);
-    box.appendChild(saveBtn);
-    document.body.appendChild(box);
-
-    // Posiciona box próximo à palavra selecionada
-    const rect = range.getBoundingClientRect();
-    box.style.top = `${rect.bottom + window.scrollY + 6}px`;
-    box.style.left = `${rect.left + window.scrollX}px`;
-    input.focus();
-
-    saveBtn.addEventListener('click', async ()=>{
-        const link = input.value.trim();
-        if(!link) return;
-
-        // Cria <a> no documento
-        const a = document.createElement('a');
-        a.href = link;
-        a.textContent = pendingSelectedWord;
-        a.target = "_blank";
-        a.className = 'dict-link';
-
-        range.deleteContents();
-        range.insertNode(a);
-
-        // Salva no Firebase
-        try {
-            const docRef = db.collection('videos_temp').doc(currentDocName);
-            const docSnap = await docRef.get();
-            if(!docSnap.exists) throw new Error("Documento não encontrado");
-
-            const data = docSnap.data();
-            const segmentsData = data.segments || [];
-
-            // Garante que o índice do segmento existe
-            if(!segmentsData[segIndex].links) segmentsData[segIndex].links = [];
-            segmentsData[segIndex].links.push({ palavra: pendingSelectedWord, url: link });
-
-            await docRef.update({ segments: segmentsData });
-
-            // Salva localmente também
-            saveState(segments[segIndex].start+'_'+segIndex, {link:{palavra:pendingSelectedWord,url:link}}, currentDocName);
-
-            alert('Link salvo com sucesso no Firebase!');
-        } catch(err){
-            console.error(err);
-            alert('Erro ao salvar no Firebase: '+err.message);
-        }
-
-        box.remove();
-        hideDefineButton();
-        sel.removeAllRanges();
+    // Buscar todos os links salvos no Firebase
+    const linksSnap = await db.collection('links').get();
+    const linksMap = {};
+    linksSnap.forEach(doc => {
+        linksMap[doc.data().palavra] = doc.data().link;
     });
+
+    const partsMap = {};
+    currentVideoData.segments.forEach((seg,i)=>{
+        let partName = "Parte 1";
+        if(seg.title && seg.title.includes("Parte")){
+            const m = seg.title.match(/Parte\s*\d+/i); if(m) partName = m[0];
+        } else if(currentVideoData.segments.length>1) partName = `Parte ${i+1}`;
+        if(!partsMap[partName]) partsMap[partName] = [];
+        partsMap[partName].push(seg);
+    });
+
+    Object.keys(partsMap).forEach(partName=>{
+        const partEl = document.createElement('div'); partEl.className='part';
+        const partTitle = document.createElement('div'); partTitle.className='part-title'; partTitle.textContent=partName;
+        partEl.appendChild(partTitle);
+
+        partsMap[partName].forEach((seg,index)=>{
+            const segEl = document.createElement('div'); segEl.className='segment';
+            const segHeader = document.createElement('div'); segHeader.className='segment-header';
+            const segTitle = document.createElement('div'); segTitle.className='segment-title'; segTitle.textContent=seg.title||`Segmento ${index+1}`;
+            const segTimes = document.createElement('div'); segTimes.className='segment-times'; segTimes.textContent=`${seg.start} – ${seg.end}`;
+            segHeader.appendChild(segTitle); segHeader.appendChild(segTimes);
+
+            const segDetails = document.createElement('div'); segDetails.className='segment-details';
+
+            if(seg.transcription){
+                const trDiv = document.createElement('div'); trDiv.className='transcription';
+                let text = seg.transcription;
+                
+                // Substituir palavras por links
+                text = makeTranscriptLinks(text);
+
+// Depois aplica os links do dicionário
+Object.keys(linksMap).forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'g');
+    text = text.replace(regex, `<a href="${linksMap[word]}" target="_blank" class="dict-link">${word}</a>`);
 });
-/* =================== Bootstrapping =================== */
-document.getElementById('loadDocBtn').onclick=()=>{
-    const name = document.getElementById('docSelect').value.trim();
-    if(name) loadSegments(name);
-};
 
-// Carrega os documentos disponíveis ao iniciar
-loadAvailableDocuments();
+                trDiv.innerHTML = text;  // importante: innerHTML para renderizar <a>
+                segDetails.appendChild(trDiv);
+            }
 
-// YouTube Iframe API
+            const playBtn = document.createElement('button'); playBtn.className='play-segment-btn'; playBtn.textContent='▶️ Tocar este segmento';
+            playBtn.addEventListener('click',()=>playSegment(currentVideoData.videoId,seg));
+            segDetails.appendChild(playBtn);
+
+            segHeader.addEventListener('click',()=>segDetails.classList.toggle('open'));
+            segEl.appendChild(segHeader); segEl.appendChild(segDetails);
+            partEl.appendChild(segEl);
+        });
+        partsContainer.appendChild(partEl);
+    });
+}
+
+
+
+// YouTube Player
+function loadYouTubePlayer(videoId){
+    currentVideoId=videoId;
+    if(!player){ player=new YT.Player('player',{ height:'360', width:'640', videoId:videoId, playerVars:{playsinline:1,modestbranding:1,rel:0}, events:{onReady:onPlayerReady,onStateChange:onPlayerStateChange} }); }
+    else{ player.loadVideoById(videoId); player.stopVideo();}
+    pauseBtn.disabled=false; stopBtn.disabled=false;
+}
+function onPlayerReady(e){ updateStatus('Pronto'); }
+function onPlayerStateChange(e){ if(e.data==YT.PlayerState.PLAYING) updateStatus('Tocando'); else if(e.data==YT.PlayerState.PAUSED) updateStatus('Pausado'); else if(e.data==YT.PlayerState.ENDED){ updateStatus('Finalizado'); clearInterval(checkInterval); currentSegment=null; }}
+function playSegment(videoId,seg){ if(!player) return; if(videoId!==currentVideoId){ loadYouTubePlayer(videoId); const check=setInterval(()=>{ if(player && player.getCurrentTime){ clearInterval(check); actuallyPlaySegment(seg); } },100); } else actuallyPlaySegment(seg);}
+function actuallyPlaySegment(seg){ const start=toSeconds(seg.start), end=toSeconds(seg.end); player.seekTo(start,true); player.playVideo(); currentSegment={start,end,title:seg.title}; updateStatus(`Tocando: ${seg.title}`); clearInterval(checkInterval); checkInterval=setInterval(()=>{ if(player.getCurrentTime()>=currentSegment.end){ player.pauseVideo(); updateStatus(`Segmento concluído: ${seg.title}`); clearInterval(checkInterval); currentSegment=null;}},300);}
+pauseBtn.addEventListener('click',()=>{ if(player) player.pauseVideo(); });
+stopBtn.addEventListener('click',()=>{ if(player){ player.stopVideo(); updateStatus('Parado'); clearInterval(checkInterval); currentSegment=null; } });
+
+// Botão flutuante para link
+document.addEventListener('selectionchange',()=>{
+    const sel=document.getSelection();
+    if(sel && sel.toString().trim()!==''){ selectedWord=sel.toString().trim(); const rect=sel.getRangeAt(0).getBoundingClientRect();
+        linkBtn.style.top=(rect.top+window.scrollY-40)+'px'; linkBtn.style.left=(rect.left+window.scrollX)+'px'; linkBtn.style.display='block';
+    } else { linkBtn.style.display='none'; selectedWord=''; }
+});
+linkBtn.addEventListener('click',()=>{ wordInputLink.value=selectedWord; urlInput.value=''; linkModal.style.display='block'; modalOverlay.style.display='block'; });
+modalOverlay.addEventListener('click',()=>{ linkModal.style.display='none'; modalOverlay.style.display='none'; });
+cancelLinkBtn.addEventListener('click',()=>{ linkModal.style.display='none'; modalOverlay.style.display='none'; });
+saveLinkBtn.addEventListener('click',async ()=>{
+    const word=wordInputLink.value.trim(); const url=urlInput.value.trim();
+    if(!word || !url){ alert('Preencha todos os campos'); return; }
+    try{ await db.collection('links').doc(word.toLowerCase()).set({palavra:word,link:url,dataCriacao:firebase.firestore.FieldValue.serverTimestamp()});
+        alert('Link salvo!'); linkModal.style.display='none'; modalOverlay.style.display='none';
+    }catch(e){ alert('Erro ao salvar link'); console.error(e);}
+});
+
+// Event listeners canais e vídeos
+channelSelect.addEventListener('change',()=>{ if(channelSelect.value) loadVideosFromChannel(channelSelect.value); else { videoSelect.innerHTML='<option value="">Selecione um vídeo</option>'; videoSelect.disabled=true; loadBtn.disabled=true;} });
+videoSelect.addEventListener('change',()=>{ loadBtn.disabled=!videoSelect.value; });
+loadBtn.addEventListener('click',()=>{ if(channelSelect.value && videoSelect.value) loadVideoData(channelSelect.value,videoSelect.value); });
+
+// YouTube API
 const tag=document.createElement('script'); tag.src="https://www.youtube.com/iframe_api"; document.body.appendChild(tag);
+window.onYouTubeIframeAPIReady=()=>console.log("YouTube API pronta.");
 
-defineBtn.style.display = 'none';
-let pendingWord = null;
-let pendingRange = null;
-
-function showLinkInput(word, range){
-    pendingWord = word;
-    pendingRange = range;
-
-    const existingBox = document.getElementById('linkInputBox');
-    if(existingBox) existingBox.remove();
-
-    const box = document.createElement('div');
-    box.id = 'linkInputBox';
-    box.style.position = 'absolute';
-    box.style.background = '#fff';
-    box.style.border = '1px solid #ccc';
-    box.style.padding = '8px';
-    box.style.borderRadius = '6px';
-    box.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-    box.style.zIndex = 10000;
-    box.style.display = 'flex';
-    box.style.gap = '6px';
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Digite o link...';
-    input.style.flex = '1';
-    input.value = 'https://';
-
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = 'Salvar';
-    saveBtn.style.background = '#28a745';
-    saveBtn.style.color = '#fff';
-    saveBtn.style.border = 'none';
-    saveBtn.style.padding = '6px 10px';
-    saveBtn.style.borderRadius = '3px';
-    saveBtn.style.cursor = 'pointer';
-
-    box.appendChild(input);
-    box.appendChild(saveBtn);
-    document.body.appendChild(box);
-
-    // posiciona box perto da seleção
-    const rect = range.getBoundingClientRect();
-    box.style.top = `${rect.bottom + window.scrollY + 6}px`;
-    box.style.left = `${rect.left + window.scrollX}px`;
-    input.focus();
-
-    saveBtn.onclick = async ()=>{
-        const link = input.value.trim();
-        if(!link) return;
-
-        // transforma a palavra em link no DOM
-        const a = document.createElement('a');
-        a.href = link;
-        a.textContent = pendingWord;
-        a.target = "_blank";
-        a.className = 'dict-link';
-        pendingRange.deleteContents();
-        pendingRange.insertNode(a);
-
-        // encontra índice do segmento aberto
-        let segIndex = null;
-        const details = Array.from(document.querySelectorAll('.details'));
-        details.forEach((d,i)=>{
-            if(d.classList.contains('open')) segIndex = i;
-        });
-        if(segIndex === null){
-            alert("Abra o segmento correto antes de salvar o link.");
-            box.remove();
-            return;
-        }
-
-        // salva no Firebase
-        try{
-            const docRef = db.collection('videos_temp').doc(currentDocName);
-            const docSnap = await docRef.get();
-            if(!docSnap.exists) throw new Error("Documento não encontrado");
-
-            const data = docSnap.data();
-            if(!data.segments[segIndex].links) data.segments[segIndex].links = [];
-            data.segments[segIndex].links.push({ palavra: pendingWord, url: link });
-
-            await docRef.update({ segments: data.segments });
-            saveState(data.segments[segIndex].start+'_'+segIndex, {link:{palavra:pendingWord,url:link}}, currentDocName);
-
-            alert("Link salvo com sucesso!");
-        } catch(err){
-            console.error(err);
-            alert("Erro ao salvar no Firebase: "+err.message);
-        }
-
-        box.remove();
-        pendingWord = null;
-        pendingRange = null;
-        window.getSelection().removeAllRanges();
-    };
-}
-
-
-
-
-document.addEventListener('selectionchange', () => {
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0) {
-        defineBtn.style.display = 'none';
-        return;
-    }
-
-    const text = sel.toString().trim();
-
-    // Nova regex: permite letras, números, parênteses, hífen e até + se necessário
-    if (!/^[\p{L}0-9()\-\+\[\]]+$/u.test(text)) {
-        defineBtn.style.display = 'none';
-        return;
-    }
-
-    const range = sel.getRangeAt(0);
-
-    // Evita mostrar botão se a seleção já é um link
-    if (range.startContainer.parentElement.closest('a') || range.endContainer.parentElement.closest('a')) {
-        defineBtn.style.display = 'none';
-        return;
-    }
-
-    // Mostra o botão
-    defineBtn.style.display = 'inline-block';
-    pendingWord = text;
-    pendingRange = range;
-
-    // Calcula posição do botão
-    const rect = range.getBoundingClientRect();
-    defineBtn.style.top = `${rect.top + window.scrollY - 30}px`;
-    defineBtn.style.left = `${rect.left + window.scrollX}px`;
+// Inicializar
+loadChannels();
+document.getElementById('cadastrarVideoBtn').addEventListener('click', () => {
+    window.location.href = 'cadastrar-video.html'; // coloque o nome da sua página de cadastro
 });
-
-
-
-/* =================== CLIQUE NO BOTÃO =================== */
-defineBtn.onclick = ()=>{
-    if(!pendingWord || !pendingRange) return;
-    showLinkInput(pendingWord, pendingRange);
-};
-
 </script>
 </body>
 </html>
