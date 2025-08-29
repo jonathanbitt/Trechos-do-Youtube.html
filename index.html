@@ -241,28 +241,36 @@ async function renderVideoParts() {
 
             const segDetails = document.createElement('div'); segDetails.className='segment-details';
 
-            if(seg.transcription){
-                const trDiv = document.createElement('div'); trDiv.className='transcription';
-                let text = seg.transcription;
-                
-                // Substituir palavras por links
-                text = makeTranscriptLinks(text);
+            if (seg.transcription) {
+    const trDiv = document.createElement('div');
+    trDiv.className = 'transcription';
+    let text = seg.transcription;
 
-// Depois aplica os links do dicionário
-Object.keys(linksMap).forEach(word => {
-    const regex = new RegExp(`\\b${word}\\b`, 'g');
-    text = text.replace(regex, `<a href="${linksMap[word]}" target="_blank" class="dict-link">${word}</a>`);
-});
+    // Substituir tempos (0:00) por links
+    text = makeTranscriptLinks(text);
 
-                trDiv.innerHTML = text;  // importante: innerHTML para renderizar <a>
-                segDetails.appendChild(trDiv);
-            }
+    // Substituir palavras com links salvos no segmento
+    if (seg.links) {
+        Object.keys(seg.links).forEach(word => {
+            const regex = new RegExp(`\\b${word}\\b`, 'g');
+            text = text.replace(regex, `<a href="${seg.links[word]}" target="_blank" class="dict-link">${word}</a>`);
+        });
+    }
+
+    trDiv.innerHTML = text;
+    segDetails.appendChild(trDiv);
+}
+
 
             const playBtn = document.createElement('button'); playBtn.className='play-segment-btn'; playBtn.textContent='▶️ Tocar este segmento';
             playBtn.addEventListener('click',()=>playSegment(currentVideoData.videoId,seg));
             segDetails.appendChild(playBtn);
 
-            segHeader.addEventListener('click',()=>segDetails.classList.toggle('open'));
+            segHeader.addEventListener('click', () => {
+               segDetails.classList.toggle('open');
+               currentSegment = seg; // <-- Define o segmento atual
+            });
+
             segEl.appendChild(segHeader); segEl.appendChild(segDetails);
             partEl.appendChild(segEl);
         });
@@ -296,13 +304,67 @@ document.addEventListener('selectionchange',()=>{
 linkBtn.addEventListener('click',()=>{ wordInputLink.value=selectedWord; urlInput.value=''; linkModal.style.display='block'; modalOverlay.style.display='block'; });
 modalOverlay.addEventListener('click',()=>{ linkModal.style.display='none'; modalOverlay.style.display='none'; });
 cancelLinkBtn.addEventListener('click',()=>{ linkModal.style.display='none'; modalOverlay.style.display='none'; });
-saveLinkBtn.addEventListener('click',async ()=>{
-    const word=wordInputLink.value.trim(); const url=urlInput.value.trim();
-    if(!word || !url){ alert('Preencha todos os campos'); return; }
-    try{ await db.collection('links').doc(word.toLowerCase()).set({palavra:word,link:url,dataCriacao:firebase.firestore.FieldValue.serverTimestamp()});
-        alert('Link salvo!'); linkModal.style.display='none'; modalOverlay.style.display='none';
-    }catch(e){ alert('Erro ao salvar link'); console.error(e);}
+
+
+
+saveLinkBtn.addEventListener('click', async () => {
+    const word = wordInputLink.value.trim();
+    const url = urlInput.value.trim();
+    
+    console.log("currentVideoData:", currentVideoData);
+    console.log("currentSegment:", currentSegment);
+    console.log("Palavra:", word);
+    console.log("URL:", url);
+
+    if (!word || !url) {
+        alert('Preencha todos os campos');
+        return;
+    }
+
+    if (!currentVideoData) {
+        alert("Nenhum vídeo carregado.");
+        return;
+    }
+
+    const channelId = channelSelect.value;
+    const videoId = videoSelect.value;
+    const docRef = db.collection(channelId).doc(videoId);
+    console.log("DocRef path:", docRef.path);
+
+    try {
+        // Atualiza os segmentos do vídeo
+            const updatedSegments = currentVideoData.segments.map((seg, i) => {
+                // Se currentSegment for null, usar o primeiro segmento como padrão
+                const segmentToUse = currentSegment || currentVideoData.segments[0];
+
+                if (seg.title === segmentToUse.title) {
+                    if (!seg.links) seg.links = {}; // cria objeto links se não existir
+                    seg.links[word] = url;         // adiciona a palavra + link
+                }
+                return seg;
+            });
+
+        console.log("updatedSegments:", updatedSegments);
+        console.log("Tipo do array:", Array.isArray(updatedSegments));
+
+        updatedSegments.forEach((seg, i) => {
+            console.log(`Segmento ${i}:`, seg);
+            console.log("links:", seg.links, "Tipo:", typeof seg.links);
+        });
+
+        await docRef.update({ segments: updatedSegments });
+
+        alert('Link salvo no segmento!');
+        linkModal.style.display = 'none';
+        modalOverlay.style.display = 'none';
+    } catch (e) {
+        alert('Erro ao salvar link');
+        console.error("Erro Firestore:", e.code, e.message);
+    }
 });
+
+
+
 
 // Event listeners canais e vídeos
 channelSelect.addEventListener('change',()=>{ if(channelSelect.value) loadVideosFromChannel(channelSelect.value); else { videoSelect.innerHTML='<option value="">Selecione um vídeo</option>'; videoSelect.disabled=true; loadBtn.disabled=true;} });
