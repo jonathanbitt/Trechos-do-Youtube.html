@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player de Vídeo com Transcrição Sincronizada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 10px;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .video-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 20%; /* 1/5 da altura da página */
+            position: relative;
+            background: #000;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .transcription-container {
+            padding: 15px;
+            max-height: 60vh;
+            overflow-y: auto;
+            font-size: 16px;
+        }
+        
+        .transcription-line {
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .transcription-line:hover {
+            background-color: #f0f8ff;
+            border-left: 3px solid #0066cc;
+        }
+        
+        .time-code {
+            display: inline-block;
+            width: 60px;
+            color: #666;
+            font-size: 0.85em;
+            margin-right: 10px;
+            vertical-align: top;
+            background: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .text {
+            display: inline;
+            transition: all 0.3s ease;
+        }
+        
+        .active {
+            font-weight: bold;
+            color: #0066cc;
+            background-color: #e6f2ff;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        
+        .controls {
+            padding: 12px 15px;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 8px 16px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #0052a3;
+        }
+        
+        h1 {
+            text-align: center;
+            padding: 15px;
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+        
+        .instructions {
+            text-align: center;
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            padding: 0 15px;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 8px;
+            }
+            
+            .transcription-container {
+                padding: 12px;
+                max-height: 55vh;
+                font-size: 15px;
+            }
+            
+            h1 {
+                font-size: 1.2rem;
+                padding: 12px;
+            }
+            
+            .time-code {
+                width: 55px;
+                font-size: 0.8em;
+            }
+            
+            button {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Player de Vídeo com Transcrição Sincronizada</h1>
+    <p class="instructions">Clique em qualquer frase para pular para aquele momento do vídeo</p>
+    
+    <div class="container">
+        <div class="video-container">
+            <!-- O iframe do YouTube será inserido aqui via JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <button id="play-btn">▶ Reproduzir</button>
+            <button id="pause-btn">⏸ Pausar</button>
+            <button id="restart-btn">↺ Reiniciar</button>
+        </div>
+        
+        <div class="transcription-container" id="transcription">
+            <!-- A transcrição será inserida aqui via JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // ID do vídeo do YouTube (substitua pelo seu)
+        const videoId = 'Kk-iqR26pM4'; // Este é um exemplo (Rick Astley - Never Gonna Give You Up)
+        
+        // SUA TRANSCRIÇÃO (substitua pela sua transcrição)
+        // Formato: [tempo em segundos, texto da frase]
+        const transcriptionData = [
+  
+  [0, "Hey there. Welcome back to Sound Like a"],
+  [2, "Local. Today we're doing something a"],
+  [4, "little different, but it's super"],
+  [6, "effective for sounding more natural in"],
+  [8, "English. We're going to learn by reading"],
+  [10, "a short story. The book cover you see"],
+  [12, "here is a great reference for how we can"],
+  [14, "learn English the fun way."],
+  [17, "You might think stories are just for"],
+  [19, "reading practice, but they're one of the"],
+  [21, "best ways to learn new words and phrases"],
+  [23, "in context, just like a native speaker"],
+  [26, "does. So, let's dive in and see how much"],
+  [28, "we can learn from a simple story."],
+  [32, "Today's story is called The Unexpected"],
+  [34, "Shortcut. I'll read it and I want you to"],
+  [36, "just listen. Try to pay attention to the"],
+  [38, "flow and maybe a few words you don't"],
+  [40, "know. Don't worry about understanding"],
+  [42, "every single word."],
+  [44, "So, here it is."],
+  [47, "It was a gloomy Saturday morning and"],
+  [49, "rain was coming down in buckets. Mark"],
+  [51, "had a list of errands to run and he was"],
+  [53, "already running behind. He had to pick"],
+  [55, "up a birthday cake, grab some groceries,"],
+  [58, "and drop off a package at the post"],
+  [60, "office."],
+  [62, "\"This is just my luck,\" he muttered to"],
+  [63, "himself, watching the traffic get worse."],
+  [66, "He was in a jam, and his GPS told him he"],
+  [68, "was going to be late."],
+  [71, "Suddenly, an idea popped into his head."],
+  [73, "\"I'll take a shortcut,\" he decided. He"],
+  [76, "turned onto a small side street he had"],
+  [78, "never been on before. At first, it"],
+  [80, "seemed like a brilliant idea. The road"],
+  [82, "was quiet with no cars in sight. He was"],
+  [85, "really making good time."],
+  [88, "But then the road turned into a dirt"],
+  [90, "path and his car hit a huge pothole. The"],
+  [93, "engine made a strange sound and then"],
+  [95, "silence."],
+  [98, "Mark just sat there staring at the empty"],
+  [100, "road. He had a cake on the seat next to"],
+  [102, "him that was now a bit lopsided. He let"],
+  [105, "out a long sigh. Well, I guess I'm in a"],
+  [108, "pickle now, he said, and he started to"],
+  [110, "laugh. Sometimes you just have to roll"],
+  [112, "with the punches."],
+  [115, "Okay, so that was our story. Did you"],
+  [117, "catch those two phrases I put in there?"],
+  [119, "They're very common in American English,"],
+  [121, "but you probably won't find them in a"],
+  [123, "grammar book."],
+  [125, "Let's break them down."],
+  [127, "The first one was in a jam. Mark was in"],
+  [130, "a jam because of the traffic. It just"],
+  [132, "means he was in a difficult situation"],
+  [134, "like being stuck. It's not a literal jam"],
+  [137, "you eat."],
+  [139, "The second one was in a pickle. This is"],
+  [142, "almost the same thing as in a jam. When"],
+  [144, "Mark's car broke down, he was in a"],
+  [146, "pickle. A tricky situation he didn't"],
+  [147, "know how to get out of."],
+  [150, "And finally, roll with the punches. Mark"],
+  [153, "was frustrated, but he decided to roll"],
+  [155, "with the punches. It means you just"],
+  [157, "accept a bad situation and deal with it"],
+  [160, "as it happens without getting too upset."],
+  [164, "These phrases are a great way to sound"],
+  [166, "more natural, just like the videos on my"],
+  [168, "channel. It's about learning the way"],
+  [170, "real people speak."],
+  [173, "So, now that you've heard the story and"],
+  [174, "learned a few new phrases, I have a"],
+  [176, "challenge for you. Read the story again."],
+  [179, "This time, try to read it out loud"],
+  [181, "yourself. Focus on the flow and rhythm."],
+  [183, "It might feel weird at first, but it's"],
+  [185, "the best way to practice."],
+  [187, "Thanks for joining us today on Sound"],
+  [189, "Like a Local. I hope this short story"],
+  [191, "gave you a fun new way to practice your"],
+  [193, "English. Let me know your thoughts about"],
+  [195, "this episode. Until next time, keep"],
+  [197, "listening, keep learning, and keep"],
+  [199, "sounding like a local."]
+
+
+
+
+        ];
+        
+        // Variáveis globais
+        let player;
+        let currentActiveIndex = -1;
+        
+        // Inicializar o player quando a API do YouTube estiver pronta
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange,
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+        
+        // Quando o player estiver pronto
+        function onPlayerReady(event) {
+            // Criar a transcrição na página
+            createTranscription();
+            
+            // Atualizar a transcrição a cada 100ms
+            setInterval(updateTranscription, 100);
+        }
+        
+        // Monitorar o estado do player
+        function onPlayerStateChange(event) {
+            // Reiniciar a transcrição quando o vídeo recomeçar
+            if (event.data === YT.PlayerState.PLAYING) {
+                // Nada específico por enquanto
+            }
+        }
+        
+        // Criar os elementos da transcrição
+        function createTranscription() {
+            const container = document.getElementById('transcription');
+            
+            transcriptionData.forEach((item, index) => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'transcription-line';
+                lineDiv.id = `line-${index}`;
+                
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'time-code';
+                timeSpan.textContent = formatTime(item[0]);
+                
+                const textSpan = document.createElement('span');
+                textSpan.className = 'text';
+                textSpan.textContent = item[1];
+                
+                lineDiv.appendChild(timeSpan);
+                lineDiv.appendChild(textSpan);
+                container.appendChild(lineDiv);
+                
+                // Clique no texto para buscar o tempo no vídeo
+                lineDiv.addEventListener('click', () => {
+                    player.seekTo(item[0], true);
+                    if (player.getPlayerState() !== YT.PlayerState.PLAYING) {
+                        player.playVideo();
+                    }
+                });
+            });
+        }
+        
+        // Atualizar qual parte da transcrição deve estar ativa
+        function updateTranscription() {
+            if (!player || !player.getCurrentTime) return;
+            
+            const currentTime = player.getCurrentTime();
+            let newActiveIndex = -1;
+            
+            // Encontrar o índice da frase atual baseado no tempo
+            for (let i = 0; i < transcriptionData.length; i++) {
+                if (currentTime >= transcriptionData[i][0]) {
+                    newActiveIndex = i;
+                } else {
+                    break;
+                }
+            }
+            
+            // Se mudou a frase ativa, atualizar a interface
+            if (newActiveIndex !== currentActiveIndex) {
+                // Remover destaque anterior
+                if (currentActiveIndex >= 0) {
+                    const prevLine = document.getElementById(`line-${currentActiveIndex}`);
+                    if (prevLine) {
+                        const textSpan = prevLine.querySelector('.text');
+                        textSpan.classList.remove('active');
+                    }
+                }
+                
+                // Aplicar destaque à nova frase
+                if (newActiveIndex >= 0) {
+                    const newLine = document.getElementById(`line-${newActiveIndex}`);
+                    if (newLine) {
+                        const textSpan = newLine.querySelector('.text');
+                        textSpan.classList.add('active');
+                        
+                        // Rolagem automática para manter a linha ativa visível
+                        newLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+                
+                currentActiveIndex = newActiveIndex;
+            }
+        }
+        
+        // Formatar segundos em mm:ss - CORRIGIDO
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Configurar botões de controle
+        document.getElementById('play-btn').addEventListener('click', () => {
+            player.playVideo();
+        });
+        
+        document.getElementById('pause-btn').addEventListener('click', () => {
+            player.pauseVideo();
+        });
+        
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            player.seekTo(0, true);
+            player.playVideo();
+        });
+        
+        // Carregar a API do YouTube IFrame
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        
+        // Criar o iframe do YouTube manualmente
+        window.onYouTubeIframeAPIReady = function() {
+            const videoContainer = document.querySelector('.video-container');
+            videoContainer.innerHTML = '<div id="youtube-player"></div>';
+            
+            player = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange,
+                    'onReady': onPlayerReady
+                }
+            });
+        };
+    </script>
+</body>
+</html>
