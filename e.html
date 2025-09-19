@@ -120,8 +120,8 @@ a.time-link { color:#007BFF; text-decoration:underline; cursor:pointer; }
     <button id="pauseBtn" disabled>⏸ </button>
     <button id="stopBtn" disabled>⏹ </button>
     
-    <button id="cadastrarVideoBtn">Cadastrar Vídeo</button>
-    <div id="play-status">Parado</div>
+    <button id="cadastrarVideoBtn">+</button>
+    <div id="play-status"> </div>
 </div>
 
 
@@ -131,30 +131,23 @@ a.time-link { color:#007BFF; text-decoration:underline; cursor:pointer; }
     <div id="parts-container"></div>
 </div>
 
-
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-
-
 <!-- Botão flutuante e modal -->
 <button id="linkBtn">📎 Criar Link</button>
-
 <div id="modalOverlay"></div>
-
 <div id="linkModal">
     <h3>Criar Link</h3>
-    
-    <!-- Palavra selecionada (somente leitura) -->
     <input type="text" id="wordInputLink" placeholder="Palavra" readonly>
-    
-    <!-- Campo já preenchido com https:// -->
-    <input type="text" id="urlInput" value="https://">
-    
+    <input type="text" id="urlInput" placeholder="URL do link">
     <div>
         <button id="saveLinkBtn">Salvar</button>
         <button id="cancelLinkBtn" style="background-color:#6c757d;">Cancelar</button>
     </div>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+
+
 
 
 <script>
@@ -421,7 +414,7 @@ function loadYouTubePlayer(videoId){
     else{ player.loadVideoById(videoId); player.stopVideo();}
     pauseBtn.disabled=false; stopBtn.disabled=false;
 }
-function onPlayerReady(e){ updateStatus('Pronto'); }
+function onPlayerReady(e){ updateStatus('P'); }
 function onPlayerStateChange(e) {
     if (e.data == YT.PlayerState.PLAYING) {
         updateStatus('Tocando');
