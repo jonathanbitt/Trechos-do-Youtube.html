@@ -417,7 +417,7 @@ function loadYouTubePlayer(videoId){
 function onPlayerReady(e){ updateStatus('P'); }
 function onPlayerStateChange(e) {
     if (e.data == YT.PlayerState.PLAYING) {
-        updateStatus('Tocando');
+        updateStatus('');
         
         // Iniciar intervalo para atualizar a transcrição
         if (window.transcriptInterval) clearInterval(window.transcriptInterval);
@@ -428,11 +428,11 @@ function onPlayerStateChange(e) {
         }, 100); // Atualizar a cada 100ms
     } 
     else if (e.data == YT.PlayerState.PAUSED) {
-        updateStatus('Pausado');
+        updateStatus('');
         clearInterval(window.transcriptInterval);
     } 
     else if (e.data == YT.PlayerState.ENDED) {
-        updateStatus('Finalizado');
+        updateStatus('');
         clearInterval(window.transcriptInterval);
         clearInterval(checkInterval);
         currentSegment = null;
