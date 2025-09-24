@@ -1,0 +1,870 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visualizador de Vídeos de Música</title>
+<style>
+body { font-family: Arial,sans-serif; max-width:1000px; margin:auto; padding:20px; background:#f7f7f7; line-height:1.6; }
+h1 { text-align:center; color:#333; margin-bottom:20px; }
+.section { background:white; border-radius:8px; padding:15px; margin-bottom:20px; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+select, button { padding:10px; margin:5px; border-radius:4px; border:1px solid #ddd; font-size:1em; }
+button { background-color:#007BFF; color:white; cursor:pointer; border:none; transition:background-color 0.3s; }
+button:hover { background-color:#0056b3; }
+button:disabled { background-color:#cccccc; cursor:not-allowed; }
+#player-container { display:flex; justify-content:center; margin:20px 0; }
+#player { width:100%; max-width:640px; height:360px; box-shadow:0 0 10px rgba(0,0,0,0.2);}
+
+#controls {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    background: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 1;
+    flex-wrap: wrap;
+}
+
+#controls button {
+    padding: 8px 16px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+#controls button:hover {
+    background-color: #0056b3;
+}
+
+#play-status {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.loading { text-align:center; padding:20px; font-style:italic; color:#666; }
+.error { text-align:center; padding:20px; color:#dc3545; background-color:#f8d7da; border-radius:5px; }
+.part { background:white; border-radius:5px; padding:15px; margin-bottom:15px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
+.part-title { font-size:1.2em; font-weight:bold; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #eee; color:#444; }
+.segment { background:#f9f9f9; border-radius:5px; padding:10px; margin-bottom:8px; }
+.segment-header { display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; }
+.segment-title { font-weight:bold; margin:0; flex-grow:1; }
+.segment-times { color:#666; font-size:0.9em; margin-right:10px; }
+.segment-details { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
+.segment-details.open { max-height:1000px; }
+.transcription { margin-top:10px; padding:10px; background:#f0f0f0; border-radius:4px; white-space:pre-line; }
+.play-segment-btn { background-color:#28a745; margin-top:8px; }
+.play-segment-btn:hover { background-color:#1e7e34; }
+
+#linkBtn { position:absolute; display:none; z-index:9999; padding:8px 12px; border-radius:20px; font-size:14px; background:#343a40; color:#fff; box-shadow:0 4px 14px rgba(0,0,0,0.25); border:none; cursor:pointer; }
+#linkBtn:hover { background:#23272b; }
+#linkBtn:active { transform:scale(0.98); }
+#linkModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border-radius:8px; box-shadow:0 5px 25px rgba(0,0,0,0.3); z-index:10000; width:90%; max-width:500px; }
+#linkModal h3 { margin-top:0; color:#333; }
+#linkModal input { width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:1em; }
+#modalOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; }
+a.time-link { color:#007BFF; text-decoration:underline; cursor:pointer; }
+
+
+
+.transcript-chunk {
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.transcript-chunk.active {
+    background-color: #ffeb3b;
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.transcription {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+.floating-btn {
+    position: absolute;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    z-index: 9999;
+}
+</style>
+</head>
+<body>
+<h1>Visualizador de Vídeos de Música</h1>
+
+<div class="section">
+    <h2>Selecionar Vídeo</h2>
+    <select id="languageSelect">
+        <option value="">Selecione um idioma</option>
+        <option value="al">Alemão</option>
+        <option value="es">Espanhol</option>
+        <option value="en">Inglês</option>
+        <option value="it">Italiano</option>
+        <option value="fr">Francês</option>
+    </select>
+    <select id="channelSelect" disabled><option value="">Selecione um canal</option></select>
+    <select id="videoSelect" disabled><option value="">Selecione um vídeo</option></select>
+    <button id="loadBtn" disabled>Carregar Vídeo</button>
+</div>
+
+<div id="player-container"><div id="player"></div></div>
+
+<div id="controls">
+    <button id="pauseBtn" disabled>⏸</button>
+    <button id="stopBtn" disabled>⏹</button>
+    <button id="playLoopBtn">▶️</button> <!-- Botão para interromper loop -->
+    <button id="cadastrarVideoBtn">+</button>
+    <div id="play-status"></div>
+</div>
+
+
+<div id="content">
+    <div id="loading" class="loading">Selecione um vídeo para carregar os segmentos...</div>
+    <div id="error" class="error" style="display:none;"></div>
+    <div id="parts-container"></div>
+</div>
+
+<!-- Botão flutuante e modal -->
+<button id="linkBtn">📎 Criar Link</button>
+<div id="modalOverlay"></div>
+<div id="linkModal">
+    <h3>Criar Link</h3>
+    <input type="text" id="wordInputLink" placeholder="Palavra" readonly>
+    <input type="text" id="urlInput" placeholder="URL do link">
+    <div>
+        <button id="saveLinkBtn">Salvar</button>
+        <button id="cancelLinkBtn" style="background-color:#6c757d;">Cancelar</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+
+<script>
+// Config Firebase
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "trechos-c7fba.firebaseapp.com",
+    projectId: "trechos-c7fba",
+    storageBucket: "trechos-c7fba.appspot.com",
+    messagingSenderId: "334052038527",
+    appId: "SEU_APP_ID"
+  };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Variáveis globais
+let player, currentVideoData = null, currentSegment = null, checkInterval = null, currentVideoId = '';
+let selectedWord = '', selectedRange = null;
+let loopInterval = null;
+let loopStart = null;
+let loopEnd = null;
+let isLooping = false;
+let selectedText = "";
+let selectionBtn = null;
+let vocabularioMap = {}; // { palavra: traducao }
+
+// DOM
+const languageSelect = document.getElementById('languageSelect');
+const channelSelect = document.getElementById('channelSelect');
+const videoSelect = document.getElementById('videoSelect');
+const loadBtn = document.getElementById('loadBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+
+const stopBtn = document.getElementById('stopBtn');
+const playLoopBtn = document.getElementById('playLoopBtn'); // seu botão ▶️
+
+playLoopBtn.addEventListener('click', () => {
+    if (isLooping) {
+        // Interrompe o loop
+        clearInterval(loopInterval);
+        isLooping = false;
+        loopStart = null;
+        loopEnd = null;
+        updateStatus('Loop interrompido');
+
+        // Continua a reprodução normalmente
+        if (player && player.playVideo) player.playVideo();
+    }
+});
+
+
+const playStatus = document.getElementById('play-status');
+const loadingEl = document.getElementById('loading');
+const errorEl = document.getElementById('error');
+const partsContainer = document.getElementById('parts-container');
+
+const linkBtn = document.getElementById('linkBtn');
+const linkModal = document.getElementById('linkModal');
+const modalOverlay = document.getElementById('modalOverlay');
+const wordInputLink = document.getElementById('wordInputLink');
+const urlInput = document.getElementById('urlInput');
+const saveLinkBtn = document.getElementById('saveLinkBtn');
+const cancelLinkBtn = document.getElementById('cancelLinkBtn');
+
+// Util
+const toSeconds = (timeStr) => {
+    const parts = timeStr.split(':').map(Number);
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return 0;
+};
+
+async function carregarVocabulario() {
+    try {
+        const snapshot = await db.collection("vocabulario").get();
+        vocabularioMap = {};
+        snapshot.forEach(doc => {
+            vocabularioMap[doc.data().termo] = doc.data().traducao;
+        });
+    } catch (e) {
+        console.error("Erro ao carregar vocabulário:", e);
+    }
+}
+
+// Processar a transcrição e marcar vocabulário
+
+function processTranscriptionText(transcription, links = {}) {
+    const chunks = transcription.split('\n').filter(chunk => chunk.trim() !== '');
+    
+    return chunks.map(chunk => {
+        let text = chunk;
+
+        // Converter tempos em links
+        text = makeTranscriptLinks(text);
+
+        // Aplicar links de palavras do vídeo (X1, X2, etc.)
+        if (links) {
+            Object.keys(links).forEach(word => {
+                const regex = new RegExp(`\\b${word}\\b`, 'g');
+                text = text.replace(regex, `<a href="${links[word]}" target="_blank" class="dict-link">${word}</a>`);
+            });
+        }
+
+       Object.keys(vocabularioMap).forEach(word => {
+            const regex = new RegExp(`\\b${escapeRegex(word)}\\b`, 'g');
+            text = text.replace(regex, (match) => {
+                return `<span class="vocab-word" style="font-weight:bold; cursor:pointer;" data-traducao="${vocabularioMap[word]}">${match}</span>`;
+            });
+        });
+
+
+        // Extrair o primeiro tempo (para data-time da div)
+        const timeMatch = text.match(/data-time="(\d+)"/);
+        const timeAttr = timeMatch ? `data-time="${timeMatch[1]}"` : '';
+
+        return {
+            text: text,
+            element: `<div class="transcript-chunk" ${timeAttr}>${text}</div>`
+        };
+    });
+}
+// REMOVER ou COMENTAR esta função duplicada
+/*
+function makeTranscriptLinks(text) {
+    return text.replace(/\((\d{1,2}:\d{2}(?::\d{2})?)\)/g, (match, p1) => {
+        const seconds = toSeconds(p1);
+        return `<a href="javascript:void(0)" class="time-link" data-time="${seconds}">(${p1})</a>`;
+    });
+}
+*/
+
+function escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function makeTranscriptLinks(text){
+    return text.replace(/\((\d{1,2}:\d{2}(?::\d{2})?)\)/g, (match,p1)=>{
+        const seconds = toSeconds(p1);
+        return `<a href="javascript:void(0)" class="time-link" data-time="${seconds}">(${p1})</a>`;
+    });
+}
+
+function updateTranscriptHighlight(currentTime) {
+    document.querySelectorAll('.transcript-chunk.active').forEach(chunk => {
+        chunk.classList.remove('active');
+    });
+
+    const chunks = document.querySelectorAll('.transcript-chunk');
+    let currentChunk = null;
+
+    for (const chunk of chunks) {
+        const chunkTime = parseFloat(chunk.getAttribute('data-time'));
+        if (!isNaN(chunkTime) && currentTime >= chunkTime) {
+            currentChunk = chunk;
+        } else if (!isNaN(chunkTime) && currentTime < chunkTime) {
+            // Se encontrou um chunk com tempo maior, para a busca
+            break;
+        }
+    }
+
+    if (currentChunk) {
+        currentChunk.classList.add('active');
+        currentChunk.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+
+
+
+
+
+const updateStatus = text => playStatus.textContent = text;
+
+function showLoading(msg) { loadingEl.textContent = msg; loadingEl.style.display = 'block'; partsContainer.style.display = 'none'; }
+function hideLoading() { loadingEl.style.display = 'none'; partsContainer.style.display = 'block'; }
+function showError(msg) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+function hideError() { errorEl.style.display = 'none'; }
+
+// Carregar canais de acordo com idioma
+// Carregar canais por idioma
+async function loadChannelsByLanguage(language) {
+    showLoading('Carregando canais...');
+    channelSelect.innerHTML = '<option value="">Selecione um canal</option>';
+    channelSelect.disabled = true;
+    
+    try {
+        // Determinar o nome da coleção baseado no idioma selecionado
+        let collectionName;
+        switch(language) {
+            case 'fr':
+                collectionName = 'canaisfrances';
+                break;
+            case 'en':
+                collectionName = 'canaisingles'; // ou canais_ingles, conforme você preferir
+                break;
+            case 'it':
+                collectionName = 'canaisitaliano'; // ou canais_portugues
+                break;
+            case 'es':
+                collectionName = 'canaisespanhol'; // ou canais_portugues
+                break;
+            case 'al':
+                collectionName = 'canaisalemao'; // ou canais_portugues
+                break;
+            default:
+                collectionName = 'canais'; // fallback
+        }
+        
+        console.log(`Buscando canais na coleção: ${collectionName} para idioma: ${language}`);
+        
+        // Buscar na coleção específica do idioma
+        const snap = await db.collection(collectionName).get();
+        
+        if (snap.empty) {
+            channelSelect.innerHTML = '<option value="">Nenhum canal encontrado para ' + getLanguageName(language) + '</option>';
+            hideLoading();
+            return;
+        }
+        
+        snap.forEach(doc => {
+            const data = doc.data();
+            const opt = document.createElement('option');
+            opt.value = doc.id; // ID = nome do canal (que é também o nome da coleção de vídeos)
+            opt.textContent = data.nomeExibicao || doc.id; // Usar nome personalizado se existir
+            if (data.descricao) {
+                opt.title = data.descricao; // Tooltip com descrição
+            }
+            channelSelect.appendChild(opt);
+        });
+        
+        channelSelect.disabled = false;
+        hideLoading();
+    } catch (e) { 
+        showError('Erro ao carregar canais: ' + e.message); 
+        console.error(e); 
+    }
+}
+
+
+
+
+
+// Carregar vídeos filtrando pelo idioma
+async function loadVideosFromChannel(channelId) {
+    showLoading('Carregando vídeos...');
+    videoSelect.innerHTML = '<option value="">Selecione um vídeo</option>';
+    videoSelect.disabled = true;
+    loadBtn.disabled = true;
+
+    try {
+        // BUSCA NA COLEÇÃO COM O MESMO NOME DO CANAL SELECIONADO
+        const snap = await db.collection(channelId).get();
+        
+        if (snap.empty) {
+            videoSelect.innerHTML = '<option value="">Nenhum vídeo encontrado neste canal</option>';
+            hideLoading();
+            return;
+        }
+
+        snap.forEach(doc => {
+            const data = doc.data();
+            const opt = document.createElement('option');
+            opt.value = doc.id;
+            opt.textContent = data.title || doc.id;
+            videoSelect.appendChild(opt);
+        });
+
+        videoSelect.disabled = false;
+        loadBtn.disabled = false;
+        hideLoading();
+    } catch (e) {
+        showError('Erro ao carregar vídeos: ' + e.message);
+        console.error(e);
+    }
+}
+
+// Função auxiliar para mostrar nome do idioma
+function getLanguageName(code) {
+    const languages = {
+        'al': 'Alemão',
+        'es': 'Espanhol', 
+        'en': 'Inglês', 
+        'fr': 'Francês',
+        'it': 'Italianio'
+    };
+    return languages[code] || code;
+}
+
+
+// Carregar dados do vídeo
+async function loadVideoData(channelId, videoId) {
+    showLoading('Carregando vídeo e transcrição...');
+    partsContainer.innerHTML = '';
+    hideError();
+    try {
+        const docSnap = await db.collection(channelId).doc(videoId).get();
+        if (!docSnap.exists) { showLoading('Nenhum dado encontrado'); return; }
+        currentVideoData = docSnap.data();
+        await carregarVocabulario();
+        hideLoading();
+        renderVideoParts();
+        if (currentVideoData.videoId) loadYouTubePlayer(currentVideoData.videoId);
+    } catch (e) { showError('Erro ao carregar vídeo'); console.error(e); }
+}
+
+
+async function renderVideoParts() {
+    partsContainer.innerHTML = '';
+
+    if (!currentVideoData) {
+        const div = document.createElement('div');
+        div.className = 'transcription';
+        div.textContent = 'Nenhum dado de vídeo encontrado';
+        partsContainer.appendChild(div);
+        return;
+    }
+
+    // Buscar todos os links salvos no Firebase
+    const linksSnap = await db.collection('links').get();
+    const linksMap = {};
+    linksSnap.forEach(doc => {
+        linksMap[doc.data().palavra] = doc.data().link;
+    });
+
+    // Criar container principal para a transcrição
+    const trDiv = document.createElement('div');
+    trDiv.className = 'transcription';
+
+    // Verificar se existe transcription (campo único)
+    if (currentVideoData.transcription) {
+        // Processar a transcrição única
+        const processedChunks = processTranscriptionText(currentVideoData.transcription, currentVideoData.links || linksMap);
+
+        if (processedChunks.length > 0) {
+            processedChunks.forEach(chunk => {
+                trDiv.innerHTML += chunk.element;
+            });
+        } else {
+            // Fallback: mostrar transcrição crua
+            const fallbackDiv = document.createElement('div');
+            fallbackDiv.className = 'transcript-chunk';
+            fallbackDiv.textContent = currentVideoData.transcription;
+            trDiv.appendChild(fallbackDiv);
+        }
+    } 
+    // Compatibilidade com estrutura antiga (segments)
+    else if (currentVideoData.segments && currentVideoData.segments.length > 0) {
+        currentVideoData.segments.forEach(seg => {
+            if (seg.transcription) {
+                const segmentDiv = document.createElement('div');
+                segmentDiv.className = 'segment';
+                
+                if (seg.title) {
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'segment-title';
+                    titleDiv.textContent = seg.title;
+                    segmentDiv.appendChild(titleDiv);
+                }
+
+                const processedChunks = processTranscriptionText(seg.transcription, seg.links || {});
+                processedChunks.forEach(chunk => {
+                    segmentDiv.innerHTML += chunk.element;
+                });
+
+                trDiv.appendChild(segmentDiv);
+            }
+        });
+    } else {
+        trDiv.textContent = 'Nenhuma transcrição disponível para este vídeo';
+    }
+
+    partsContainer.appendChild(trDiv);
+}
+
+
+
+// YouTube Player
+function loadYouTubePlayer(videoId) {
+    currentVideoId = videoId;
+    if (!player) {
+        player = new YT.Player('player', {
+            height: '360',
+            width: '640',
+            videoId: videoId,
+            playerVars: { playsinline: 1, modestbranding: 1, rel: 0 },
+            events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange }
+        });
+    } else {
+        player.loadVideoById(videoId);
+        player.stopVideo();
+    }
+    pauseBtn.disabled = false;
+    stopBtn.disabled = false;
+}
+
+function onPlayerReady(e) { updateStatus('Pronto'); }
+
+function onPlayerStateChange(e) {
+    if (e.data == YT.PlayerState.PLAYING) {
+        updateStatus('');
+        
+        if (window.transcriptInterval) clearInterval(window.transcriptInterval);
+        window.transcriptInterval = setInterval(() => {
+            if (player && player.getCurrentTime) {
+                updateTranscriptHighlight(player.getCurrentTime());
+            }
+        }, 100);
+    } else if (e.data == YT.PlayerState.PAUSED) {
+        updateStatus('');
+        clearInterval(window.transcriptInterval);
+    } else if (e.data == YT.PlayerState.ENDED) {
+        updateStatus('');
+        clearInterval(window.transcriptInterval);
+        clearInterval(checkInterval);
+        currentSegment = null;
+        
+        document.querySelectorAll('.transcript-chunk.active').forEach(chunk => {
+            chunk.classList.remove('active');
+        });
+    }
+}
+
+// Event listeners
+languageSelect.addEventListener('change', () => {
+    if (languageSelect.value) {
+        loadChannelsByLanguage(languageSelect.value);
+    } else {
+        channelSelect.disabled = true;
+        videoSelect.disabled = true;
+        loadBtn.disabled = true;
+    }
+});
+
+channelSelect.addEventListener('change', () => {
+    if (channelSelect.value) {
+        // channelSelect.value = nome do canal selecionado (ex: "France24")
+        loadVideosFromChannel(channelSelect.value);
+    } else {
+        videoSelect.disabled = true;
+        loadBtn.disabled = true;
+    }
+});
+
+videoSelect.addEventListener('change', () => {
+    loadBtn.disabled = !videoSelect.value;
+});
+
+loadBtn.addEventListener('click', () => {
+    if (channelSelect.value && videoSelect.value) {
+        loadVideoData(channelSelect.value, videoSelect.value);
+    }
+});
+
+pauseBtn.addEventListener('click', () => {
+    if (player) player.pauseVideo();
+});
+
+stopBtn.addEventListener('click', () => {
+    if (player) {
+        player.stopVideo();
+        updateStatus('Parado');
+        clearInterval(checkInterval);
+        clearInterval(loopInterval);
+        currentSegment = null;
+        isLooping = false;
+    }
+});
+
+// Clique em tempos da transcrição
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('time-link')) {
+        e.preventDefault();
+
+        const start = Number(e.target.dataset.time);
+        const allLinks = Array.from(document.querySelectorAll('.time-link'));
+        const idx = allLinks.indexOf(e.target);
+
+        let end = null;
+        if (idx >= 0 && idx < allLinks.length - 1) {
+            end = Number(allLinks[idx + 1].dataset.time);
+        } else if (player && player.getDuration) {
+            end = player.getDuration();
+        }
+
+        if (player && !isNaN(start) && !isNaN(end)) {
+            loopStart = start;
+            loopEnd = end;
+            isLooping = true;
+
+            player.seekTo(loopStart, true);
+            player.playVideo();
+
+            if (loopInterval) clearInterval(loopInterval);
+            loopInterval = setInterval(() => {
+                if (player.getCurrentTime && player.getCurrentTime() >= loopEnd) {
+                    player.seekTo(loopStart, true);
+                }
+            }, 200);
+
+            updateStatus(`Loop: ${formatTime(loopStart)} - ${formatTime(loopEnd)}`);
+        }
+    }
+});
+
+// Botão flutuante para link
+document.addEventListener('selectionchange', () => {
+    const sel = document.getSelection();
+    if (sel && sel.toString().trim() !== '') {
+        selectedWord = sel.toString().trim();
+        const rect = sel.getRangeAt(0).getBoundingClientRect();
+        linkBtn.style.top = (rect.top + window.scrollY - 40) + 'px';
+        linkBtn.style.left = (rect.left + window.scrollX) + 'px';
+        linkBtn.style.display = 'block';
+    } else {
+        linkBtn.style.display = 'none';
+        selectedWord = '';
+    }
+});
+
+linkBtn.addEventListener('click', () => {
+    wordInputLink.value = selectedWord;
+    urlInput.value = '';
+    linkModal.style.display = 'block';
+    modalOverlay.style.display = 'block';
+});
+
+modalOverlay.addEventListener('click', () => {
+    linkModal.style.display = 'none';
+    modalOverlay.style.display = 'none';
+});
+
+cancelLinkBtn.addEventListener('click', () => {
+    linkModal.style.display = 'none';
+    modalOverlay.style.display = 'none';
+});
+
+
+
+saveLinkBtn.addEventListener('click', async () => {
+    const word = wordInputLink.value.trim();
+    const url = urlInput.value.trim();
+    
+    if (!word || !url) {
+        alert('Preencha todos os campos');
+        return;
+    }
+
+    if (!currentVideoData) {
+        alert("Nenhum vídeo carregado.");
+        return;
+    }
+
+    const channelId = channelSelect.value;
+    const videoId = videoSelect.value;
+    const docRef = db.collection(channelId).doc(videoId);
+
+    try {
+        // Para a nova estrutura com transcription única
+        if (currentVideoData.transcription) {
+            const updatedLinks = currentVideoData.links || {};
+            updatedLinks[word] = url;
+            
+            await docRef.update({ 
+                links: updatedLinks 
+            });
+        } 
+        // Para estrutura antiga com segments (compatibilidade)
+        else if (currentVideoData.segments) {
+            const updatedSegments = currentVideoData.segments.map(seg => {
+                if (!seg.links) seg.links = {};
+                seg.links[word] = url;
+                return seg;
+            });
+            
+            await docRef.update({ segments: updatedSegments });
+        }
+
+        alert('Link salvo com sucesso!');
+        linkModal.style.display = 'none';
+        modalOverlay.style.display = 'none';
+        
+        // Recarregar a transcrição para mostrar o novo link
+        loadVideoData(channelId, videoId);
+    } catch (e) {
+        alert('Erro ao salvar link');
+        console.error("Erro Firestore:", e);
+    }
+});
+
+
+
+
+// Time link click (ativa o loop no trecho clicado)
+document.addEventListener('click', e => {
+    if (e.target.classList.contains('time-link')) {
+        const start = Number(e.target.dataset.time);
+        const end = start + 5; // aqui você define a duração do loop (ex: +5s do clique)
+
+        if (player && !isNaN(start) && !isNaN(end)) {
+            loopStart = start;
+            loopEnd = end;
+            isLooping = true;
+
+            player.seekTo(loopStart, true);
+            player.playVideo();
+
+            if (loopInterval) clearInterval(loopInterval);
+            loopInterval = setInterval(() => {
+                if (player.getCurrentTime && player.getCurrentTime() >= loopEnd) {
+                    player.seekTo(loopStart, true);
+                }
+            }, 200);
+
+            updateStatus(`Loop: ${formatTime(loopStart)} - ${formatTime(loopEnd)}`);
+        }
+    }
+});
+
+
+// Botão de cadastro de vídeo
+document.getElementById('cadastrarVideoBtn').addEventListener('click', () => {
+    window.location.href = 'cadastrar-video.html';
+});
+
+// YouTube API
+const tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.body.appendChild(tag);
+window.onYouTubeIframeAPIReady = () => console.log("YouTube API pronta.");
+
+// Utilitário para formatar tempo
+function formatTime(seconds) {
+    const m = Math.floor(seconds / 60).toString().padStart(1, '0');
+    const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
+// Botão flutuante para vocabulário
+document.addEventListener("mouseup", function(e) {
+    if (e.target.classList.contains("floating-btn")) return;
+
+    const selection = window.getSelection().toString().trim();
+    if (!selection) {
+        if (selectionBtn) selectionBtn.remove();
+        return;
+    }
+    selectedText = selection;
+
+    if (selectionBtn) selectionBtn.remove();
+    selectionBtn = document.createElement("button");
+    selectionBtn.textContent = "➕";
+    selectionBtn.className = "floating-btn";
+    selectionBtn.style.position = "absolute";
+    selectionBtn.style.top = (e.pageY - 40) + "px";
+    selectionBtn.style.left = (e.pageX + 10) + "px";
+    selectionBtn.style.padding = "5px 10px";
+    selectionBtn.style.borderRadius = "8px";
+    selectionBtn.style.background = "#007BFF";
+    selectionBtn.style.color = "#fff";
+    selectionBtn.style.border = "none";
+    selectionBtn.style.cursor = "pointer";
+    selectionBtn.style.zIndex = "9999";
+    document.body.appendChild(selectionBtn);
+
+    selectionBtn.addEventListener("mousedown", (ev) => {
+        ev.stopPropagation();
+    });
+
+    selectionBtn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        if (selectedText.match(/^\(X\d+\)$/)) {
+            abrirCadastroLink(selectedText);
+        } else {
+            abrirCadastroVocabulario(selectedText);
+        }
+        selectionBtn.remove();
+    });
+});
+
+function abrirCadastroVocabulario(palavra) {
+    const traducao = prompt(`Digite a tradução para: ${palavra}`);
+    if (!traducao) return;
+
+    db.collection("vocabulario").add({
+        termo: palavra,
+        traducao: traducao,
+        createdAt: new Date().toISOString()
+    }).then(() => {
+        alert(`"${palavra}" salvo no vocabulário!`);
+    });
+}
+
+function abrirCadastroLink(marcador) {
+    const link = prompt(`Digite o link para ${marcador}`);
+    if (!link) return;
+
+    const videoId = currentVideoId;
+
+    db.collection("videos").doc(videoId).update({
+        [`links.${marcador.replace(/[()]/g, "")}`]: link
+    }).then(() => {
+        alert(`Link de ${marcador} salvo para este vídeo!`);
+    });
+}
+</script>
+</body>
+</html>
