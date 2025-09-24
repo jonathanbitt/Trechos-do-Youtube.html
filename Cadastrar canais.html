@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Vídeo com Trechos</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+  body { font-family: Arial, sans-serif; margin: 15px; background: #f5f5f5; }
+  h2 { text-align: center; }
+  input, textarea, select, button {
+    display: block; margin-bottom: 12px; width: 100%;
+    padding: 12px; font-size: 16px; border-radius: 8px;
+    border: 1px solid #ccc; box-sizing: border-box;
+  }
+  textarea { min-height: 70px; resize: vertical; }
+  fieldset {
+    margin-bottom: 20px; padding: 15px; background: #fff;
+    border-radius: 8px; border: 1px solid #ddd;
+  }
+  legend { font-weight: bold; }
+  button { background: #007BFF; color: white; border: none; cursor: pointer; }
+  button:hover { background: #0056b3; }
+  .add-btn { background: #28a745; }
+  .add-btn:hover { background: #1e7e34; }
+</style>
+</head>
+<body>
+
+<h2>Cadastro de Vídeo com Trechos</h2>
+
+<!-- Seleção de idioma e canal existentes -->
+<label>Escolher Idioma</label>
+<select id="idiomaSelect">
+  <option value="">-- Selecione um idioma --</option>
+  <option value="pt">Português</option>
+  <option value="en">Inglês</option>
+  <option value="fr">Francês</option>
+  <option value="it">Italiano</option>
+</select>
+
+<label>Escolher Canal</label>
+<select id="canalSelect">
+  <option value="">-- Selecione um canal --</option>
+</select>
+
+<!-- CAMPOS PARA TÍTULO E ID DO VÍDEO -->
+<label>Título do Vídeo</label>
+<input type="text" id="videoTitle" placeholder="Digite o título do vídeo" required>
+
+<label>ID do Vídeo (YouTube)</label>
+<input type="text" id="videoId" placeholder="Digite o ID do vídeo do YouTube" required>
+
+<hr>
+
+<form id="videoForm">
+  <label>Dados do Vídeo (preenchimento automático)</label>
+  <input type="text" id="mainData" placeholder="Canal;Título;VideoID;Idioma" readonly style="background-color: #f0f0f0;">
+
+  <label>Idioma do Vídeo</label>
+  <select id="languageSelect" required>
+    <option value="">Selecione um idioma</option>
+    <option value="pt">Português</option>
+    <option value="en">Inglês</option>
+    <option value="fr">Francês</option>
+    <option value="it">Italiano</option>
+  </select>
+
+  <h3>Transcrição Completa do Vídeo</h3>
+  <div id="segmentsContainer">
+    <!-- Único campo de transcrição -->
+    <fieldset>
+      <legend>Transcrição</legend>
+      <label>Digite toda a transcrição do vídeo:</label>
+      <textarea name="transcription" placeholder="Cole aqui toda a transcrição do vídeo..." style="min-height: 200px;"></textarea>
+    </fieldset>
+  </div>
+
+  <button type="submit">💾 Salvar no Firestore</button>
+</form>
+
+<script>
+  // --- Firebase ---
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "trechos-c7fba.firebaseapp.com",
+    projectId: "trechos-c7fba",
+    storageBucket: "trechos-c7fba.appspot.com",
+    messagingSenderId: "334052038527",
+    appId: "SEU_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // --- Função para determinar o nome da coleção do idioma ---
+  function getCollectionNameByLanguage(language) {
+    const languageCollections = {
+      'pt': 'canaisportugues',
+      'en': 'canaisingles', 
+      'fr': 'canaisfrances',
+      'it': 'canaisitaliano'
+    };
+    return languageCollections[language] || 'canais';
+  }
+
+  // --- Função para atualizar o campo mainData automaticamente ---
+  function atualizarMainData() {
+    const canal = document.getElementById('canalSelect').value;
+    const titulo = document.getElementById('videoTitle').value;
+    const videoId = document.getElementById('videoId').value;
+    const idioma = document.getElementById('idiomaSelect').value;
+    
+    if (canal && titulo && videoId && idioma) {
+      document.getElementById('mainData').value = `${canal};${titulo};${videoId};${idioma}`;
+      document.getElementById('languageSelect').value = idioma;
+    }
+  }
+
+  // --- Função para dividir a transcrição em segmentos ---
+  function dividirTranscricao(transcricaoCompleta) {
+    if (!transcricaoCompleta.trim()) return [];
+    
+    // Divide a transcrição por linhas ou por pontos para criar segmentos
+    const linhas = transcricaoCompleta.split('\n').filter(linha => linha.trim() !== '');
+    const segmentos = [];
+    
+    linhas.forEach((linha, index) => {
+      if (linha.trim()) {
+        segmentos.push({
+          title: `Parte ${index + 1}`,
+          transcription: linha.trim()
+        });
+      }
+    });
+    
+    // Se não houve divisão por linhas, divide por sentenças
+    if (segmentos.length === 0 && transcricaoCompleta.length > 200) {
+      const sentencas = transcricaoCompleta.split(/[.!?]+/).filter(s => s.trim());
+      sentencas.forEach((sentenca, index) => {
+        if (sentenca.trim()) {
+          segmentos.push({
+            title: `Parte ${index + 1}`,
+            transcription: sentenca.trim() + '.'
+          });
+        }
+      });
+    }
+    
+    // Se ainda não há segmentos, cria um único segmento
+    if (segmentos.length === 0) {
+      segmentos.push({
+        title: 'Transcrição completa',
+        transcription: transcricaoCompleta.trim()
+      });
+    }
+    
+    return segmentos;
+  }
+
+  // --- Salvar no Firestore ---
+  document.getElementById("videoForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const mainData = document.getElementById("mainData").value.trim().split(";");
+    if(mainData.length < 4 || !mainData[0] || !mainData[1] || !mainData[2] || !mainData[3]) {
+      alert("⚠️ Preencha todos os campos: Canal, Título, VideoID e Idioma");
+      return;
+    }
+
+    const canal = mainData[0].trim();
+    const videoTitle = mainData[1].trim();
+    const videoId = mainData[2].trim();
+    const idiomaMain = mainData[3].trim();
+    const language = document.getElementById("languageSelect").value;
+
+    // Verificar se o idioma do select combina com o do mainData
+    if(language && idiomaMain && language !== idiomaMain) {
+      alert("⚠️ O idioma no campo principal deve ser igual ao selecionado no dropdown");
+      return;
+    }
+
+    const idiomaFinal = language || idiomaMain;
+
+    if(!idiomaFinal) {
+      alert("⚠️ Selecione um idioma para o vídeo");
+      return;
+    }
+
+    // Obter a transcrição completa
+    const transcriptionElement = document.querySelector('[name="transcription"]');
+    const transcricaoCompleta = transcriptionElement ? transcriptionElement.value.trim() : '';
+
+    if (!transcricaoCompleta) {
+      alert("⚠️ Digite a transcrição do vídeo");
+      return;
+    }
+
+    // Dividir a transcrição em segmentos automaticamente
+    const segments = dividirTranscricao(transcricaoCompleta);
+
+    try {
+      // 1️⃣ Salvar na coleção do canal (estrutura original)
+      const videoRef = db.collection(canal).doc(videoTitle);
+      
+      // Ler segmentos existentes (para preservar se quiser adicionar mais depois)
+      const docSnap = await videoRef.get();
+      let existingSegments = [];
+      if(docSnap.exists && Array.isArray(docSnap.data().segments)) {
+        existingSegments = docSnap.data().segments;
+      }
+
+      // Concatenar novos trechos sem apagar os antigos (ou substituir completamente)
+      const updatedSegments = segments; // Para substituir completamente, use apenas segments
+
+      // Salvar vídeo com idioma na coleção do canal
+      await videoRef.set({ 
+        videoId, 
+        language: idiomaFinal, 
+        segments: updatedSegments,
+        title: videoTitle,
+        lastUpdated: new Date().toISOString(),
+        transcricaoCompleta: transcricaoCompleta // Salvar também a versão completa
+      }, { merge: true });
+
+      // 2️⃣ Salvar também na coleção do idioma correspondente
+      const collectionIdioma = getCollectionNameByLanguage(idiomaFinal);
+      const canalRefIdioma = db.collection(collectionIdioma).doc(canal);
+      
+      await canalRefIdioma.set({
+        nomeExibicao: canal,
+        idioma: idiomaFinal,
+        ultimaAtualizacao: new Date().toISOString()
+      }, { merge: true });
+
+      // 3️⃣ Garantir que canal exista na coleção "canasmusicas" (para compatibilidade)
+      await db.collection("canasmusicas").doc(canal).set({ 
+        exists: true,
+        lastUpdated: new Date().toISOString()
+      }, { merge: true });
+
+      alert(`✅ Vídeo "${videoTitle}" salvo com sucesso!\n\nSalvo em:\n- Coleção: ${canal}\n- Coleção de idioma: ${collectionIdioma}\n- Segmentos criados: ${segments.length}`);
+      
+      // Limpar formulário após salvar
+      document.getElementById("mainData").value = "";
+      document.getElementById("videoTitle").value = "";
+      document.getElementById("videoId").value = "";
+      document.getElementById("languageSelect").value = "";
+      document.getElementById("idiomaSelect").value = "";
+      document.getElementById("canalSelect").value = "";
+      transcriptionElement.value = "";
+    } catch(err) {
+      console.error("Erro ao salvar:", err);
+      alert("❌ Erro ao salvar: " + err.message);
+    }
+  });
+
+  // --- Carregar canais baseado no idioma selecionado ---
+  async function carregarCanaisPorIdioma(idioma) {
+    const canalSelect = document.getElementById("canalSelect");
+    canalSelect.innerHTML = '<option value="">-- Selecione um canal --</option>';
+    canalSelect.disabled = true;
+    
+    if(!idioma) return;
+
+    try {
+      const collectionIdioma = getCollectionNameByLanguage(idioma);
+      const snapshot = await db.collection(collectionIdioma).get();
+      
+      if(snapshot.empty) {
+        canalSelect.innerHTML = '<option value="">Nenhum canal encontrado para este idioma</option>';
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        const option = document.createElement("option");
+        option.value = doc.id;
+        option.textContent = doc.data().nomeExibicao || doc.id;
+        canalSelect.appendChild(option);
+      });
+      
+      canalSelect.disabled = false;
+    } catch(err) {
+      console.error("Erro ao carregar canais por idioma:", err);
+      canalSelect.innerHTML = '<option value="">Erro ao carregar canais</option>';
+    }
+  }
+
+  // --- Event listeners para atualização automática do mainData ---
+  document.getElementById("canalSelect").addEventListener("change", atualizarMainData);
+  document.getElementById("videoTitle").addEventListener("input", atualizarMainData);
+  document.getElementById("videoId").addEventListener("input", atualizarMainData);
+  document.getElementById("idiomaSelect").addEventListener("change", atualizarMainData);
+
+  // --- Ao selecionar idioma, carregar canais ---
+  document.getElementById("idiomaSelect").addEventListener("change", function() {
+    const idioma = this.value;
+    carregarCanaisPorIdioma(idioma);
+    
+    // Sincronizar com o select de idioma do formulário
+    document.getElementById("languageSelect").value = idioma;
+    atualizarMainData();
+  });
+
+  // --- Sincronizar o select de idioma com os dados ---
+  document.getElementById("languageSelect").addEventListener("change", function() {
+    const idioma = this.value;
+    document.getElementById("idiomaSelect").value = idioma;
+    carregarCanaisPorIdioma(idioma);
+    atualizarMainData();
+  });
+</script>
+
+</body>
+</html>
