@@ -555,8 +555,8 @@ function loadYouTubePlayer(videoId) {
     currentVideoId = videoId;
     if (!player) {
         player = new YT.Player('player', {
-            height: '200',
-            width: '350',
+            height: '100',
+            width: '250',
             videoId: videoId,
             playerVars: { playsinline: 1, modestbranding: 1, rel: 0 },
             events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange }
@@ -880,4 +880,5 @@ function abrirCadastroLink(marcador) {
 }
 </script>
 </body>
+
 </html>
