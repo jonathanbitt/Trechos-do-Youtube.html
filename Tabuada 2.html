@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabuada Divertida</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            color: #333;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 #ffd166;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .current-operation {
+            font-size: 2rem;
+            margin: 30px 0;
+            color: #333;
+            background-color: #ffd166;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-container {
+            margin: 20px 0;
+        }
+
+        input {
+            font-size: 1.5rem;
+            padding: 10px 15px;
+            border: 3px solid #4facfe;
+            border-radius: 10px;
+            width: 150px;
+            text-align: center;
+            outline: none;
+        }
+
+        button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 0 #ff5252;
+        }
+
+        button:hover {
+            background-color: #ff5252;
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #ff3838;
+        }
+
+        .continue-btn {
+            background-color: #06d6a0;
+            box-shadow: 0 5px 0 #05b387;
+        }
+
+        .continue-btn:hover {
+            background-color: #05b387;
+            box-shadow: 0 3px 0 #049c73;
+        }
+
+        .feedback {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .correct {
+            color: #06d6a0;
+        }
+
+        .incorrect {
+            color: #ef476f;
+        }
+
+        .report {
+            display: none;
+            text-align: left;
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .report h2 {
+            color: #118ab2;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4facfe;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .final-message {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ffd166;
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+
+        .stars {
+            font-size: 2rem;
+            color: #ffd166;
+            margin: 10px 0;
+        }
+
+        .level-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .level {
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #e0e0e0;
+        }
+
+        .level.active {
+            background-color: #4facfe;
+            color: white;
+        }
+
+        .animal {
+            font-size: 4rem;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tabuada Divertida</h1>
+        
+        <div class="progress-container">
+            <div class="level-indicator">
+                <div class="level">Tabuada do 2</div>
+                <div class="level">Tabuada do 3</div>
+                <div class="level">Tabuada do 4</div>
+                <div class="level">Tabuada do 5</div>
+                <div class="level">Tabuada do 6</div>
+                <div class="level">Tabuada do 7</div>
+                <div class="level">Tabuada do 8</div>
+                <div class="level">Tabuada do 9</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
+        
+        <div class="animal" id="animal">🐱</div>
+        
+        <div class="current-operation" id="operation">2 x 1 = ?</div>
+        
+        <div class="input-container">
+            <input type="number" id="answer" placeholder="Resposta" min="1">
+            <button id="submit">Confirmar</button>
+            <button id="continue" class="continue-btn" style="display: none;">Continuar</button>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+        
+        <div class="report" id="report">
+            <h2>Relatório Final</h2>
+            <div class="stars" id="stars"></div>
+            <div class="table-container">
+                <table id="results-table">
+                    <thead>
+                        <tr>
+                            <th>Tabuada</th>
+                            <th>Acertos</th>
+                            <th>Nota</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body">
+                    </tbody>
+                </table>
+            </div>
+            <div id="final-message" class="final-message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Estado da aplicação
+        const state = {
+            currentTable: 2,
+            currentMultiplier: 1,
+            attempts: 0,
+            correctAnswers: 0,
+            results: {},
+            started: false,
+            waitingForContinue: false
+        };
+
+        // Elementos DOM
+        const operationElement = document.getElementById('operation');
+        const answerInput = document.getElementById('answer');
+        const submitButton = document.getElementById('submit');
+        const continueButton = document.getElementById('continue');
+        const feedbackElement = document.getElementById('feedback');
+        const progressElement = document.getElementById('progress');
+        const reportElement = document.getElementById('report');
+        const resultsBody = document.getElementById('results-body');
+        const starsElement = document.getElementById('stars');
+        const finalMessageElement = document.getElementById('final-message');
+        const levelIndicators = document.querySelectorAll('.level');
+        const animalElement = document.getElementById('animal');
+
+        // Inicializar a aplicação
+        function init() {
+            // Carregar dados do localStorage se existirem
+            const savedState = localStorage.getItem('multiplicationPractice');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                Object.assign(state, parsedState);
+            } else {
+                // Inicializar resultados
+                for (let i = 2; i <= 9; i++) {
+                    state.results[i] = { correct: 0, total: 0 };
+                }
+            }
+            
+            updateProgress();
+            updateLevelIndicator();
+            displayNextOperation();
+            
+            // Event listeners
+            submitButton.addEventListener('click', checkAnswer);
+            continueButton.addEventListener('click', continueToNext);
+            answerInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !state.waitingForContinue) {
+                    checkAnswer();
+                }
+            });
+            
+            // Focar no campo de resposta
+            answerInput.focus();
+        }
+
+        // Atualizar a barra de progresso
+        function updateProgress() {
+            const totalOperations = 27; // 9 tabuadas x 3 operações
+            const completedOperations = (state.currentTable - 2) * 3 + state.attempts;
+            const progressPercentage = (completedOperations / totalOperations) * 100;
+            progressElement.style.width = `${progressPercentage}%`;
+        }
+
+        // Atualizar indicador de nível
+        function updateLevelIndicator() {
+            levelIndicators.forEach((indicator, index) => {
+                if (index === state.currentTable - 2) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+
+        // Exibir a próxima operação
+        function displayNextOperation() {
+            operationElement.textContent = `${state.currentTable} x ${state.currentMultiplier} = ?`;
+            answerInput.value = '';
+            answerInput.focus();
+            submitButton.style.display = 'inline-block';
+            continueButton.style.display = 'none';
+            state.waitingForContinue = false;
+            
+            // Animação do animal
+            const animals = ['🐱', '🐶', '🐰', '🐻', '🐼', '🐨', '🦊', '🐯', '🦁'];
+            animalElement.textContent = animals[Math.floor(Math.random() * animals.length)];
+        }
+
+        // Verificar a resposta
+        function checkAnswer() {
+            const userAnswer = parseInt(answerInput.value);
+            const correctAnswer = state.currentTable * state.currentMultiplier;
+            
+            if (isNaN(userAnswer)) {
+                feedbackElement.textContent = 'Por favor, digite um número!';
+                feedbackElement.className = 'feedback incorrect';
+                return;
+            }
+            
+            state.attempts++;
+            
+            if (userAnswer === correctAnswer) {
+                feedbackElement.textContent = 'Parabéns! Você acertou! 🎉';
+                feedbackElement.className = 'feedback correct';
+                state.correctAnswers++;
+                state.results[state.currentTable].correct++;
+                
+                // Salvar estado no localStorage
+                localStorage.setItem('multiplicationPractice', JSON.stringify(state));
+                
+                // Avançar automaticamente após acerto
+                setTimeout(continueToNext, 1500);
+            } else {
+                feedbackElement.innerHTML = `
+                    <div>Que pena! Você respondeu <strong>${userAnswer}</strong>.</div>
+                    <div>A resposta correta era <strong>${correctAnswer}</strong>.</div>
+                `;
+                feedbackElement.className = 'feedback incorrect';
+                
+                // Mostrar botão "Continuar" em vez de avançar automaticamente
+                submitButton.style.display = 'none';
+                continueButton.style.display = 'inline-block';
+                state.waitingForContinue = true;
+                
+                state.results[state.currentTable].total++;
+                
+                // Salvar estado no localStorage
+                localStorage.setItem('multiplicationPractice', JSON.stringify(state));
+            }
+        }
+
+        // Continuar para a próxima operação
+        function continueToNext() {
+            if (state.attempts < 3) {
+                state.currentMultiplier++;
+                displayNextOperation();
+                feedbackElement.textContent = '';
+            } else {
+                // Próxima tabuada
+                state.currentTable++;
+                state.attempts = 0;
+                state.currentMultiplier = 1;
+                
+                if (state.currentTable > 9) {
+                    // Fim do jogo
+                    showReport();
+                } else {
+                    updateLevelIndicator();
+                    displayNextOperation();
+                    feedbackElement.textContent = '';
+                }
+            }
+            
+            updateProgress();
+        }
+
+        // Mostrar relatório final
+        function showReport() {
+            // Esconder elementos do jogo
+            operationElement.style.display = 'none';
+            answerInput.style.display = 'none';
+            submitButton.style.display = 'none';
+            continueButton.style.display = 'none';
+            feedbackElement.style.display = 'none';
+            animalElement.style.display = 'none';
+            
+            // Mostrar relatório
+            reportElement.style.display = 'block';
+            
+            // Calcular e exibir resultados
+            let totalScore = 0;
+            let tablesToReview = [];
+            
+            for (let table = 2; table <= 9; table++) {
+                const correct = state.results[table].correct;
+                const total = state.results[table].total;
+                const score = total > 0 ? Math.round((correct / total) * 10) : 0;
+                totalScore += score;
+                
+                // Adicionar à lista de revisão se a nota for menor que 10
+                if (score < 10) {
+                    tablesToReview.push(table);
+                }
+                
+                // Adicionar linha à tabela
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${table}</td>
+                    <td>${correct}/${total}</td>
+                    <td>${score}</td>
+                `;
+                resultsBody.appendChild(row);
+            }
+            
+            // Calcular média
+            const averageScore = (totalScore / 8).toFixed(1);
+            
+            // Exibir estrelas baseadas na média
+            const starCount = Math.round(averageScore / 2);
+            starsElement.textContent = '★'.repeat(starCount) + '☆'.repeat(5 - starCount);
+            
+            // Mensagem final
+            let message = `Sua média final foi ${averageScore}. `;
+            
+            if (tablesToReview.length > 0) {
+                message += `Volte daqui a algumas horas para praticar as tabuadas do ${tablesToReview.join(', ')}.`;
+            } else {
+                message += 'Parabéns! Você dominou todas as tabuadas!';
+            }
+            
+            finalMessageElement.textContent = message;
+            
+            // Limpar localStorage
+            localStorage.removeItem('multiplicationPractice');
+        }
+
+        // Inicializar a aplicação quando a página carregar
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
