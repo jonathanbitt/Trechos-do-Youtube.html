@@ -1,0 +1,159 @@
+<!doctype html>
+
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Leitor de Textos com Voz e Controle de Velocidade</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#8b5cf6;--muted:#94a3b8;color-scheme:dark}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial; margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#071022 0%, #081428 100%); color:#e6eef8}
+    .card{width:100%; max-width:800px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:20px; box-shadow:0 10px 30px rgba(2,6,23,0.6);}
+    h1{font-size:22px;margin:0 0 12px}
+    p.lead{margin:0 0 18px; color:var(--muted)}
+    textarea{width:100%; min-height:100px; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); background:rgba(255,255,255,0.02); color:inherit; font-size:18px; resize:vertical}
+    .controls{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:14px}
+    .big-btn{padding:10px 14px; border-radius:10px; background:linear-gradient(180deg,var(--accent),#6d28d9); color:white; border:0; font-weight:600; cursor:pointer; min-width:90px}
+    .ghost{background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted)}
+    .range-wrap{flex:1; min-width:200px}
+    label{font-size:13px; color:var(--muted); display:block; margin-bottom:6px}
+    input[type=range]{width:100%}
+    .meta{display:flex; gap:8px; align-items:center; margin-top:10px; font-size:13px; color:var(--muted)}
+    select{background:rgba(255,255,255,0.01); color:inherit; border-radius:8px; padding:8px; border:1px solid rgba(255,255,255,0.04)}
+    .status{margin-left:auto; font-weight:600}
+    @media (max-width:520px){textarea{font-size:16px} .big-btn{flex:1}} 
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <h1>Leitor de texto — escolha o idioma e a velocidade</h1>
+    <p class="lead">Cole ou digite abaixo o texto que deseja ouvir:</p><textarea id="textInput" placeholder="Cole aqui o texto a ser lido...">Di questi tempi compro libri e musica su Internet.</textarea>
+
+<div class="controls">
+  <div class="range-wrap">
+    <label for="rate">Velocidade: <span id="rateVal">1.00×</span></label>
+    <input id="rate" type="range" min="0.5" max="1.0" step="0.01" value="1">
+  </div>
+
+  <div>
+    <label for="lang">Idioma:</label>
+    <select id="lang">
+      <option value="it-IT">Italiano</option>
+      <option value="pt-BR">Português</option>
+      <option value="en-US">Inglês</option>
+      <option value="es-ES">Espanhol</option>
+      <option value="fr-FR">Francês</option>
+      <option value="de-DE">Alemão</option>
+    </select>
+  </div>
+
+  <div style="display:flex; gap:8px; align-items:center">
+    <button id="play" class="big-btn">▶️ Tocar</button>
+    <button id="stop" class="big-btn ghost">■ Parar</button>
+  </div>
+</div>
+
+<div class="meta">
+  <div>
+    <label for="voice">Voz:</label>
+    <select id="voice" aria-label="Seleção de voz">
+      <option>Carregando vozes…</option>
+    </select>
+  </div>
+  <div class="status" id="status">Pronto</div>
+</div>
+
+<p style="margin-top:12px; color:var(--muted); font-size:13px">Dica: se não ouvir som, verifique as vozes disponíveis no seu navegador. Em alguns dispositivos é necessário habilitar vozes do sistema.</p>
+
+  </main>  <script>
+    const rateInput = document.getElementById('rate');
+    const rateVal = document.getElementById('rateVal');
+    const playBtn = document.getElementById('play');
+    const stopBtn = document.getElementById('stop');
+    const voiceSelect = document.getElementById('voice');
+    const status = document.getElementById('status');
+    const textInput = document.getElementById('textInput');
+    const langSelect = document.getElementById('lang');
+
+    let availableVoices = [];
+    let chosenVoice = null;
+    let utterance = null;
+
+    function setStatus(t){ status.textContent = t }
+
+    function populateVoices(){
+      availableVoices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      if(!availableVoices.length){
+        voiceSelect.innerHTML = '<option>Sem vozes disponíveis</option>';
+        return;
+      }
+
+      const lang = langSelect.value;
+      const filtered = availableVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith(lang.split('-')[0]));
+      const list = filtered.length ? filtered : availableVoices;
+
+      list.forEach((v, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${v.name} — ${v.lang}${v.localService ? ' (local)' : ''}`;
+        voiceSelect.appendChild(opt);
+      });
+
+      voiceSelect.selectedIndex = 0;
+      chosenVoice = list[0];
+      voiceSelect._voices = list;
+    }
+
+    populateVoices();
+    speechSynthesis.onvoiceschanged = populateVoices;
+
+    rateInput.addEventListener('input', ()=>{
+      rateVal.textContent = parseFloat(rateInput.value).toFixed(2) + '×';
+    });
+
+    langSelect.addEventListener('change', populateVoices);
+
+    voiceSelect.addEventListener('change', ()=>{
+      const list = voiceSelect._voices || speechSynthesis.getVoices();
+      chosenVoice = list[voiceSelect.selectedIndex] || list[0];
+    });
+
+    function createUtterance(){
+      if(utterance){ speechSynthesis.cancel(); utterance = null }
+      utterance = new SpeechSynthesisUtterance(textInput.value.trim());
+      utterance.lang = langSelect.value;
+      utterance.rate = parseFloat(rateInput.value) || 1;
+      utterance.pitch = 1;
+      if(chosenVoice) utterance.voice = chosenVoice;
+
+      utterance.onstart = () => setStatus('Falando…');
+      utterance.onend = () => setStatus('Pronto');
+      utterance.onerror = (e) => {
+        console.error('Erro TTS', e);
+        setStatus('Erro ao falar');
+      };
+    }
+
+    playBtn.addEventListener('click', ()=>{
+      if(speechSynthesis.speaking){
+        speechSynthesis.cancel();
+      }
+      createUtterance();
+      try{
+        speechSynthesis.speak(utterance);
+      }catch(err){
+        console.error(err);
+        setStatus('Falha ao iniciar');
+      }
+    });
+
+    stopBtn.addEventListener('click', ()=>{
+      speechSynthesis.cancel();
+      setStatus('Parado');
+    });
+
+    document.addEventListener('click', ()=>{}, {once:true});
+  </script></body>
+</html>
