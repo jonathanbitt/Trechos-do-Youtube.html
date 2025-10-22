@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Aulas de Italiano Elegante</title>
+    <style>
+        :root {
+            --primary: #008C45;
+            --secondary: #CD212A;
+            --accent: #F4F5F0;
+            --light: #f8f9fa;
+            --dark: #2C2C2C;
+            --gold: #FFD700;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8ecef 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Menu Lateral */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary), #00A859);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .menu {
+            list-style: none;
+        }
+        
+        .menu-item {
+            margin-bottom: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .menu-item.active a {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .menu-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 15px 0;
+        }
+        
+        /* Conteúdo Principal */
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary), #00A859);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), white, var(--secondary));
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+            font-style: italic;
+        }
+        
+        .lesson-series {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: var(--accent);
+            border-radius: 15px;
+            border: 2px dashed var(--primary);
+        }
+        
+        .lesson-series h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .lesson-series p {
+            color: var(--dark);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .lesson-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lesson-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .lesson-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .lesson-title {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .section-icon {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .section-content {
+            background: var(--accent);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .examples-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .examples-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .examples-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .examples-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .italian-text {
+            font-weight: bold;
+            color: var(--primary);
+            flex: 1;
+        }
+        
+        .play-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .play-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .play-btn.playing {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .anatomy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .anatomy-table th {
+            background: var(--secondary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .anatomy-table tr:nth-child(even) {
+            background: #fff5f5;
+        }
+        
+        .anatomy-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ffe0e0;
+        }
+        
+        .quick-tip {
+            background: linear-gradient(135deg, var(--gold), #FFE55C);
+            color: #8B6B00;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #FFC400;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+        }
+        
+        .quick-tip h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, var(--primary), #00B86B);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 6px 20px rgba(0, 140, 69, 0.3);
+        }
+        
+        .summary h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .summary-icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .elegant-example {
+            background: white;
+            color: var(--dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-style: italic;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .example-text {
+            flex: 1;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--dark);
+            color: white;
+            border-top: 1px solid #444;
+            margin-top: 50px;
+        }
+        
+        .footer p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .audio-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .audio-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 1100px) {
+            .lessons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+            
+            .menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .menu-item {
+                margin: 5px;
+            }
+            
+            .menu-item a {
+                padding: 8px 12px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .lesson-card {
+                padding: 25px;
+            }
+            
+            .examples-table td {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .play-btn {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 30px 25px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .lesson-card {
+                padding: 20px;
+            }
+            
+            .examples-table, .anatomy-table {
+                font-size: 0.9rem;
+            }
+            
+            .examples-table th, .examples-table td,
+            .anatomy-table th, .anatomy-table td {
+                padding: 8px 10px;
+            }
+            
+            .elegant-example {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Lateral -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>🇮🇹 Mini Aulas</h1>
+                <p>Italiano Elegante</p>
+            </div>
+            <ul class="menu">
+                <li class="menu-item active"><a href="#intro"><span class="menu-icon">🏠</span> Introdução</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#lesson1"><span class="menu-icon">1️⃣</span> Si è dimenticato</a></li>
+                <li class="menu-item"><a href="#lesson2"><span class="menu-icon">2️⃣</span> Origem Dimenticare</a></li>
+                <li class="menu-item"><a href="#lesson3"><span class="menu-icon">3️⃣</span> Volevo solo aiutare</a></li>
+                <li class="menu-item"><a href="#lesson4"><span class="menu-icon">4️⃣</span> E tu pensi che ci creda?</a></li>
+                <li class="menu-item"><a href="#lesson5"><span class="menu-icon">5️⃣</span> Che cos'è questo?</a></li>
+                <li class="menu-item"><a href="#lesson6"><span class="menu-icon">6️⃣</span> Chi sei?</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#series"><span class="menu-icon">✨</span> Série Completa</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="content">
+            <div class="header" id="intro">
+                <h1>Le Domande Essenziali dell'Italiano</h1>
+                <p>Mini aulas elegantes que unem beleza didática, estrutura lógica e tom professoral paciente</p>
+            </div>
+            
+            <div class="lesson-series" id="series">
+                <h2>✨ As Perguntas Essenciais do Italiano</h2>
+                <p>Cada lição é uma joia de clareza, beleza e compreensão — perfeita para aprendizes com sensibilidade linguística</p>
+            </div>
+
+            <div class="audio-controls">
+                <button class="audio-btn" id="playAllItalian">🎵 Ouvir Todas as Frases</button>
+                <button class="audio-btn" id="stopAll">⏹️ Parar Pronúncia</button>
+            </div>
+            
+            <div class="lessons-grid">
+                <!-- Lição 1 -->
+                <div class="lesson-card" id="lesson1">
+                    <div class="lesson-number">1</div>
+                    <h2 class="lesson-title">"Si è dimenticato" 🌿</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">📚</span>
+                            Contexto e Significado
+                        </div>
+                        <div class="section-content">
+                            <p>A expressão "si è dimenticato" vem do verbo "dimenticare" (esquecer) e é usada para indicar que alguém se esqueceu de algo.</p>
+                            <p><strong>Forma:</strong> Reflexiva + Passato Prossimo</p>
+                            <p><strong>Tradução literal:</strong> "Ele/Ela se esqueceu"</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Italiano</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Marco si è dimenticato le chiavi.</span>
+                                        <button class="play-btn" data-text="Marco si è dimenticato le chiavi">▶</button>
+                                    </td>
+                                    <td>Marco esqueceu as chaves.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Lei si è dimenticata dell'appuntamento.</span>
+                                        <button class="play-btn" data-text="Lei si è dimenticata dell'appuntamento">▶</button>
+                                    </td>
+                                    <td>Ela se esqueceu do compromisso.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Expressão
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Dica rápida</h4>
+                                <p>Observe cada parte da construção gramatical</p>
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Parte</th>
+                                    <th>Função</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">si</span>
+                                        <button class="play-btn" data-text="si" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Reflexivo</td>
+                                    <td>Indica que o sujeito pratica a ação em si mesmo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">è</span>
+                                        <button class="play-btn" data-text="è" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Verbo auxiliar</td>
+                                    <td>Necessário para formar o Passato Prossimo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">dimenticato</span>
+                                        <button class="play-btn" data-text="dimenticato" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Particípio passado</td>
+                                    <td>Concorda em gênero e número com o sujeito</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>"si è dimenticato" = alguém se esqueceu</p>
+                        <p>Usado com Passato Prossimo e verbo reflexivo</p>
+                        <p>Concordância de gênero importante</p>
+                        <p>Traz suavidade ou educação à frase</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Marco si è dimenticato di comprare il pane."<br>
+                                "Marco se esqueceu de comprar o pão."
+                            </div>
+                            <button class="play-btn" data-text="Marco si è dimenticato di comprare il pane">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 2 -->
+                <div class="lesson-card" id="lesson2">
+                    <div class="lesson-number">2</div>
+                    <h2 class="lesson-title">Origem de "Dimenticare" 📜</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Significado e Uso
+                        </div>
+                        <div class="section-content">
+                            <p>O verbo "dimenticare" significa <strong>esquecer</strong>, ou seja, deixar de lembrar de algo ou alguém.</p>
+                            <p>É um verbo regular da primeira conjugação (-are) e muito usado em todas as situações.</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Italiano</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Non dimenticare di chiamarmi.</span>
+                                        <button class="play-btn" data-text="Non dimenticare di chiamarmi">▶</button>
+                                    </td>
+                                    <td>Não esqueça de me ligar.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Ho dimenticato il portafoglio.</span>
+                                        <button class="play-btn" data-text="Ho dimenticato il portafoglio">▶</button>
+                                    </td>
+                                    <td>Esqueci a carteira.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">✨</span>
+                            Origem Etimológica
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Dica rápida</h4>
+                                <p>A palavra dimenticare vem do latim "demin(t)icare", influenciada por "meminisse" (lembrar)</p>
+                            </div>
+                            
+                            <p><strong>meminisse</strong> → lembrar</p>
+                            <p><strong>de- + meminisse</strong> → esquecer (literalmente: "afastar da memória")</p>
+                            
+                            <p><em>Curiosidade histórica:</em> A raiz <strong>mem- / ment-</strong> em latim está presente em várias palavras ligadas à mente e memória.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Dimenticare = "esquecer", derivado do latim de-meminisse</p>
+                        <p>Significado literal: afastar da memória</p>
+                        <p>Ligado à raiz mem- / ment- (mente e lembrança)</p>
+                        <p>Verbo regular da primeira conjugação (-are)</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Non possiamo dimenticare le lezioni del passato."<br>
+                                "Não podemos esquecer as lições do passado."
+                            </div>
+                            <button class="play-btn" data-text="Non possiamo dimenticare le lezioni del passato">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 3 -->
+                <div class="lesson-card" id="lesson3">
+                    <div class="lesson-number">3</div>
+                    <h2 class="lesson-title">"Volevo solo aiutare" 💫</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Contexto e Significado
+                        </div>
+                        <div class="section-content">
+                            <p>Frase gentil e humilde para expressar intenção de ajudar.</p>
+                            <p><strong>Tradução literal:</strong> "Eu só queria ajudar"</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Italiano</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Scusa, volevo solo aiutare.</span>
+                                        <button class="play-btn" data-text="Scusa, volevo solo aiutare">▶</button>
+                                    </td>
+                                    <td>Desculpe, eu só queria ajudar.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Non era mia intenzione, volevo solo aiutare.</span>
+                                        <button class="play-btn" data-text="Non era mia intenzione, volevo solo aiutare">▶</button>
+                                    </td>
+                                    <td>Não era minha intenção, eu só queria ajudar.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Frase
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Palavra</th>
+                                    <th>Função</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Volevo</span>
+                                        <button class="play-btn" data-text="Volevo" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Verbo volere no imperfetto</td>
+                                    <td>Indica desejo ou intenção no passado</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">solo</span>
+                                        <button class="play-btn" data-text="solo" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Advérbio</td>
+                                    <td>Limita a ação: "somente", "apenas"</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">aiutare</span>
+                                        <button class="play-btn" data-text="aiutare" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Verbo no infinitivo</td>
+                                    <td>Ação que se queria realizar</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Volevo solo aiutare = Eu só queria ajudar</p>
+                        <p>Expressa intenção gentil ou desculpa</p>
+                        <p>Imperfetto indica desejo no passado</p>
+                        <p>Advérbio solo reforça a limitação da ação</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Non volevo disturbarti, volevo solo aiutare."<br>
+                                "Eu não queria incomodar você, eu só queria ajudar."
+                            </div>
+                            <button class="play-btn" data-text="Non volevo disturbarti, volevo solo aiutare">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 4 -->
+                <div class="lesson-card" id="lesson4">
+                    <div class="lesson-number">4</div>
+                    <h2 class="lesson-title">"E tu pensi che ci creda?" 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Contexto e Significado
+                        </div>
+                        <div class="section-content">
+                            <p>Pergunta se alguém realmente acredita em algo, com tom de surpresa, dúvida ou ironia.</p>
+                            <p><strong>Tradução literal:</strong> "E você acha que ele/ela acredita nisso?"</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Italiano</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">E tu pensi che ci creda davvero?</span>
+                                        <button class="play-btn" data-text="E tu pensi che ci creda davvero">▶</button>
+                                    </td>
+                                    <td>E você acha que ele/ela realmente acredita nisso?</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Non ci credo… e tu pensi che ci creda?</span>
+                                        <button class="play-btn" data-text="Non ci credo… e tu pensi che ci creda">▶</button>
+                                    </td>
+                                    <td>Eu não acredito… e você acha que ele/ela acredita nisso?</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Frase
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Palavra</th>
+                                    <th>Função</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">E</span>
+                                        <button class="play-btn" data-text="E" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Conector</td>
+                                    <td>Ligação com contexto anterior</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">tu</span>
+                                        <button class="play-btn" data-text="tu" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Sujeito</td>
+                                    <td>Segunda pessoa singular</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">pensi</span>
+                                        <button class="play-btn" data-text="pensi" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Verbo principal</td>
+                                    <td>Expressa opinião ou dúvida</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">che</span>
+                                        <button class="play-btn" data-text="che" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Conjunção</td>
+                                    <td>Introduz oração no subjuntivo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">ci</span>
+                                        <button class="play-btn" data-text="ci" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Pronome</td>
+                                    <td>Substitui "ne / nisso"</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">creda</span>
+                                        <button class="play-btn" data-text="creda" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Subjuntivo</td>
+                                    <td>Expressa dúvida ou possibilidade</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>E tu pensi che ci creda? = E você acha que ele/ela acredita nisso?</p>
+                        <p>Expressa dúvida sobre crença alheia</p>
+                        <p>Subjuntivo (creda) usado para incerteza</p>
+                        <p>Pronome ci substitui "isso" mencionado antes</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "— Marco ha detto che vincerà la gara.<br>
+                                — E tu pensi che ci creda?"<br><br>
+                                "— Marco disse que vai ganhar a corrida.<br>
+                                — E você acha que ele acredita nisso?"
+                            </div>
+                            <button class="play-btn" data-text="Marco ha detto che vincerà la gara. E tu pensi che ci creda">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 5 -->
+                <div class="lesson-card" id="lesson5">
+                    <div class="lesson-number">5</div>
+                    <h2 class="lesson-title">"Che cos'è questo?" 🌟</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Significado e Contexto
+                        </div>
+                        <div class="section-content">
+                            <p>Uma das frases mais básicas e úteis do italiano para perguntar o que é algo próximo.</p>
+                            <p><strong>Tradução:</strong> "O que é isto?"</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Situação</th>
+                                    <th>Exemplo Italiano</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>Curiosidade</td>
+                                    <td>
+                                        <span class="italian-text">Che cos'è questo profumo?</span>
+                                        <button class="play-btn" data-text="Che cos'è questo profumo">▶</button>
+                                    </td>
+                                    <td>Que perfume é este?</td>
+                                </tr>
+                                <tr>
+                                    <td>Estranhamento</td>
+                                    <td>
+                                        <span class="italian-text">Che cos'è questo rumore?</span>
+                                        <button class="play-btn" data-text="Che cos'è questo rumore">▶</button>
+                                    </td>
+                                    <td>Que barulho é este?</td>
+                                </tr>
+                                <tr>
+                                    <td>Aprendizado</td>
+                                    <td>
+                                        <span class="italian-text">Che cos'è questo oggetto?</span>
+                                        <button class="play-btn" data-text="Che cos'è questo oggetto">▶</button>
+                                    </td>
+                                    <td>O que é este objeto?</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Expressão
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Dica rápida</h4>
+                                <p>"Cos'è" é a contração de "cosa è", feita para facilitar a fala</p>
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Parte</th>
+                                    <th>Função</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Che</span>
+                                        <button class="play-btn" data-text="Che" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Pronome interrogativo</td>
+                                    <td>Introduz a pergunta</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">cosa</span>
+                                        <button class="play-btn" data-text="cosa" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Substantivo</td>
+                                    <td>Forma literal: "que coisa"</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">è</span>
+                                        <button class="play-btn" data-text="è" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Verbo essere</td>
+                                    <td>Indica o que algo é</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">questo</span>
+                                        <button class="play-btn" data-text="questo" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Pronome demonstrativo</td>
+                                    <td>Algo próximo de quem fala</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Che cos'è questo? → "O que é isto?"</p>
+                        <p>Expressa curiosidade, surpresa ou interesse</p>
+                        <p>"Cos'è" = contração de "cosa è"</p>
+                        <p>Palavra-chave: questo = algo próximo</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Che cos'è questo silenzio così profondo?"<br>
+                                "O que é este silêncio tão profundo?"
+                            </div>
+                            <button class="play-btn" data-text="Che cos'è questo silenzio così profondo">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 6 -->
+                <div class="lesson-card" id="lesson6">
+                    <div class="lesson-number">6</div>
+                    <h2 class="lesson-title">"Chi sei?" 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Significado e Contexto
+                        </div>
+                        <div class="section-content">
+                            <p>Pergunta simples e direta, mas poderosa para identificar alguém.</p>
+                            <p><strong>Tradução:</strong> "Quem é você?"</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Situação</th>
+                                    <th>Exemplo Italiano</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>Conversa comum</td>
+                                    <td>
+                                        <span class="italian-text">Ciao! Chi sei?</span>
+                                        <button class="play-btn" data-text="Ciao! Chi sei">▶</button>
+                                    </td>
+                                    <td>Oi! Quem é você?</td>
+                                </tr>
+                                <tr>
+                                    <td>Tom de surpresa</td>
+                                    <td>
+                                        <span class="italian-text">Chi sei tu?!</span>
+                                        <button class="play-btn" data-text="Chi sei tu">▶</button>
+                                    </td>
+                                    <td>Quem é você?!</td>
+                                </tr>
+                                <tr>
+                                    <td>Reflexão interior</td>
+                                    <td>
+                                        <span class="italian-text">Chi sei davvero?</span>
+                                        <button class="play-btn" data-text="Chi sei davvero">▶</button>
+                                    </td>
+                                    <td>Quem é você de verdade?</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Frase
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Palavra</th>
+                                    <th>Função</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">Chi</span>
+                                        <button class="play-btn" data-text="Chi" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Pronome interrogativo</td>
+                                    <td>Sempre usado para pessoas</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="italian-text">sei</span>
+                                        <button class="play-btn" data-text="sei" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Verbo essere</td>
+                                    <td>Forma familiar de "você é"</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="quick-tip">
+                                <h4>📘 Curiosidade</h4>
+                                <p>"Chi sei?" vem do latim "Quis es?", literalmente "Quem és?". É uma das perguntas humanas mais antigas.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Chi sei? = Quem é você?</p>
+                        <p>Chi → pergunta sobre pessoa</p>
+                        <p>Sei → do verbo essere</p>
+                        <p>Pode expressar curiosidade, descoberta ou desafio</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Chi sei quando nessuno ti guarda?"<br>
+                                "Quem é você quando ninguém te observa?"
+                            </div>
+                            <button class="play-btn" data-text="Chi sei quando nessuno ti guarda">▶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>✨ Mini Aulas de Italiano Elegante • Beleza didática unida à estrutura lógica ✨</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuração da API de síntese de voz para italiano
+        let speech = null;
+        let currentUtterance = null;
+        
+        // Inicializar a síntese de voz
+        function initSpeech() {
+            if ('speechSynthesis' in window) {
+                speech = window.speechSynthesis;
+                return true;
+            } else {
+                console.error("Seu navegador não suporta a API de síntese de voz.");
+                return false;
+            }
+        }
+        
+        // Função para falar o texto em italiano
+        function speakText(text, onEndCallback = null) {
+            if (!speech) return null;
+            
+            // Parar qualquer fala em andamento
+            speech.cancel();
+            
+            // Criar uma nova instância de SpeechSynthesisUtterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Configurar a voz para italiano
+            utterance.lang = 'it-IT';
+            utterance.rate = 0.9; // Velocidade um pouco mais lenta para melhor compreensão
+            utterance.pitch = 1.0;
+            
+            // Tentar encontrar uma voz italiana
+            const voices = speech.getVoices();
+            const italianVoice = voices.find(voice => 
+                voice.lang.includes('it-IT') || voice.lang.includes('it')
+            );
+            
+            if (italianVoice) {
+                utterance.voice = italianVoice;
+            }
+            
+            // Configurar callbacks
+            if (onEndCallback) {
+                utterance.onend = onEndCallback;
+            }
+            
+            utterance.onerror = function() {
+                console.error("Erro na síntese de voz");
+                removeAllPlayingStates();
+            };
+            
+            // Iniciar a fala
+            speech.speak(utterance);
+            currentUtterance = utterance;
+            
+            return utterance;
+        }
+        
+        // Remover todos os estados de reprodução
+        function removeAllPlayingStates() {
+            document.querySelectorAll('.playing').forEach(element => {
+                element.classList.remove('playing');
+            });
+        }
+        
+        // Adicionar funcionalidade aos botões de play
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar a síntese de voz
+            if (!initSpeech()) {
+                alert("Seu navegador não suporta a funcionalidade de áudio. Tente usar Chrome, Firefox ou Edge.");
+                return;
+            }
+            
+            // Adicionar evento de clique a todos os botões de play
+            document.querySelectorAll('.play-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const text = this.getAttribute('data-text');
+                    
+                    // Remover a classe 'playing' de todos os botões
+                    document.querySelectorAll('.play-btn').forEach(btn => {
+                        btn.classList.remove('playing');
+                        btn.innerHTML = '▶';
+                    });
+                    
+                    // Adicionar a classe 'playing' ao botão atual
+                    this.classList.add('playing');
+                    this.innerHTML = '⏸';
+                    
+                    // Falar o texto
+                    const utterance = speakText(text, function() {
+                        button.classList.remove('playing');
+                        button.innerHTML = '▶';
+                    });
+                });
+            });
+            
+            // Botão para reproduzir todas as frases em italiano
+            document.getElementById('playAllItalian').addEventListener('click', function() {
+                const allTexts = Array.from(document.querySelectorAll('.play-btn'))
+                    .map(btn => btn.getAttribute('data-text'))
+                    .filter(text => text.length > 0);
+                
+                let index = 0;
+                
+                function playNext() {
+                    if (index < allTexts.length) {
+                        const text = allTexts[index];
+                        speakText(text, function() {
+                            index++;
+                            setTimeout(playNext, 1000); // Pequena pausa entre frases
+                        });
+                    }
+                }
+                
+                removeAllPlayingStates();
+                playNext();
+            });
+            
+            // Botão para parar toda a reprodução
+            document.getElementById('stopAll').addEventListener('click', function() {
+                speech.cancel();
+                removeAllPlayingStates();
+            });
+            
+            // Ativar item do menu quando clicado
+            document.querySelectorAll('.menu-item a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    document.querySelectorAll('.menu-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.parentElement.classList.add('active');
+                });
+            });
+            
+            // Ativar item do menu baseado na rolagem
+            window.addEventListener('scroll', function() {
+                const sections = document.querySelectorAll('.lesson-card, .header, .lesson-series');
+                const menuItems = document.querySelectorAll('.menu-item');
+                
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                menuItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.querySelector('a').getAttribute('href') === '#' + current) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+            
+            // Carregar as vozes disponíveis (necessário para alguns navegadores)
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = function() {
+                    initSpeech();
+                };
+            }
+        });
+    </script>
+</body>
+</html>
