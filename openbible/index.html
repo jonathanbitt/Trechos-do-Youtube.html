@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prática de Vocabulário - Sistema Anki</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff9800;
+            --secondary: #e1f5fe;
+            --text: #333;
+            --light: #fff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+            --easy: #4caf50;
+            --good: #ffc107;
+            --hard: #ff9800;
+            --again: #f44336;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: var(--light);
+            box-shadow: var(--shadow);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: var(--primary);
+            color: var(--light);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+            min-height: calc(100vh - 200px);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+        }
+        
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+.cartao-container {
+    perspective: 1000px;
+    height: 350px; /* Aumentado de 300px para 350px */
+    margin-bottom: 2rem;
+}
+        
+        .cartao {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        
+        .cartao.virado {
+            transform: rotateY(180deg);
+        }
+        
+        .cartao-frente, .cartao-verso {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: var(--radius);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .cartao-frente {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        /* Melhorias para o cartão verso */
+        .cartao-verso {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            transform: rotateY(180deg);
+            padding: 1.5rem; /* Reduzido para dar mais espaço */
+            overflow-y: auto; /* Permite scroll se necessário */
+            max-height: 100%;
+        }
+
+        
+
+        /* Ajuste no botão de detalhes */
+        .cartao-verso .btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .cartao-verso .btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+        
+        .palavra-principal {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .palavra-traducao {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #fff;
+            opacity: 0.9;
+        }
+        
+        .dica {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 1rem;
+        }
+        
+        .link-dicionario {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            color: #fff;
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(255,255,255,0.5);
+            padding: 0.3rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .link-dicionario:hover {
+            opacity: 1;
+            border-bottom-color: rgba(255,255,255,0.8);
+        }
+        
+        .botoes-dificuldade {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 480px) {
+            .botoes-dificuldade {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .btn-dificuldade {
+            padding: 1rem;
+            border: none;
+            border-radius: var(--radius);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-dificuldade:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-again { background: var(--again); }
+        .btn-hard { background: var(--hard); }
+        .btn-good { background: var(--good); }
+        .btn-easy { background: var(--easy); }
+        
+        .controles-sessao {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .info-adicional {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            text-align: left;
+            width: 100%;
+        }
+        
+        .info-item {
+            margin-bottom: 0.5rem;
+            padding: 0.3rem 0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .message {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem;
+            color: var(--light);
+        }
+        
+        .congelamento-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Adicione ao final do CSS existente */
+.modal-palavra {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+.modal-palavra .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-palavra .modal-conteudo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-palavra .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-palavra .close-btn:hover {
+    color: #333;
+}
+
+/* Reutilizar estilos existentes */
+.modal-palavra .tipo {
+    display: inline-block;
+    background-color: #e1f5fe;
+    color: #ff9800;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.modal-palavra .conjugacao-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+.modal-palavra .conjugacao-table td {
+    padding: 0.3rem;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-palavra .exemplo-item {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.modal-palavra .notas {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    background-color: #fff9e6;
+    border-radius: 4px;
+}
+
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <h1>Prática de Vocabulário - Anki</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Aulas</a></li>
+                        <li><a href="admin.html">Administração</a></li>
+                        <li><a href="frases.html">Cadastro de Frases</a></li>
+                        <li><a href="openbible.html">OpenBible</a></li>
+                        <li><a href="analise.html">Análise de Texto</a></li>
+                        <li><a href="pratica.html" class="active">Prática Anki</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="main-content">
+            <!-- Painel de Estatísticas e Controle -->
+            <div class="panel">
+                <h2>Progresso do Aprendizado</h2>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPalavras">0</div>
+                        <div class="stat-label">Total de Palavras</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="palavrasEstudadas">0</div>
+                        <div class="stat-label">Palavras Estudadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="revisoesHoje">0</div>
+                        <div class="stat-label">Revisões Hoje</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="novasHoje">0</div>
+                        <div class="stat-label">Novas Hoje</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">Progresso da Sessão</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressoSessao" style="width: 0%"></div>
+                    </div>
+                    <div id="contadorSessao">0/0</div>
+                </div>
+                
+                <div class="controles-sessao">
+                    <button id="iniciarSessaoBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar Sessão
+                    </button>
+                    <button id="pausarSessaoBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                </div>
+                
+                <div class="congelamento-info">
+                    <i class="fas fa-snowflake"></i>
+                    <strong>Dica:</strong> Você pode congelar palavras clicando nelas na lista ao lado.
+                </div>
+            </div>
+            
+            <!-- Área Principal de Estudo -->
+            <div class="panel">
+                <h2>Estudo Ativo</h2>
+                
+                <div id="areaEstudo">
+                    <div class="loading" id="loadingEstudo">
+                        <i class="fas fa-brain"></i><br>
+                        Clique em "Iniciar Sessão" para começar a praticar
+                    </div>
+                    
+                    <div id="cartaoArea" style="display: none;">
+                        <div class="cartao-container">
+                            <div class="cartao" id="cartao">
+
+
+                                <div class="cartao-frente">
+                                    <div class="palavra-principal" id="palavraFrente"></div>
+                                    <div class="dica">Clique para ver a resposta</div>
+                                </div>
+
+
+
+
+
+                                <div class="cartao-verso">
+                                    <div class="palavra-principal" id="palavraVerso"></div>
+                                    <div class="palavra-traducao" id="traducaoVerso"></div>
+                                    <div id="infoVerso"></div>
+                                    <div class="dica">Avalie sua dificuldade</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="botoes-dificuldade">
+                            <button class="btn-dificuldade btn-again" data-dificuldade="again">
+                                <i class="fas fa-redo"></i> Muito Difícil
+                            </button>
+                            <button class="btn-dificuldade btn-hard" data-dificuldade="hard">
+                                <i class="fas fa-exclamation-triangle"></i> Difícil
+                            </button>
+                            <button class="btn-dificuldade btn-good" data-dificuldade="good">
+                                <i class="fas fa-check"></i> Médio
+                            </button>
+                            <button class="btn-dificuldade btn-easy" data-dificuldade="easy">
+                                <i class="fas fa-rocket"></i> Fácil
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="sessaoConcluida" style="display: none; text-align: center;">
+                        <i class="fas fa-trophy" style="font-size: 4rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3>Sessão Concluída!</h3>
+                        <p id="resumoSessao"></p>
+                        <button id="novaSessaoBtn" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-sync"></i> Nova Sessão
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>Sistema de Mini Aulas Interativas em Francês &copy; 2023</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDGUikGRoJoVu3g0tSenKtZHffflApUWQ",
+            authDomain: "agenda-diaria-6c1ac.firebaseapp.com",
+            projectId: "agenda-diaria-6c1ac",
+            storageBucket: "agenda-diaria-6c1ac.firebasestorage.app",
+            messagingSenderId: "38282868914",
+            appId: "1:38282868914:web:a8332ed3fe258a41af71ab",
+            measurementId: "G-3B5J0MLJ7R"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Constantes do Sistema
+        const INTERVALOS_EBINGHAUS = [1, 3, 7, 16, 35];
+        const INTERVALOS_MANUTENCAO = [45, 60, 90];
+        const LIMITE_DIARIO = 20;
+        const NOVAS_POR_DIA = 5;
+
+        // Elementos da interface
+        const iniciarSessaoBtn = document.getElementById('iniciarSessaoBtn');
+        const pausarSessaoBtn = document.getElementById('pausarSessaoBtn');
+        const cartao = document.getElementById('cartao');
+        const cartaoArea = document.getElementById('cartaoArea');
+        const loadingEstudo = document.getElementById('loadingEstudo');
+        const sessaoConcluida = document.getElementById('sessaoConcluida');
+        const novaSessaoBtn = document.getElementById('novaSessaoBtn');
+        const progressoSessao = document.getElementById('progressoSessao');
+        const contadorSessao = document.getElementById('contadorSessao');
+        //const linkDicionario = document.getElementById('linkDicionario');
+
+        // Elementos de estatísticas
+        const totalPalavras = document.getElementById('totalPalavras');
+        const palavrasEstudadas = document.getElementById('palavrasEstudadas');
+        const revisoesHoje = document.getElementById('revisoesHoje');
+        const novasHoje = document.getElementById('novasHoje');
+
+        // Variáveis globais
+        let sessaoAtiva = [];
+        let indiceAtual = 0;
+        let estatisticasSessao = {
+            total: 0,
+            completadas: 0,
+            dificuldade: { again: 0, hard: 0, good: 0, easy: 0 }
+        };
+
+        // Sistema de Dificuldade
+        const SISTEMA_DIFICULDADE = {
+            again: { 
+                nome: "Muito Difícil", 
+                cor: "#f44336",
+                fator: 0.1,
+                icone: "fas fa-redo"
+            },
+            hard: { 
+                nome: "Difícil", 
+                cor: "#ff9800",
+                fator: 0.5,
+                icone: "fas fa-exclamation-triangle"
+            },
+            good: { 
+                nome: "Médio", 
+                cor: "#ffc107", 
+                fator: 1.0,
+                icone: "fas fa-check"
+            },
+            easy: { 
+                nome: "Fácil", 
+                cor: "#4caf50",
+                fator: 2.5,
+                icone: "fas fa-rocket"
+            }
+        };
+
+        // Função para calcular próximo intervalo
+        function calcularProximoIntervalo(palavraAtual, dificuldade) {
+            const config = SISTEMA_DIFICULDADE[dificuldade];
+            
+            // Se é uma palavra nova (sem ankiData), começa do primeiro intervalo
+            if (!palavraAtual.ankiData) {
+                if (dificuldade === 'again' || dificuldade === 'hard') {
+                    return INTERVALOS_EBINGHAUS[0]; // 1 dia
+                } else if (dificuldade === 'good') {
+                    return INTERVALOS_EBINGHAUS[1]; // 3 dias
+                } else { // easy
+                    return INTERVALOS_EBINGHAUS[2]; // 7 dias
+                }
+            }
+            
+            const ankiData = palavraAtual.ankiData;
+            let novoIntervalo;
+            
+            if (dificuldade === 'again') {
+                // Reinicia do começo
+                novoIntervalo = INTERVALOS_EBINGHAUS[0];
+            } else {
+                const intervaloAtual = ankiData.intervaloAtual || INTERVALOS_EBINGHAUS[0];
+                const indiceAtual = INTERVALOS_EBINGHAUS.indexOf(intervaloAtual);
+                
+                if (dificuldade === 'easy' && indiceAtual < INTERVALOS_EBINGHAUS.length - 1) {
+                    // Pula para próximo intervalo
+                    novoIntervalo = INTERVALOS_EBINGHAUS[indiceAtual + 1];
+                } else if (dificuldade === 'hard' && indiceAtual > 0) {
+                    // Volta intervalo anterior
+                    novoIntervalo = INTERVALOS_EBINGHAUS[indiceAtual - 1];
+                } else {
+                    // Mantém intervalo atual
+                    novoIntervalo = intervaloAtual;
+                }
+            }
+            
+            return novoIntervalo;
+        }
+
+        // Função para gerar sessão diária
+        async function gerarSessaoDiaria() {
+            try {
+                // Buscar todas as palavras
+                const snapshot = await db.collection('palavras').get();
+                const todasPalavras = [];
+                
+                snapshot.forEach(doc => {
+                    todasPalavras.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                totalPalavras.textContent = todasPalavras.length;
+                
+                // Separar palavras por status
+                const palavrasComAnki = todasPalavras.filter(p => p.ankiData);
+                const palavrasSemAnki = todasPalavras.filter(p => !p.ankiData);
+                
+                palavrasEstudadas.textContent = palavrasComAnki.length;
+                
+                // Revisões devidas hoje
+                const hoje = new Date().toISOString().split('T')[0];
+                const revisoesDevidas = palavrasComAnki.filter(palavra => {
+                    if (palavra.ankiData.congelada) return false;
+                    return palavra.ankiData.proximaRevisao <= hoje;
+                });
+                
+                // Novas palavras (ordem de cadastro)
+                const novasPalavras = palavrasSemAnki
+                    .sort((a, b) => new Date(a.dataCadastro || 0) - new Date(b.dataCadastro || 0))
+                    .slice(0, NOVAS_POR_DIA);
+                
+                revisoesHoje.textContent = revisoesDevidas.length;
+                novasHoje.textContent = novasPalavras.length;
+                
+                // Combinar e priorizar (máximo LIMITE_DIARIO)
+                let sessao = [...revisoesDevidas, ...novasPalavras];
+                
+                // Priorizar por dificuldade e antiguidade
+                sessao = sessao.sort((a, b) => {
+                    // Palavras novas primeiro
+                    if (!a.ankiData && b.ankiData) return -1;
+                    if (a.ankiData && !b.ankiData) return 1;
+                    if (!a.ankiData && !b.ankiData) return 0;
+                    
+                    // Palavras com menor eficiência primeiro (mais difíceis)
+                    const eficienciaA = a.ankiData.eficiencia || 0;
+                    const eficienciaB = b.ankiData.eficiencia || 0;
+                    
+                    if (eficienciaA !== eficienciaB) {
+                        return eficienciaA - eficienciaB;
+                    }
+                    
+                    // Mais antiga primeiro
+                    return new Date(a.ankiData.ultimaRevisao || 0) - new Date(b.ankiData.ultimaRevisao || 0);
+                }).slice(0, LIMITE_DIARIO);
+                
+                return sessao;
+                
+            } catch (error) {
+                console.error('Erro ao gerar sessão:', error);
+                return [];
+            }
+        }
+
+        // Função para iniciar sessão
+        async function iniciarSessao() {
+            sessaoAtiva = await gerarSessaoDiaria();
+            
+            if (sessaoAtiva.length === 0) {
+                loadingEstudo.innerHTML = `
+                    <div class="message success">
+                        <i class="fas fa-check-circle"></i><br>
+                        Nenhuma revisão pendente para hoje! 🎉
+                    </div>
+                `;
+                return;
+            }
+            
+            estatisticasSessao = {
+                total: sessaoAtiva.length,
+                completadas: 0,
+                dificuldade: { again: 0, hard: 0, good: 0, easy: 0 }
+            };
+            
+            indiceAtual = 0;
+            loadingEstudo.style.display = 'none';
+            cartaoArea.style.display = 'block';
+            iniciarSessaoBtn.disabled = true;
+            pausarSessaoBtn.disabled = false;
+            
+            mostrarCartaoAtual();
+            atualizarProgresso();
+        }
+
+
+
+
+        
+// Função para mostrar cartão atual (SEM ROLAGEM DUPLA)
+function mostrarCartaoAtual() {
+    if (indiceAtual >= sessaoAtiva.length) {
+        concluirSessao();
+        return;
+    }
+    
+    const palavra = sessaoAtiva[indiceAtual];
+    
+    console.log('Mostrando palavra:', palavra);
+    
+    // Resetar para mostrar a frente
+    cartao.classList.remove('virado');
+    
+    // FRENTE: Apenas a palavra em francês (SEM LINK)
+    document.getElementById('palavraFrente').textContent = palavra.palavra || 'Palavra não disponível';
+    
+    // VERSO: Conteúdo completo da resposta
+    const palavraVersoElement = document.getElementById('palavraVerso');
+    const traducaoVersoElement = document.getElementById('traducaoVerso');
+    const infoVersoElement = document.getElementById('infoVerso');
+    
+    // Palavra e tradução principais
+    palavraVersoElement.textContent = palavra.palavra || 'Palavra não disponível';
+    traducaoVersoElement.textContent = palavra.traducao || 'Tradução não disponível';
+    
+    // Informações adicionais com layout mais compacto - SEM SCROLL INTERNO
+    let infoHTML = `
+        <div class="info-adicional" style="margin-top: 1rem; font-size: 0.9rem;">
+            <div class="info-item">
+                <strong>Tipo:</strong> ${palavra.tipo || 'Não informado'}
+            </div>
+    `;
+    
+    // Adicionar definição se existir (mais compacta)
+    if (palavra.definicao && palavra.definicao.trim() !== '') {
+        const definicaoResumida = palavra.definicao.length > 80 ? palavra.definicao.substring(0, 80) + '...' : palavra.definicao;
+        infoHTML += `
+            <div class="info-item">
+                <strong>Def:</strong> ${definicaoResumida}
+            </div>
+        `;
+    }
+    
+    // Adicionar pronúncia se existir
+    if (palavra.pronuncia && palavra.pronuncia.trim() !== '') {
+        infoHTML += `
+            <div class="info-item">
+                <strong>Pron:</strong> ${palavra.pronuncia}
+            </div>
+        `;
+    }
+    
+    // Informações do Anki se existirem (mais compactas)
+    if (palavra.ankiData) {
+        const intervalo = palavra.ankiData.intervaloAtual || 0;
+        const eficiencia = palavra.ankiData.eficiencia || 0;
+        infoHTML += `
+            <div class="info-item" style="opacity: 0.7; font-size: 0.8rem;">
+                <strong>⏱️:</strong> ${intervalo}d | <strong>📊:</strong> ${eficiencia}%
+            </div>
+        `;
+    } else {
+        infoHTML += `
+            <div class="info-item" style="opacity: 0.7; font-size: 0.8rem;">
+                <strong>Status:</strong> 🔄 Nova
+            </div>
+        `;
+    }
+    
+    // Botão para ver detalhes completos
+    infoHTML += `
+        <div class="info-item" style="margin-top: 0.5rem;">
+            <button class="btn" onclick="event.stopPropagation(); exibirDetalhesPalavra('${palavra.id}')" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                <i class="fas fa-book"></i> Ver detalhes completos
+            </button>
+        </div>
+    `;
+    
+    infoHTML += `</div>`;
+    infoVersoElement.innerHTML = infoHTML;
+}
+
+
+
+
+
+
+
+
+        // Função para avaliar dificuldade
+        async function avaliarDificuldade(dificuldade) {
+            const palavra = sessaoAtiva[indiceAtual];
+            const hoje = new Date().toISOString().split('T')[0];
+            
+            // Calcular próximo intervalo
+            const proximoIntervalo = calcularProximoIntervalo(palavra, dificuldade);
+            const proximaRevisao = new Date();
+            proximaRevisao.setDate(proximaRevisao.getDate() + proximoIntervalo);
+            
+            // Preparar dados Anki (novos ou atualizados)
+            const ankiDataAtual = palavra.ankiData || {};
+            const novoAnkiData = {
+                camada: "ATIVO",
+                intervaloAtual: proximoIntervalo,
+                proximaRevisao: proximaRevisao.toISOString().split('T')[0],
+                ultimaRevisao: hoje,
+                historico: [
+                    ...(ankiDataAtual.historico || []),
+                    { data: hoje, dificuldade: dificuldade }
+                ],
+                totalRevisoes: (ankiDataAtual.totalRevisoes || 0) + 1,
+                streak: dificuldade === 'again' ? 0 : (ankiDataAtual.streak || 0) + 1,
+                congelada: ankiDataAtual.congelada || false
+            };
+            
+            // Calcular eficiência (baseada nas últimas 10 revisões)
+            const ultimasRevisoes = novoAnkiData.historico.slice(-10);
+            const acertos = ultimasRevisoes.filter(rev => 
+                rev.dificuldade === 'good' || rev.dificuldade === 'easy'
+            ).length;
+            novoAnkiData.eficiencia = Math.round((acertos / ultimasRevisoes.length) * 100) || 0;
+            
+            // Determinar camada baseado no progresso
+            if (novoAnkiData.streak >= 5 && novoAnkiData.eficiencia >= 90) {
+                novoAnkiData.camada = 'CONSOLIDADO';
+            } else if (novoAnkiData.streak >= 3 && novoAnkiData.eficiencia >= 80) {
+                novoAnkiData.camada = 'MANUTENCAO';
+            } else {
+                novoAnkiData.camada = 'ATIVO';
+            }
+            
+            // Salvar no Firebase
+            try {
+                await db.collection('palavras').doc(palavra.id).update({
+                    ankiData: novoAnkiData
+                });
+                
+                // Atualizar estatísticas da sessão
+                estatisticasSessao.completadas++;
+                estatisticasSessao.dificuldade[dificuldade]++;
+                
+                // Próximo cartão
+                indiceAtual++;
+                mostrarCartaoAtual();
+                atualizarProgresso();
+                
+            } catch (error) {
+                console.error('Erro ao salvar avaliação:', error);
+            }
+        }
+
+        // Função para atualizar progresso
+        function atualizarProgresso() {
+            const progresso = (estatisticasSessao.completadas / estatisticasSessao.total) * 100;
+            progressoSessao.style.width = `${progresso}%`;
+            contadorSessao.textContent = `${estatisticasSessao.completadas}/${estatisticasSessao.total}`;
+        }
+
+        // Função para concluir sessão
+        function concluirSessao() {
+            cartaoArea.style.display = 'none';
+            sessaoConcluida.style.display = 'block';
+            
+            const resumo = `
+                <p><strong>${estatisticasSessao.completadas}</strong> palavras revisadas</p>
+                <p>
+                    🟢 Fácil: ${estatisticasSessao.dificuldade.easy} | 
+                    🟡 Médio: ${estatisticasSessao.dificuldade.good} | 
+                    🟠 Difícil: ${estatisticasSessao.dificuldade.hard} | 
+                    🔴 Muito Difícil: ${estatisticasSessao.dificuldade.again}
+                </p>
+            `;
+            
+            document.getElementById('resumoSessao').innerHTML = resumo;
+            iniciarSessaoBtn.disabled = false;
+            pausarSessaoBtn.disabled = true;
+        }
+
+
+        // Função para exibir detalhes da palavra em modal
+async function exibirDetalhesPalavra(palavraId) {
+    try {
+        const doc = await db.collection('palavras').doc(palavraId).get();
+        
+        if (!doc.exists) {
+            alert('Palavra não encontrada no dicionário!');
+            return;
+        }
+        
+        const palavra = doc.data();
+        const modalHTML = criarModalPalavra(palavra);
+        
+        // Criar ou atualizar modal
+        let modal = document.getElementById('detalhesPalavraModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'detalhesPalavraModal';
+            modal.className = 'modal-palavra';
+            document.body.appendChild(modal);
+        }
+        
+        modal.innerHTML = modalHTML;
+        modal.style.display = 'block';
+        
+        // Event listeners para o modal
+        document.getElementById('fecharModal').addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        document.getElementById('overlayModal').addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        // Botão de áudio
+        document.getElementById('btnAudio').addEventListener('click', () => {
+            falar(palavra.palavra);
+        });
+        
+    } catch (error) {
+        console.error('Erro ao carregar detalhes da palavra:', error);
+        alert('Erro ao carregar detalhes da palavra!');
+    }
+}
+
+// Função para criar HTML do modal
+function criarModalPalavra(palavra) {
+    let conjugacaoHTML = '';
+    if (palavra.conjugacao) {
+        conjugacaoHTML = `
+            <div class="conjugacao">
+                <h4>Conjugação:</h4>
+                ${Object.entries(palavra.conjugacao).map(([tempo, formas]) => `
+                    <div class="tempo-conjugacao">
+                        <strong>${tempo.replace('_', ' ')}:</strong>
+                        <table class="conjugacao-table">
+                            ${Object.entries(formas).map(([pessoa, forma]) => `
+                                <tr>
+                                    <td><strong>${pessoa}:</strong></td>
+                                    <td>${forma}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+    
+    let exemplosHTML = '';
+    if (palavra.exemplos && palavra.exemplos.length > 0) {
+        exemplosHTML = `
+            <div class="exemplos">
+                <h4>Exemplos:</h4>
+                ${palavra.exemplos.map(exemplo => `
+                    <div class="exemplo-item">
+                        <div><strong>${exemplo.fr}</strong></div>
+                        <div>${exemplo.pt}</div>
+                        <button class="btn audio-btn" onclick="falar('${exemplo.fr.replace(/'/g, "\\'")}')" style="margin-top: 0.5rem; padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                            <i class="fas fa-volume-up"></i> Ouvir exemplo
+                        </button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+    
+    let notasHTML = '';
+    if (palavra.notas) {
+        notasHTML = `<div class="notas"><strong>Notas:</strong> ${palavra.notas}</div>`;
+    }
+    
+    return `
+        <div class="overlay" id="overlayModal"></div>
+        <div class="modal-conteudo">
+            <button class="close-btn" id="fecharModal">&times;</button>
+            <div class="palavra-header">
+                <h3>${palavra.palavra}</h3>
+                <button class="btn audio-btn" id="btnAudio">
+                    <i class="fas fa-volume-up"></i> Pronúncia
+                </button>
+            </div>
+            
+            <div class="tipo">${palavra.tipo}</div>
+            
+            <div class="traducao"><strong>Tradução:</strong> ${palavra.traducao}</div>
+            <div class="definicao"><strong>Definição:</strong> ${palavra.definicao}</div>
+            <div class="pronuncia"><strong>Pronúncia:</strong> ${palavra.pronuncia}</div>
+            
+            ${exemplosHTML}
+            ${conjugacaoHTML}
+            ${notasHTML}
+        </div>
+    `;
+}
+
+
+
+        // Event Listeners
+        iniciarSessaoBtn.addEventListener('click', iniciarSessao);
+        novaSessaoBtn.addEventListener('click', iniciarSessao);
+        
+cartao.addEventListener('click', (e) => {
+    // Agora vira o cartão em qualquer clique, já que não tem mais link
+    cartao.classList.toggle('virado');
+});
+
+        document.querySelectorAll('.btn-dificuldade').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const dificuldade = e.target.closest('.btn-dificuldade').dataset.dificuldade;
+                avaliarDificuldade(dificuldade);
+            });
+        });
+
+        pausarSessaoBtn.addEventListener('click', () => {
+            sessaoAtiva = [];
+            indiceAtual = 0;
+            cartaoArea.style.display = 'none';
+            loadingEstudo.style.display = 'block';
+            loadingEstudo.innerHTML = 'Sessão pausada. Clique em "Iniciar Sessão" para continuar.';
+            iniciarSessaoBtn.disabled = false;
+            pausarSessaoBtn.disabled = true;
+        });
+
+        // Inicializar a página
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Inicializando sistema de prática...');
+            // Carregar estatísticas iniciais
+            await gerarSessaoDiaria();
+        });
+    </script>
+</body>
+</html>
