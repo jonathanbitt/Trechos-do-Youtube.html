@@ -314,6 +314,62 @@
             font-size: 0.8rem;
         }
         
+        .subtitulo-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f0f8ff;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .subtitulo {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .exemplos-container {
+            margin: 1rem 0;
+        }
+        
+        .exemplo-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #fff;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .tabela-resumo {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        .tabela-resumo th, .tabela-resumo td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tabela-resumo th {
+            background-color: var(--primary);
+            color: var(--light);
+        }
+        
+        .tabela-resumo tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .dicas-lista {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .dicas-lista li {
+            margin-bottom: 0.5rem;
+        }
+        
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -333,6 +389,11 @@
             .frase-container {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+            
+            .tabela-resumo {
+                display: block;
+                overflow-x: auto;
             }
         }
     </style>
@@ -447,8 +508,21 @@
             console.log('Tentando carregar aula com:', { docId, titulo });
             
             if (!docId && !titulo) {
-                mostrarErro('Parâmetro não encontrado na URL. Use ?id=ID_DO_DOCUMENTO ou ?titulo=TITULO_DA_AULA');
-                return;
+                // Se não há parâmetros, tentar carregar dados do JSON
+                console.log('Nenhum parâmetro encontrado, tentando carregar dados do JSON...');
+                try {
+                    const response = await fetch('json.json');
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar JSON');
+                    }
+                    const jsonData = await response.json();
+                    exibirAula(jsonData, 'json');
+                    return;
+                } catch (error) {
+                    console.error('Erro ao carregar JSON:', error);
+                    mostrarErro('Parâmetro não encontrado na URL. Use ?id=ID_DO_DOCUMENTO ou ?titulo=TITULO_DA_AULA ou forneça um arquivo JSON válido');
+                    return;
+                }
             }
 
             try {
@@ -501,21 +575,203 @@
             let html = `
                 <div class="aula-header">
                     <h1 class="aula-titulo">${conteudo.titulo || 'Sem título'}</h1>
-                    <p class="aula-descricao">${conteudo.descricao || ''}</p>
+                    <p class="aula-descricao">${conteudo.tipo ? `Tipo: ${conteudo.tipo}` : ''}</p>
                     ${conteudo.nivel ? `<span class="aula-nivel">${conteudo.nivel}</span>` : ''}
                     
-                    ${conteudo.ementa_tags ? `
+                    ${conteudo.tags ? `
                         <div class="tags-container">
-                            ${conteudo.ementa_tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            ${conteudo.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                         </div>
                     ` : ''}
                     
                     <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
-                        ID do documento: ${docId}
+                        ${docId === 'json' ? 'Fonte: Arquivo JSON' : `ID do documento: ${docId}`}
                     </div>
                 </div>
             `;
 
+            // Verificar se é a estrutura do JSON
+            if (conteudo.conteudo && Array.isArray(conteudo.conteudo)) {
+                // Processar estrutura do JSON
+                html += processarEstruturaJSON(conteudo);
+            } else {
+                // Processar estrutura original (Firebase)
+                html += processarEstruturaFirebase(conteudo);
+            }
+
+            document.getElementById('aula-content').innerHTML = html;
+            
+            // Adicionar event listeners para os ícones de áudio
+            document.querySelectorAll('.audio-icon').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const texto = this.getAttribute('data-texto');
+                    if (texto) {
+                        this.classList.add('playing');
+                        falarTexto(texto);
+                    }
+                });
+            });
+        }
+
+        // Função para processar estrutura do JSON
+        function processarEstruturaJSON(conteudo) {
+            let html = '';
+            
+            conteudo.conteudo.forEach(item => {
+                html += `
+                    <div class="subtitulo-section">
+                        <h2 class="subtitulo">${item.subtitulo}</h2>
+                `;
+                
+                // Verificar o tipo de conteúdo
+                if (typeof item.conteudo === 'string') {
+                    // Conteúdo simples (texto)
+                    html += `<p>${item.conteudo}</p>`;
+                } else if (item.conteudo && typeof item.conteudo === 'object') {
+                    // Conteúdo estruturado
+                    
+                    // Explicação
+                    if (item.conteudo.explicacao) {
+                        html += `<div class="explicacao">${item.conteudo.explicacao}</div>`;
+                    }
+                    
+                    // Exemplos
+                    if (item.conteudo.exemplos && Array.isArray(item.conteudo.exemplos)) {
+                        html += `<div class="exemplos-container">`;
+                        item.conteudo.exemplos.forEach(exemplo => {
+                            html += `
+                                <div class="exemplo-item">
+                                    <div class="frase-container">
+                                        <div class="frase-frances">${exemplo.frase}</div>
+                                        <button class="audio-icon" data-texto="${exemplo.frase}">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="frase-traducao">${exemplo.traducao}</div>
+                                    ${exemplo.pronuncia ? `<small><strong>Pronúncia:</strong> ${exemplo.pronuncia}</small>` : ''}
+                                </div>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+                    
+                    // Erro comum
+                    if (item.conteudo.erro_comum) {
+                        html += `
+                            <div class="erro-correcao">
+                                <div class="erro-box">
+                                    <strong>❌ Erro comum:</strong><br>
+                                    ${item.conteudo.erro_comum.erro}
+                                </div>
+                                <div class="correcao-box">
+                                    <strong>✅ Correção:</strong><br>
+                                    ${item.conteudo.erro_comum.correcao}
+                                </div>
+                            </div>
+                            <div class="explicacao">
+                                <strong>Explicação:</strong> ${item.conteudo.erro_comum.explicacao}
+                            </div>
+                        `;
+                    }
+                    
+                    // Tabela de resumo
+                    if (item.conteudo.tabela && Array.isArray(item.conteudo.tabela)) {
+                        html += `
+                            <table class="tabela-resumo">
+                                <thead>
+                                    <tr>
+                                        <th>Demonstrativo</th>
+                                        <th>Uso</th>
+                                        <th>Exemplo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${item.conteudo.tabela.map(linha => `
+                                        <tr>
+                                            <td><strong>${linha.demonstrativo}</strong></td>
+                                            <td>${linha.uso}</td>
+                                            <td>${linha.exemplo}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                    }
+                    
+                    // Dicas
+                    if (item.conteudo.dicas && Array.isArray(item.conteudo.dicas)) {
+                        html += `
+                            <div class="explicacao">
+                                <h4>Dicas importantes:</h4>
+                                <ul class="dicas-lista">
+                                    ${item.conteudo.dicas.map(dica => `<li>${dica}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    }
+                    
+                    // Exercícios
+                    if (item.conteudo.exercicios && Array.isArray(item.conteudo.exercicios)) {
+                        html += `
+                            <div class="exercicios">
+                                <h3>${item.conteudo.instrucoes || 'Exercícios Práticos'}</h3>
+                                <div class="exercicios-lista">
+                                    ${item.conteudo.exercicios.map((exercicio, index) => `
+                                        <div class="exercicio-item">
+                                            <p><strong>Exercício ${index + 1}:</strong> ${exercicio.frase || ''}</p>
+                                            <button onclick="mostrarResposta(${index})" class="btn">Ver Resposta</button>
+                                            <div id="resposta-${index}" style="display: none; margin-top: 0.5rem;">
+                                                <strong>Resposta:</strong> ${exercicio.resposta_correta || ''}<br>
+                                                ${exercicio.explicacao ? `<em>${exercicio.explicacao}</em>` : ''}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Vocabulário
+                    if (item.conteudo.categorias && Array.isArray(item.conteudo.categorias)) {
+                        html += `
+                            <div class="vocabulario-section">
+                                <h3>Vocabulário Relacionado</h3>
+                                <div class="vocabulario">
+                                    ${item.conteudo.categorias.map(categoria => `
+                                        <div class="vocabulario-categoria">
+                                            <h4>${categoria.categoria}</h4>
+                                            ${categoria.palavras.map(palavra => `
+                                                <div class="palavra-item">
+                                                    <div>
+                                                        <strong>${palavra.palavra}</strong><br>
+                                                        <small>${palavra.traducao}</small>
+                                                        ${palavra.pronuncia ? `<br><small><em>${palavra.pronuncia}</em></small>` : ''}
+                                                    </div>
+                                                    ${palavra.palavra ? `
+                                                        <button class="audio-icon" data-texto="${palavra.palavra}" title="Ouvir pronúncia">
+                                                            <i class="fas fa-volume-up"></i>
+                                                        </button>
+                                                    ` : ''}
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                html += `</div>`;
+            });
+            
+            return html;
+        }
+
+        // Função para processar estrutura original (Firebase)
+        function processarEstruturaFirebase(conteudo) {
+            let html = '';
+            
             // Adicionar correções
             let correcaoCount = 0;
             for (const key in conteudo) {
@@ -550,22 +806,11 @@
                     </div>
                 `;
             }
-
-            document.getElementById('aula-content').innerHTML = html;
             
-            // Adicionar event listeners para os ícones de áudio
-            document.querySelectorAll('.audio-icon').forEach(icon => {
-                icon.addEventListener('click', function() {
-                    const texto = this.getAttribute('data-texto');
-                    if (texto) {
-                        this.classList.add('playing');
-                        falarTexto(texto);
-                    }
-                });
-            });
+            return html;
         }
 
-        // Função para criar HTML de uma correção
+        // Função para criar HTML de uma correção (para estrutura Firebase)
         function criarHtmlCorrecao(correcao) {
             return `
                 <div class="correcao-item">
@@ -631,7 +876,7 @@
             `;
         }
 
-        // Função para criar HTML da explicação gramatical
+        // Função para criar HTML da explicação gramatical (para estrutura Firebase)
         function criarHtmlExplicacaoGramatical(explicacao) {
             return `
                 <div class="regra-gramatical">
@@ -666,7 +911,7 @@
             `;
         }
 
-        // Função para criar HTML dos exercícios
+        // Função para criar HTML dos exercícios (para estrutura Firebase)
         function criarHtmlExercicios(exercicios) {
             return `
                 <div class="exercicios">
@@ -691,7 +936,7 @@
             `;
         }
 
-        // Função para criar HTML do vocabulário
+        // Função para criar HTML do vocabulário (para estrutura Firebase)
         function criarHtmlVocabulario(vocabulario) {
             return `
                 <div class="vocabulario-section">
