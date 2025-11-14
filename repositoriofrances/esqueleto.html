@@ -381,7 +381,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <script>
-        // Configuração do Firebase
+        // Configuração do Firebase - MESMA CONFIGURAÇÃO DO ADMIN
         const firebaseConfig = {
             apiKey: "AIzaSyDDGUikGRoJoVu3g0tSenKtZHffflApUWQ",
             authDomain: "agenda-diaria-6c1ac.firebaseapp.com",
@@ -393,7 +393,12 @@
         };
 
         // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (error) {
+            console.log('Firebase já inicializado');
+        }
+        
         const db = firebase.firestore();
 
         // Sistema de síntese de voz
@@ -434,51 +439,59 @@
             synth.speak(currentUtterance);
         }
 
-        // Função para carregar a aula
+        // Função para carregar a aula do REPOSITÓRIO
         async function carregarAula() {
-            const aulaId = getUrlParameter('id');
+            const docId = getUrlParameter('id');
             const titulo = getUrlParameter('titulo');
             
-            if (!aulaId && !titulo) {
-                mostrarErro('Parâmetro não encontrado na URL. Use ?id=ID_DA_AULA ou ?titulo=TITULO_DA_AULA');
+            console.log('Tentando carregar aula com:', { docId, titulo });
+            
+            if (!docId && !titulo) {
+                mostrarErro('Parâmetro não encontrado na URL. Use ?id=ID_DO_DOCUMENTO ou ?titulo=TITULO_DA_AULA');
                 return;
             }
 
             try {
-                let query = db.collection('aulas');
+                let docRef;
                 
-                if (aulaId) {
-                    // Buscar por ID
-                    const doc = await query.doc(aulaId).get();
-                    if (doc.exists) {
-                        exibirAula(doc.data(), doc.id);
-                    } else {
-                        mostrarErro('Aula não encontrada com o ID fornecido.');
-                    }
+                if (docId) {
+                    // Buscar por ID direto na coleção "repositorio"
+                    docRef = db.collection('repositorio').doc(docId);
+                    console.log('Buscando documento por ID:', docId);
                 } else if (titulo) {
                     // Buscar por título
-                    const snapshot = await query
+                    const snapshot = await db.collection('repositorio')
                         .where('titulo', '==', decodeURIComponent(titulo))
+                        .limit(1)
                         .get();
                     
                     if (!snapshot.empty) {
-                        const doc = snapshot.docs[0];
-                        exibirAula(doc.data(), doc.id);
+                        docRef = snapshot.docs[0].ref;
+                        console.log('Documento encontrado por título:', titulo);
                     } else {
-                        mostrarErro('Aula não encontrada com o título fornecido.');
+                        throw new Error('Nenhum documento encontrado com este título');
                     }
                 }
+
+                const doc = await docRef.get();
+                
+                if (!doc.exists) {
+                    throw new Error('Documento não encontrado no repositório');
+                }
+
+                const conteudo = doc.data();
+                console.log('Conteúdo carregado:', conteudo);
+                
+                exibirAula(conteudo, doc.id);
                 
             } catch (error) {
-                console.error('Erro ao carregar aula:', error);
-                mostrarErro('Erro ao carregar a aula. Tente novamente.');
+                console.error('Erro detalhado ao carregar aula:', error);
+                mostrarErro(`Erro ao carregar a aula: ${error.message}`);
             }
         }
 
         // Função para exibir a aula
-        function exibirAula(aula, aulaId) {
-            const conteudo = aula.conteudo;
-            
+        function exibirAula(conteudo, docId) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('aula-content').style.display = 'block';
             
@@ -487,23 +500,29 @@
             
             let html = `
                 <div class="aula-header">
-                    <h1 class="aula-titulo">${conteudo.titulo}</h1>
-                    <p class="aula-descricao">${conteudo.descricao}</p>
-                    <span class="aula-nivel">${conteudo.nivel}</span>
+                    <h1 class="aula-titulo">${conteudo.titulo || 'Sem título'}</h1>
+                    <p class="aula-descricao">${conteudo.descricao || ''}</p>
+                    ${conteudo.nivel ? `<span class="aula-nivel">${conteudo.nivel}</span>` : ''}
                     
                     ${conteudo.ementa_tags ? `
                         <div class="tags-container">
                             ${conteudo.ementa_tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                         </div>
                     ` : ''}
+                    
+                    <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                        ID do documento: ${docId}
+                    </div>
                 </div>
             `;
 
             // Adicionar correções
+            let correcaoCount = 0;
             for (const key in conteudo) {
                 if (key.startsWith('correcao_')) {
                     const correcao = conteudo[key];
                     html += criarHtmlCorrecao(correcao);
+                    correcaoCount++;
                 }
             }
 
@@ -520,6 +539,16 @@
             // Adicionar vocabulário
             if (conteudo.vocabulario_relacionado) {
                 html += criarHtmlVocabulario(conteudo.vocabulario_relacionado);
+            }
+
+            // Mensagem se não houver correções
+            if (correcaoCount === 0) {
+                html += `
+                    <div class="correcao-item">
+                        <p>Nenhuma correção encontrada neste documento.</p>
+                        <p>Verifique se o documento contém campos que começam com "correcao_".</p>
+                    </div>
+                `;
             }
 
             document.getElementById('aula-content').innerHTML = html;
@@ -541,12 +570,16 @@
             return `
                 <div class="correcao-item">
                     <div class="frase-container">
-                        <div class="frase-frances">${correcao.frase}</div>
-                        <button class="audio-icon" data-texto="${correcao.frase}">
-                            <i class="fas fa-volume-up"></i>
-                        </button>
+                        <div class="frase-frances">${correcao.frase || 'Frase não disponível'}</div>
+                        ${correcao.frase ? `
+                            <button class="audio-icon" data-texto="${correcao.frase}">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        ` : ''}
                     </div>
-                    <div class="frase-traducao">${correcao.traducao}</div>
+                    ${correcao.traducao ? `
+                        <div class="frase-traducao">${correcao.traducao}</div>
+                    ` : ''}
                     
                     ${correcao.explicacao ? `
                         <div class="explicacao">
@@ -562,18 +595,18 @@
                             </div>
                             <div class="correcao-box">
                                 <strong>✅ Correção:</strong><br>
-                                ${correcao.frase}
+                                ${correcao.frase || 'Não disponível'}
                             </div>
                         </div>
                     ` : ''}
                     
-                    ${correcao.explicacao_detalhada ? `
+                    ${correcao.explicacao_detalhada && correcao.explicacao_detalhada.erros ? `
                         <div class="detalhes-erro">
                             <h4>Detalhes dos erros:</h4>
-                            ${Object.values(correcao.explicacao_detalhada.erros || {}).map(erro => `
+                            ${Object.values(correcao.explicacao_detalhada.erros).map(erro => `
                                 <div class="erro-item">
-                                    <strong>${erro.seu_texto} → ${erro.correto}</strong><br>
-                                    ${erro.explicacao}
+                                    <strong>${erro.seu_texto || ''} → ${erro.correto || ''}</strong><br>
+                                    ${erro.explicacao || ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -602,18 +635,20 @@
         function criarHtmlExplicacaoGramatical(explicacao) {
             return `
                 <div class="regra-gramatical">
-                    <h2>${explicacao.titulo}</h2>
-                    <p><strong>Conceito:</strong> ${explicacao.conceito}</p>
+                    <h2>${explicacao.titulo || 'Regras Gramaticais'}</h2>
+                    ${explicacao.conceito ? `<p><strong>Conceito:</strong> ${explicacao.conceito}</p>` : ''}
                     
                     ${explicacao.regras ? `
                         <div class="regras-lista">
                             ${explicacao.regras.map(regra => `
-                                <div class="regra-item">
-                                    <h4>${regra.demonstrativo}</h4>
-                                    <p><strong>Uso:</strong> ${regra.uso}</p>
-                                    <ul>
-                                        ${regra.exemplos.map(exemplo => `<li>${exemplo}</li>`).join('')}
-                                    </ul>
+                                <div class="regra-item" style="margin-bottom: 1.5rem; padding: 1rem; background: white; border-radius: var(--radius);">
+                                    <h4>${regra.demonstrativo || 'Regra'}</h4>
+                                    ${regra.uso ? `<p><strong>Uso:</strong> ${regra.uso}</p>` : ''}
+                                    ${regra.exemplos ? `
+                                        <ul>
+                                            ${regra.exemplos.map(exemplo => `<li>${exemplo}</li>`).join('')}
+                                        </ul>
+                                    ` : ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -635,18 +670,18 @@
         function criarHtmlExercicios(exercicios) {
             return `
                 <div class="exercicios">
-                    <h2>${exercicios.titulo}</h2>
-                    <p><strong>Instruções:</strong> ${exercicios.instrucoes}</p>
+                    <h2>${exercicios.titulo || 'Exercícios'}</h2>
+                    ${exercicios.instrucoes ? `<p><strong>Instruções:</strong> ${exercicios.instrucoes}</p>` : ''}
                     
                     ${exercicios.exercicios ? `
                         <div class="exercicios-lista">
                             ${exercicios.exercicios.map((exercicio, index) => `
                                 <div class="exercicio-item">
-                                    <p><strong>Exercício ${index + 1}:</strong> ${exercicio.frase}</p>
+                                    <p><strong>Exercício ${index + 1}:</strong> ${exercicio.frase || ''}</p>
                                     <button onclick="mostrarResposta(${index})" class="btn">Ver Resposta</button>
                                     <div id="resposta-${index}" style="display: none; margin-top: 0.5rem;">
-                                        <strong>Resposta:</strong> ${exercicio.resposta_correta}<br>
-                                        <em>${exercicio.explicacao}</em>
+                                        <strong>Resposta:</strong> ${exercicio.resposta_correta || ''}<br>
+                                        ${exercicio.explicacao ? `<em>${exercicio.explicacao}</em>` : ''}
                                     </div>
                                 </div>
                             `).join('')}
@@ -668,12 +703,14 @@
                                 ${palavras.map(palavra => `
                                     <div class="palavra-item">
                                         <div>
-                                            <strong>${palavra.palavra}</strong><br>
-                                            <small>${palavra.traducao}</small>
+                                            <strong>${palavra.palavra || ''}</strong><br>
+                                            <small>${palavra.traducao || ''}</small>
                                         </div>
-                                        <button class="audio-icon" data-texto="${palavra.palavra}" title="Ouvir pronúncia">
-                                            <i class="fas fa-volume-up"></i>
-                                        </button>
+                                        ${palavra.palavra ? `
+                                            <button class="audio-icon" data-texto="${palavra.palavra}" title="Ouvir pronúncia">
+                                                <i class="fas fa-volume-up"></i>
+                                            </button>
+                                        ` : ''}
                                     </div>
                                 `).join('')}
                             </div>
@@ -686,7 +723,9 @@
         // Função para mostrar resposta dos exercícios
         function mostrarResposta(index) {
             const resposta = document.getElementById(`resposta-${index}`);
-            resposta.style.display = resposta.style.display === 'none' ? 'block' : 'none';
+            if (resposta) {
+                resposta.style.display = resposta.style.display === 'none' ? 'block' : 'none';
+            }
         }
 
         // Função para mostrar erro
@@ -696,12 +735,16 @@
             document.getElementById('error-message').innerHTML = `
                 <h3>Erro ao carregar a aula</h3>
                 <p>${mensagem}</p>
-                <a href="index.html" class="btn">Voltar para o Início</a>
+                <p><strong>Dica:</strong> Verifique se o ID do documento está correto e se as regras do Firebase permitem leitura pública.</p>
+                <a href="javascript:location.reload()" class="btn">Tentar Novamente</a>
             `;
         }
 
         // Carregar a aula quando a página carregar
-        window.addEventListener('load', carregarAula);
+        window.addEventListener('load', function() {
+            console.log('Página carregada, iniciando carregamento da aula...');
+            carregarAula();
+        });
     </script>
 </body>
 </html>
