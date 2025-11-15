@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frases em Francês - Aulas Interativas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff9800;
+            --secondary: #e1f5fe;
+            --text: #333;
+            --light: #fff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 2rem;
+        }
+        
+        header {
+            background-color: var(--light);
+            box-shadow: var(--shadow);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: var(--primary);
+            color: var(--light);
+        }
+        
+        .controls {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin: 2rem 0 1rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            align-items: flex-end;
+            width: 100%;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        select, input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 1rem;
+        }
+        
+        .search-box {
+            flex: 2;
+            min-width: 400px;
+        }
+        
+        .search-box input {
+            width: 100%;
+        }
+        
+        .filter-group select {
+            width: 300px;
+            min-width: 250px;
+        }
+
+        .filter-group input {
+            width: 100%;
+        }
+
+        .tags-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag-filter-item {
+            background-color: #f5f5f5;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+        }
+
+        .tag-filter-item:hover {
+            background-color: #e0e0e0;
+        }
+
+        .tag-filter-item.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .frases-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .frase-card {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            transition: transform 0.3s ease;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .frase-card.correcao {
+            background-color: #fffaf0;
+            border-left: 6px solid var(--primary);
+        }
+
+        .frase-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .frase-card.selected {
+            border: 3px solid var(--primary) !important;
+            box-shadow: 0 6px 12px rgba(255, 152, 0, 0.2);
+        }
+
+        .frase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+        
+        .frase-texto {
+            flex: 1;
+            width: 100%;
+        }
+
+        .frase-frances {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            width: 100%;
+            word-wrap: break-word;
+        }
+
+        .frase-traducao {
+            font-size: 1.1rem;
+            color: #666;
+            font-style: italic;
+            width: 100%;
+            word-wrap: break-word;
+        }
+        
+        .audio-icon {
+            cursor: pointer;
+            color: var(--primary);
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            background-color: var(--secondary);
+        }
+        
+        .audio-icon:hover {
+            transform: scale(1.1);
+            background-color: var(--primary);
+            color: var(--light);
+        }
+        
+        .audio-icon.playing {
+            color: #4caf50;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .frase-detalhes {
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+        
+        .detalhe-item {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .detalhe-label {
+            font-weight: 600;
+            min-width: 80px;
+        }
+        
+        .categoria-tag {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .nivel-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .nivel-iniciante {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .nivel-intermediario {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .nivel-avancado {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .palavras-chave {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: 0.5rem;
+        }
+        
+        .palavra-chave {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Estilos para seções de correção */
+        .correcao-section {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px dashed #eee;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .comparacao-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: var(--radius);
+        }
+
+        .erro-original, .correcao-correta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .label-erro {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .label-correto {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .texto-erro {
+            color: #c62828;
+            text-decoration: line-through;
+        }
+
+        .texto-correto {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .seta-correcao {
+            text-align: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .erro-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #fff8e1;
+            border-radius: var(--radius);
+            border-left: 4px solid #ff9800;
+        }
+
+        .erro-comparacao {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .incorreto {
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .correto {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .seta {
+            color: var(--primary);
+        }
+
+        .explicacao-erro {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .frase-relacionada {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background-color: #f5f5f5;
+            border-radius: var(--radius);
+        }
+
+        .frase-rel-frances {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .frase-rel-traducao {
+            color: #666;
+            font-style: italic;
+        }
+
+        .frase-rel-tempo {
+            display: inline-block;
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-top: 0.3rem;
+        }
+
+        .verbo-titulo {
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .tempo-titulo {
+            font-weight: 600;
+            color: #666;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .conjugacao-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .conjugacao-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0.5rem;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .pessoa {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .conjugacao {
+            font-family: monospace;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+        
+        .message {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem;
+            color: var(--light);
+        }
+        
+        /* Estilos para ícones de áudio nas conjugações */
+        .conjugacao-item .audio-icon {
+            font-size: 0.9rem;
+            margin-right: 0.3rem;
+            padding: 0.2rem;
+            background-color: transparent;
+        }
+        
+        .conjugacao-audio {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        /* NOVOS ESTILOS PARA A SEÇÃO DE RECURSOS MULTIMÍDIA */
+        .resources-section {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            width: 100%;
+        }
+
+        .resources-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .correction-info {
+            font-size: 1rem;
+            color: #666;
+            margin-left: 1rem;
+            font-weight: normal;
+        }
+
+        .add-resource-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+
+        .add-resource-btn:hover {
+            background: #e68900;
+            transform: scale(1.1);
+        }
+
+        .resource-menu {
+            position: fixed;
+            bottom: 90px;
+            right: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 10px;
+            z-index: 99;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 200px;
+        }
+
+        .resource-menu.active {
+            display: flex;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border: none;
+            background: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        .menu-item:hover {
+            background: #f3f4f6;
+        }
+
+        .menu-icon {
+            font-size: 1.2rem;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .input-area input[type="text"], .input-area input[type="file"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #e68900;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            max-width: 560px;
+            height: 315px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .pdf-container, .image-container {
+            margin-top: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .pdf-container iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+
+        .image-container img {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .comments-container {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .comment {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 6px;
+            border-left: 4px solid var(--primary);
+            word-wrap: break-word;
+            position: relative;
+            padding-right: 80px;
+            min-height: 60px;
+        }
+
+        .comment a {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .empty-resources {
+            color: #9ca3af;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .resource-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .resource-card h4 {
+            margin: 0 0 10px 0;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .resource-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            color: #374151;
+        }
+
+        .close-section {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+        }
+
+        .close-section:hover {
+            color: #374151;
+        }
+
+        .selection-indicator {
+            display: flex !important;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary) !important;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        /* ESTILOS PARA EDIÇÃO DE COMENTÁRIOS */
+        .edit-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+        }
+
+        .edit-btn:hover {
+            background: #2563eb;
+        }
+
+        .comment-editing {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .save-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .save-btn:hover {
+            background: #059669;
+        }
+
+        .cancel-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .cancel-btn:hover {
+            background: #4b5563;
+        }
+
+        .comment .resource-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            margin: 0;
+        }
+
+        .comment-content {
+            margin-right: 0;
+            padding-right: 0;
+        }
+
+        .comment-time {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            .frases-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+                gap: 1.5rem;
+                margin-top: 1rem;
+                width: 100%;
+            }
+            
+            .erro-comparacao {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .conjugacao-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-group select {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .search-box {
+                min-width: 100%;
+                flex: 1;
+            }
+
+            .input-area {
+                flex-direction: column;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .resources-section h2 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .correction-info {
+                margin-left: 0;
+            }
+
+            .comment {
+                padding-right: 70px;
+            }
+
+            .comment .resource-actions {
+                top: 5px;
+                right: 5px;
+            }
+
+            .edit-actions {
+                flex-direction: column;
+            }
+        }
+
+        .ementa-tags {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+        }
+
+        .ementa-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .ementa-tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .ementa-tag {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .resource-type-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .resource-type-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1rem;
+        }
+
+        .video-resource, .pdf-resource, .embedded-page-resource {
+            margin-bottom: 1.5rem;
+        }
+
+        .resource-error {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .resource-error i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        .resource-header {
+            margin-bottom: 10px;
+        }
+
+        .resource-header h4 {
+            margin: 0;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        /* ESTILOS PARA PÁGINAS INCORPORADAS */
+        .embedded-page-resource {
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .embedded-page-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .embedded-page-header h4 {
+            margin: 0;
+            color: var(--text);
+            font-size: 1.1rem;
+            flex: 1;
+        }
+
+        .embedded-page-container {
+            width: 100%;
+            background: white;
+        }
+
+        .embedded-page {
+            width: 100%;
+            height: 600px;
+            border: none;
+            display: block;
+        }
+
+        .embedded-page[src*="modules/"] {
+            height: 700px;
+        }
+
+        .embedded-page[src^="http"] {
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-language"></i>
+                    <h1>Frases em Francês - Aulas Interativas</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html" class="active">Aulas</a></li>
+                        <li><a href="admin.html">Administração</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="controls">
+            <div class="filter-group">
+                <label for="categoriaFilter">Categoria:</label>
+                <select id="categoriaFilter">
+                    <option value="">Todas as categorias</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="nivelFilter">Nível:</label>
+                <select id="nivelFilter">
+                    <option value="">Todos os níveis</option>
+                    <option value="iniciante">Iniciante</option>
+                    <option value="intermediario">Intermediário</option>
+                    <option value="avancado">Avançado</option>
+                </select>
+            </div>
+            
+            <div class="filter-group search-box">
+                <label for="searchInput">Buscar:</label>
+                <input type="text" id="searchInput" placeholder="Digite para buscar frases ou palavras...">
+            </div>
+        </div>
+
+        <!-- Filtro de Tags -->
+        <div class="controls" id="tagsFilterContainer" style="display: none;">
+            <div class="filter-group" style="width: 100%;">
+                <label>Filtrar por Tags:</label>
+                <div class="tags-filter" id="tagsFilter">
+                    <!-- As tags serão inseridas aqui dinamicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Carregando conteúdo...</p>
+        </div>
+        
+        <div id="frasesContainer" class="frases-container" style="display: none;">
+            <!-- As frases serão inseridas aqui dinamicamente -->
+        </div>
+        
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="fas fa-inbox"></i>
+            <h3>Nenhuma frase encontrada</h3>
+            <p>Tente ajustar os filtros ou adicione conteúdo através da página de administração.</p>
+        </div>
+
+        <!-- NOVA SEÇÃO DE RECURSOS MULTIMÍDIA -->
+        <div class="resources-section" id="resourcesSection" style="display: none;">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-paperclip"></i> Recursos de Aprendizado
+                    <span class="correction-info" id="correctionInfo">- Selecione uma correção acima</span>
+                </h2>
+                <button class="close-section" onclick="deselectCorrection()" title="Desselecionar correção">×</button>
+            </div>
+            
+            <!-- Seções de recursos (inicialmente ocultas) -->
+            <div id="videos-section" class="resource-section" style="display: none;">
+                <div class="section-header">
+                    <h3>🎥 Vídeos do YouTube</h3>
+                    <button class="close-section" onclick="closeSection('videos-section')">×</button>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="videoLink" placeholder="Cole o link do vídeo do YouTube...">
+                    <button class="action-btn" onclick="addVideo()">Adicionar</button>
+                </div>
+                <div id="videos-container"></div>
+            </div>
+
+            <div id="pdfs-section" class="resource-section" style="display: none;">
+                <div class="section-header">
+                    <h3>📄 Arquivos PDF</h3>
+                    <button class="close-section" onclick="closeSection('pdfs-section')">×</button>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="pdfLink" placeholder="Cole o link do PDF...">
+                    <button class="action-btn" onclick="addPdf()">Adicionar PDF por Link</button>
+                </div>
+                <div class="file-upload-area" id="pdfUploadArea">
+                    <div class="upload-icon">📄</div>
+                    <p>Arraste um PDF aqui ou clique para selecionar</p>
+                    <input type="file" id="pdfFile" accept=".pdf" style="display: none;" onchange="handlePdfUpload(this.files)">
+                </div>
+                <div id="pdfs-container"></div>
+            </div>
+
+            <div id="images-section" class="resource-section" style="display: none;">
+                <div class="section-header">
+                    <h3>🖼️ Imagens</h3>
+                    <button class="close-section" onclick="closeSection('images-section')">×</button>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="imageLink" placeholder="Cole o link da imagem...">
+                    <button class="action-btn" onclick="addImage()">Adicionar Imagem por Link</button>
+                </div>
+                <div class="file-upload-area" id="imageUploadArea">
+                    <div class="upload-icon">🖼️</div>
+                    <p>Arraste uma imagem aqui ou clique para selecionar</p>
+                    <input type="file" id="imageFile" accept="image/*" multiple style="display: none;" onchange="handleImageUpload(this.files)">
+                </div>
+                <div id="images-container" class="resources-grid"></div>
+            </div>
+
+            <div id="comments-section" class="resource-section" style="display: none;">
+                <div class="section-header">
+                    <h3>💬 Comentários e Links</h3>
+                    <button class="close-section" onclick="closeSection('comments-section')">×</button>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="commentText" placeholder="Escreva um comentário ou cole um link...">
+                    <button class="action-btn" onclick="addComment()">Enviar</button>
+                </div>
+                <div id="comments-container" class="empty-resources">Nenhum comentário ainda.</div>
+            </div>
+
+            <div id="pages-section" class="resource-section" style="display: none;">
+                <div class="section-header">
+                    <h3>🌐 Páginas Incorporadas</h3>
+                    <button class="close-section" onclick="closeSection('pages-section')">×</button>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="pageLink" placeholder="Nome da página (ex: etre.html)">
+                    <button class="action-btn" onclick="addEmbeddedPage()">Incorporar</button>
+                </div>
+                <div id="embedded-pages-container"></div>
+            </div>
+
+            <!-- Área para exibir recursos salvos -->
+            <div id="saved-resources">
+                <div class="empty-resources">
+                    <i class="fas fa-mouse-pointer" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>Selecione uma correção acima para ver e adicionar recursos</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Sistema de Mini Aulas Interativas em Francês &copy; 2023</p>
+        </div>
+    </footer>
+
+    <!-- Botão de adicionar recursos -->
+    <button class="add-resource-btn" onclick="toggleResourceMenu()">+</button>
+    <div class="resource-menu" id="resourceMenu">
+        <button class="menu-item" onclick="openSection('videos-section')">
+            <span class="menu-icon">🎥</span>
+            <span>Adicionar Vídeo</span>
+        </button>
+        <button class="menu-item" onclick="openSection('pdfs-section')">
+            <span class="menu-icon">📄</span>
+            <span>Adicionar PDF</span>
+        </button>
+        <button class="menu-item" onclick="openSection('images-section')">
+            <span class="menu-icon">🖼️</span>
+            <span>Adicionar Imagem</span>
+        </button>
+        <button class="menu-item" onclick="openSection('comments-section')">
+            <span class="menu-icon">💬</span>
+            <span>Adicionar Comentário</span>
+        </button>
+        <button class="menu-item" onclick="openSection('pages-section')">
+            <span class="menu-icon">🌐</span>
+            <span>Incorporar Página</span>
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDGUikGRoJoVu3g0tSenKtZHffflApUWQ",
+            authDomain: "agenda-diaria-6c1ac.firebaseapp.com",
+            projectId: "agenda-diaria-6c1ac",
+            storageBucket: "agenda-diaria-6c1ac.firebasestorage.app",
+            messagingSenderId: "38282868914",
+            appId: "1:38282868914:web:a8332ed3fe258a41af71ab",
+            measurementId: "G-3B5J0MLJ7R"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Elementos da interface
+        const frasesContainer = document.getElementById('frasesContainer');
+        const loadingElement = document.getElementById('loading');
+        const emptyStateElement = document.getElementById('emptyState');
+        const messageElement = document.getElementById('message');
+        const categoriaFilter = document.getElementById('categoriaFilter');
+        const nivelFilter = document.getElementById('nivelFilter');
+        const searchInput = document.getElementById('searchInput');
+        const tagsFilterContainer = document.getElementById('tagsFilterContainer');
+        const tagsFilter = document.getElementById('tagsFilter');
+        const resourcesSection = document.getElementById('resourcesSection');
+        const correctionInfo = document.getElementById('correctionInfo');
+
+        // Variáveis para recursos
+        let currentCorrectionId = null;
+        let todasFrases = [];
+        let todasTags = [];
+        let tagsSelecionadas = [];
+
+        // ========== FUNÇÃO PARA CORRIGIR LINKS DO GOOGLE DRIVE ==========
+        function corrigirLinkGoogleDrive(link) {
+            if (link.includes('drive.google.com/file/d/')) {
+                const fileId = link.match(/\/d\/([^\/]+)/);
+                if (fileId && fileId[1]) {
+                    return `https://drive.google.com/uc?export=view&id=${fileId[1]}`;
+                }
+            }
+            if (link.includes('drive.google.com/uc?')) {
+                return link;
+            }
+            return link;
+        }
+
+        // Sistema de síntese de voz
+        let synth = window.speechSynthesis;
+        let currentUtterance = null;
+
+        // ========== FUNÇÕES PARA RECURSOS MULTIMÍDIA ==========
+
+        // Inicializar áreas de upload
+        function initializeUploadAreas() {
+            const pdfUploadArea = document.getElementById('pdfUploadArea');
+            pdfUploadArea.addEventListener('click', () => document.getElementById('pdfFile').click());
+            setupDragAndDrop(pdfUploadArea, 'pdfFile');
+
+            const imageUploadArea = document.getElementById('imageUploadArea');
+            imageUploadArea.addEventListener('click', () => document.getElementById('imageFile').click());
+            setupDragAndDrop(imageUploadArea, 'imageFile');
+        }
+
+        function setupDragAndDrop(uploadArea, fileInputId) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (fileInputId === 'pdfFile') {
+                    handlePdfUpload(files);
+                } else {
+                    handleImageUpload(files);
+                }
+            });
+        }
+
+        // Menu de recursos
+        function toggleResourceMenu() {
+            const menu = document.getElementById('resourceMenu');
+            menu.classList.toggle('active');
+        }
+
+        function openSection(sectionId) {
+            if (!checkCorrectionSelected()) return;
+            
+            document.getElementById('resourceMenu').classList.remove('active');
+            document.getElementById(sectionId).style.display = 'block';
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function closeSection(sectionId) {
+            document.getElementById(sectionId).style.display = 'none';
+        }
+
+        // Fechar menu ao clicar fora
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('resourceMenu');
+            const button = document.querySelector('.add-resource-btn');
+            
+            if (menu && button && !menu.contains(event.target) && !button.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
+        // ========== SISTEMA DE SELEÇÃO DE CORREÇÃO ==========
+
+        function selectCorrection(correctionId) {
+            document.querySelectorAll('.frase-card').forEach(card => {
+                card.style.border = '';
+                card.classList.remove('selected');
+            });
+            
+            const selectedCard = document.querySelector(`[data-correction-id="${correctionId}"]`);
+            if (selectedCard) {
+                selectedCard.style.border = '3px solid var(--primary)';
+                selectedCard.classList.add('selected');
+                
+                const indicator = selectedCard.querySelector('.selection-indicator');
+                if (indicator) {
+                    indicator.style.display = 'flex';
+                }
+            }
+            
+            currentCorrectionId = correctionId;
+            
+            const selectedCorrection = todasFrases.find(f => f.id === correctionId);
+            if (selectedCorrection) {
+                correctionInfo.textContent = `- Para: "${selectedCorrection.frase.substring(0, 50)}${selectedCorrection.frase.length > 50 ? '...' : ''}"`;
+                resourcesSection.style.display = 'block';
+            }
+            
+            mostrarMensagem(`Correção selecionada! Agora você pode adicionar recursos.`, 'success');
+            loadResources();
+        }
+
+        function deselectCorrection() {
+            document.querySelectorAll('.frase-card').forEach(card => {
+                card.style.border = '';
+                card.classList.remove('selected');
+            });
+            
+            currentCorrectionId = null;
+            resourcesSection.style.display = 'none';
+            correctionInfo.textContent = '- Selecione uma correção acima';
+            
+            document.querySelectorAll('.resource-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            document.getElementById('resourceMenu').classList.remove('active');
+        }
+
+        function checkCorrectionSelected() {
+            if (!currentCorrectionId) {
+                mostrarMensagem('Por favor, selecione uma correção clicando nela antes de adicionar recursos.', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        // Upload de arquivos
+        function handlePdfUpload(files) {
+            if (!checkCorrectionSelected()) return;
+            
+            const file = files[0];
+            if (!file) return;
+            
+            if (file.type !== 'application/pdf') {
+                alert('Por favor, selecione um arquivo PDF.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const pdfData = {
+                    name: file.name,
+                    data: e.target.result,
+                    type: 'uploaded',
+                    timestamp: new Date().toISOString()
+                };
+
+                saveResourceToFirebase('pdfs', pdfData);
+                closeSection('pdfs-section');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleImageUpload(files) {
+            if (!checkCorrectionSelected()) return;
+            
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) {
+                    alert(`O arquivo ${file.name} não é uma imagem.`);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = {
+                        name: file.name,
+                        data: e.target.result,
+                        type: 'uploaded',
+                        timestamp: new Date().toISOString()
+                    };
+
+                    saveResourceToFirebase('images', imageData);
+                };
+                reader.readAsDataURL(file);
+            });
+            closeSection('images-section');
+        }
+
+        // Função para testar se uma URL é uma imagem válida
+        function testarImagem(url, callback) {
+            const img = new Image();
+            img.onload = function() {
+                callback(true);
+            };
+            img.onerror = function() {
+                callback(false);
+            };
+            img.src = url;
+        }
+
+        // Função para formatar URL da página
+        function formatarUrlPagina(pageName) {
+            if (pageName.startsWith('http://') || pageName.startsWith('https://')) {
+                return pageName;
+            }
+            else if (pageName.endsWith('.html')) {
+                return 'modules/' + pageName;
+            }
+            else if (pageName.includes('/')) {
+                return pageName;
+            }
+            else {
+                return 'modules/' + pageName + '.html';
+            }
+        }
+
+        async function saveResourceToFirebase(type, data) {
+            try {
+                if (!currentCorrectionId) {
+                    mostrarMensagem('Erro: Nenhuma correção selecionada.', 'error');
+                    return;
+                }
+
+                // Processar URLs antes de salvar
+                if (type === 'images' && data.url) {
+                    data.url = corrigirLinkGoogleDrive(data.url);
+                    
+                    if (data.type === 'link') {
+                        await new Promise((resolve) => {
+                            testarImagem(data.url, function(ehValida) {
+                                if (!ehValida) {
+                                    mostrarMensagem('Aviso: A URL da imagem pode não ser acessível. Verifique se o link é público.', 'error');
+                                }
+                                resolve();
+                            });
+                        });
+                    }
+                }
+
+                if (type === 'pdfs' && data.url) {
+                    data.url = corrigirLinkGoogleDrive(data.url);
+                }
+
+                if (type === 'videos' && data.url) {
+                    if (!data.url.includes('youtube.com') && !data.url.includes('youtu.be')) {
+                        mostrarMensagem('Aviso: Por favor, use apenas links do YouTube.', 'warning');
+                    }
+                }
+
+                if (type === 'pages') {
+                    if (!data.pageUrl) {
+                        data.pageUrl = formatarUrlPagina(data.pageName);
+                    }
+                }
+
+                const resourceRef = db.collection('resources').doc(currentCorrectionId);
+                const doc = await resourceRef.get();
+                
+                let updateData;
+                
+                if (doc.exists) {
+                    const existingData = doc.data();
+                    const resources = existingData[type] || [];
+                    resources.push(data);
+                    updateData = { [type]: resources };
+                } else {
+                    updateData = {
+                        correctionId: currentCorrectionId,
+                        [type]: [data],
+                        createdAt: new Date().toISOString()
+                    };
+                }
+
+                await resourceRef.set(updateData, { merge: true });
+                
+                mostrarMensagem(`${type.charAt(0).toUpperCase() + type.slice(1)} adicionado com sucesso!`, 'success');
+                loadResources();
+                
+            } catch (error) {
+                console.error('Erro ao salvar recurso:', error);
+                mostrarMensagem('Erro ao salvar recurso. Verifique o console para detalhes.', 'error');
+            }
+        }
+
+        // Carregar recursos do Firebase
+        async function loadResources() {
+            if (!currentCorrectionId) {
+                document.getElementById('saved-resources').innerHTML = `
+                    <div class="empty-resources">
+                        <i class="fas fa-mouse-pointer" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Selecione uma correção clicando nela para ver e adicionar recursos</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const resourceRef = db.collection('resources').doc(currentCorrectionId);
+                const doc = await resourceRef.get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    renderResources(data);
+                } else {
+                    document.getElementById('saved-resources').innerHTML = `
+                        <div class="empty-resources">
+                            <i class="fas fa-plus-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <p>Nenhum recurso adicionado ainda para esta correção</p>
+                            <p>Use o botão "+" abaixo para adicionar vídeos, PDFs, imagens e outros recursos</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar recursos:', error);
+                document.getElementById('saved-resources').innerHTML = `
+                    <div class="empty-resources">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Erro ao carregar recursos</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderResources(data) {
+            const container = document.getElementById('saved-resources');
+            
+            if (!data || Object.keys(data).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-resources">
+                        <i class="fas fa-plus-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Nenhum recurso adicionado ainda para esta correção</p>
+                        <p>Use o botão "+" abaixo para adicionar vídeos, PDFs, imagens e outros recursos</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            const resourceTypes = {
+                videos: { title: '🎥 Vídeos do YouTube', hasContent: false },
+                pdfs: { title: '📄 Arquivos PDF', hasContent: false },
+                images: { title: '🖼️ Imagens', hasContent: false },
+                comments: { title: '💬 Comentários', hasContent: false },
+                pages: { title: '🌐 Páginas Incorporadas', hasContent: false }
+            };
+
+            Object.keys(resourceTypes).forEach(type => {
+                if (data[type] && data[type].length > 0) {
+                    resourceTypes[type].hasContent = true;
+                }
+            });
+
+            // Renderizar VÍDEOS
+            if (resourceTypes.videos.hasContent) {
+                html += `<div class="resource-type-section">`;
+                html += `<h3>${resourceTypes.videos.title}</h3>`;
+                html += `<div class="videos-grid">`;
+                
+                data.videos.forEach((video, index) => {
+                    let embedUrl = video.url;
+                    
+                    if (video.url.includes('youtube.com/watch?v=')) {
+                        embedUrl = video.url.replace('watch?v=', 'embed/');
+                    } else if (video.url.includes('youtu.be/')) {
+                        const videoId = video.url.split('youtu.be/')[1];
+                        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                    }
+
+                    html += `
+                        <div class="video-resource">
+                            <div class="video-container">
+                                <iframe src="${embedUrl}" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen
+                                        onerror="this.parentElement.innerHTML='<div class=\\'resource-error\\'><i class=\\'fas fa-exclamation-triangle\\'></i><p>Vídeo não disponível</p><small>${video.url}</small></div>'">
+                                </iframe>
+                            </div>
+                            <div class="resource-actions">
+                                <button class="delete-btn" onclick="deleteResource('videos', ${index})" title="Excluir vídeo">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            }
+
+            // Renderizar PDFs
+            if (resourceTypes.pdfs.hasContent) {
+                html += `<div class="resource-type-section">`;
+                html += `<h3>${resourceTypes.pdfs.title}</h3>`;
+                
+                data.pdfs.forEach((pdf, index) => {
+                    let pdfUrl = pdf.url || pdf.data;
+                    const pdfName = pdf.name || 'Documento PDF';
+                    
+                    html += `
+                        <div class="pdf-resource">
+                            <div class="pdf-container">
+                                <iframe src="${pdfUrl}" 
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                </iframe>
+                                <div class="resource-error" style="display: none;">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <p>PDF não carregado: ${pdfName}</p>
+                                    <small><a href="${pdfUrl}" target="_blank">Abrir em nova aba</a></small>
+                                </div>
+                            </div>
+                            <div class="resource-actions">
+                                <button class="delete-btn" onclick="deleteResource('pdfs', ${index})" title="Excluir PDF">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+
+            // Renderizar IMAGENS
+            if (resourceTypes.images.hasContent) {
+                html += `<div class="resource-type-section">`;
+                html += `<h3>${resourceTypes.images.title}</h3>`;
+                html += `<div class="resources-grid">`;
+                
+                data.images.forEach((image, index) => {
+                    let imageUrl = image.url || image.data;
+                    const imageName = image.name || 'Imagem';
+                    
+                    html += `
+                        <div class="resource-card">
+                            <div class="resource-header">
+                                <h4>${imageName}</h4>
+                            </div>
+                            <div class="image-container">
+                                <img src="${imageUrl}" 
+                                     alt="${imageName}"
+                                     loading="lazy"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="resource-error" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; color: #666; background: #f9f9f9; border-radius: 8px; min-height: 150px;">
+                                    <i class="fas fa-image" style="font-size: 2rem; margin-bottom: 10px; color: #ccc;"></i>
+                                    <p><strong>Imagem não carregada</strong></p>
+                                    <small style="margin-top: 5px;">${imageName}</small>
+                                </div>
+                            </div>
+                            <div class="resource-actions">
+                                <button class="delete-btn" onclick="deleteResource('images', ${index})" title="Excluir imagem">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            }
+
+            // Renderizar COMENTÁRIOS - ATUALIZADO COM EDIÇÃO
+            if (resourceTypes.comments.hasContent) {
+                html += `<div class="resource-type-section">`;
+                html += `<h3>${resourceTypes.comments.title}</h3>`;
+                html += `<div class="comments-container">`;
+                
+                data.comments.forEach((comment, index) => {
+                    let formattedText = '';
+                    if (comment.text) {
+                        formattedText = comment.text.replace(
+                            /(https?:\/\/[^\s]+)/g, 
+                            '<a href="$1" target="_blank" rel="noopener">$1</a>'
+                        );
+                    }
+                    
+                    const timestamp = comment.timestamp ? new Date(comment.timestamp).toLocaleString('pt-BR') : '';
+                    const lastEdited = comment.lastEdited ? new Date(comment.lastEdited).toLocaleString('pt-BR') : '';
+                    
+                    html += `
+                        <div class="comment" id="comment-${index}">
+                            <div class="comment-content">
+                                <div class="comment-text">${formattedText}</div>
+                                ${timestamp ? `<div class="comment-time">${lastEdited ? 'Editado em: ' + lastEdited : 'Criado em: ' + timestamp}</div>` : ''}
+                            </div>
+                            <div class="resource-actions">
+                                <button class="edit-btn" onclick="enableCommentEdit(${index})" title="Editar comentário">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="delete-btn" onclick="deleteResource('comments', ${index})" title="Excluir comentário">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            }
+
+            // Renderizar PÁGINAS INCORPORADAS
+            if (resourceTypes.pages.hasContent) {
+                html += `<div class="resource-type-section">`;
+                html += `<h3>${resourceTypes.pages.title}</h3>`;
+                
+                data.pages.forEach((page, index) => {
+                    const pageUrl = page.pageUrl || page.pageName;
+                    const displayName = page.pageName;
+                    
+                    html += `
+                        <div class="embedded-page-resource">
+                            <div class="embedded-page-header">
+                                <h4>${displayName}</h4>
+                                <button class="delete-btn" onclick="deleteResource('pages', ${index})" title="Remover página">
+                                    <i class="fas fa-trash"></i> Remover
+                                </button>
+                            </div>
+                            <div class="embedded-page-container">
+                                <iframe src="${pageUrl}" 
+                                        class="embedded-page"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                </iframe>
+                                <div class="resource-error" style="display: none; padding: 20px; text-align: center; color: #666; background: #f5f5f5; border-radius: 8px;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <p>Página não carregada: ${displayName}</p>
+                                    <small>URL: ${pageUrl}</small>
+                                    <br>
+                                    <a href="${pageUrl}" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">
+                                        Tentar abrir em nova aba
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Adicionar recursos
+        function addVideo() {
+            if (!checkCorrectionSelected()) return;
+            let link = document.getElementById('videoLink').value.trim();
+            if (!link) return;
+
+            const videoData = {
+                url: link,
+                type: 'youtube',
+                timestamp: new Date().toISOString()
+            };
+
+            saveResourceToFirebase('videos', videoData);
+            document.getElementById('videoLink').value = '';
+        }
+
+        function addPdf() {
+            if (!checkCorrectionSelected()) return;
+            const link = document.getElementById('pdfLink').value.trim();
+            if (!link) return;
+
+            const pdfData = {
+                name: 'PDF Externo',
+                url: link,
+                type: 'link',
+                timestamp: new Date().toISOString()
+            };
+
+            saveResourceToFirebase('pdfs', pdfData);
+            document.getElementById('pdfLink').value = '';
+        }
+
+        function addImage() {
+            if (!checkCorrectionSelected()) return;
+            let link = document.getElementById('imageLink').value.trim();
+            if (!link) return;
+
+            link = corrigirLinkGoogleDrive(link);
+
+            const imageData = {
+                name: 'Imagem Externa',
+                url: link,
+                type: 'link',
+                timestamp: new Date().toISOString()
+            };
+
+            testarImagem(link, function(ehValida) {
+                if (ehValida) {
+                    saveResourceToFirebase('images', imageData);
+                    document.getElementById('imageLink').value = '';
+                } else {
+                    mostrarMensagem('A imagem não pôde ser carregada. Verifique o link.', 'error');
+                }
+            });
+        }
+
+        function addComment() {
+            if (!checkCorrectionSelected()) return;
+            const text = document.getElementById('commentText').value.trim();
+            if (!text) return;
+
+            const commentData = {
+                text: text,
+                timestamp: new Date().toISOString()
+            };
+
+            saveResourceToFirebase('comments', commentData);
+            document.getElementById('commentText').value = '';
+        }
+
+        function addEmbeddedPage() {
+            if (!checkCorrectionSelected()) return;
+            let pageInput = document.getElementById('pageLink').value.trim();
+            if (!pageInput) return;
+
+            let pageUrl = '';
+
+            if (pageInput.startsWith('http://') || pageInput.startsWith('https://')) {
+                pageUrl = pageInput;
+            }
+            else if (pageInput.includes('.html') || pageInput.includes('/')) {
+                if (pageInput.startsWith('modules/')) {
+                    pageUrl = pageInput;
+                }
+                else if (pageInput.endsWith('.html')) {
+                    pageUrl = 'modules/' + pageInput;
+                }
+                else {
+                    pageUrl = pageInput;
+                }
+            }
+            else {
+                pageUrl = 'modules/' + pageInput + '.html';
+            }
+
+            const pageData = {
+                pageName: pageInput,
+                pageUrl: pageUrl,
+                timestamp: new Date().toISOString()
+            };
+
+            saveResourceToFirebase('pages', pageData);
+            document.getElementById('pageLink').value = '';
+        }
+
+        // Deletar recursos
+        async function deleteResource(type, index) {
+            if (!currentCorrectionId) return;
+            
+            const resourceTypeNames = {
+                'videos': 'vídeo',
+                'pdfs': 'PDF', 
+                'images': 'imagem',
+                'comments': 'comentário',
+                'pages': 'página incorporada'
+            };
+            
+            const resourceName = resourceTypeNames[type] || 'recurso';
+            
+            if (!confirm(`Tem certeza que deseja excluir este ${resourceName}?`)) {
+                return;
+            }
+            
+            try {
+                const resourceRef = db.collection('resources').doc(currentCorrectionId);
+                const doc = await resourceRef.get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    const resources = data[type] || [];
+                    resources.splice(index, 1);
+                    
+                    await resourceRef.update({
+                        [type]: resources
+                    });
+                    
+                    mostrarMensagem(`${resourceName.charAt(0).toUpperCase() + resourceName.slice(1)} excluído com sucesso!`, 'success');
+                    loadResources();
+                }
+            } catch (error) {
+                console.error('Erro ao deletar recurso:', error);
+                mostrarMensagem('Erro ao excluir recurso.', 'error');
+            }
+        }
+
+        // ========== FUNÇÕES PARA EDIÇÃO DE COMENTÁRIOS ==========
+
+        function enableCommentEdit(commentIndex) {
+            if (!currentCorrectionId) {
+                mostrarMensagem('Nenhuma correção selecionada.', 'error');
+                return;
+            }
+            
+            const commentElement = document.getElementById(`comment-${commentIndex}`);
+            if (!commentElement) {
+                console.error('Elemento do comentário não encontrado:', `comment-${commentIndex}`);
+                return;
+            }
+            
+            const commentContent = commentElement.querySelector('.comment-content');
+            const commentText = commentElement.querySelector('.comment-text');
+            
+            if (!commentText) {
+                console.error('Texto do comentário não encontrado');
+                return;
+            }
+            
+            let originalText = commentText.textContent || commentText.innerText;
+            
+            commentElement.classList.add('comment-editing');
+            commentContent.innerHTML = `
+                <textarea class="edit-input" rows="3">${originalText}</textarea>
+                <div class="edit-actions">
+                    <button class="save-btn" onclick="saveCommentEdit(${commentIndex})">
+                        <i class="fas fa-check"></i> Salvar
+                    </button>
+                    <button class="cancel-btn" onclick="cancelCommentEdit(${commentIndex})">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            `;
+            
+            const textarea = commentContent.querySelector('.edit-input');
+            if (textarea) {
+                textarea.focus();
+            }
+        }
+
+        async function saveCommentEdit(commentIndex) {
+            if (!currentCorrectionId) return;
+            
+            const commentElement = document.getElementById(`comment-${commentIndex}`);
+            const textarea = commentElement.querySelector('.edit-input');
+            const newText = textarea.value.trim();
+            
+            if (!newText) {
+                mostrarMensagem('O comentário não pode estar vazio.', 'error');
+                return;
+            }
+            
+            try {
+                const resourceRef = db.collection('resources').doc(currentCorrectionId);
+                const doc = await resourceRef.get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    const comments = data.comments || [];
+                    
+                    comments[commentIndex].text = newText;
+                    comments[commentIndex].lastEdited = new Date().toISOString();
+                    
+                    await resourceRef.update({
+                        comments: comments
+                    });
+                    
+                    mostrarMensagem('Comentário atualizado com sucesso!', 'success');
+                    loadResources();
+                }
+            } catch (error) {
+                console.error('Erro ao editar comentário:', error);
+                mostrarMensagem('Erro ao editar comentário.', 'error');
+            }
+        }
+
+        function cancelCommentEdit(commentIndex) {
+            loadResources();
+        }
+
+        // ========== FUNÇÕES ORIGINAIS DO INDEX.HTML ==========
+
+        function processarConjugacaoComAudio(conjugacaoTexto) {
+            if (conjugacaoTexto.includes('🔊')) {
+                const textoLimpo = conjugacaoTexto.replace('🔊', '').trim();
+                return {
+                    texto: conjugacaoTexto,
+                    textoAudio: textoLimpo,
+                    temAudio: true
+                };
+            } else {
+                return {
+                    texto: conjugacaoTexto,
+                    textoAudio: conjugacaoTexto,
+                    temAudio: false
+                };
+            }
+        }
+
+        function falarTexto(texto) {
+            if (currentUtterance) {
+                synth.cancel();
+            }
+
+            document.querySelectorAll('.audio-icon.playing').forEach(icon => {
+                icon.classList.remove('playing');
+            });
+
+            event.target.classList.add('playing');
+
+            currentUtterance = new SpeechSynthesisUtterance(texto);
+            currentUtterance.lang = 'fr-FR';
+            currentUtterance.rate = 0.9;
+            currentUtterance.pitch = 1;
+            currentUtterance.volume = 1;
+
+            currentUtterance.onend = function() {
+                document.querySelectorAll('.audio-icon.playing').forEach(icon => {
+                    icon.classList.remove('playing');
+                });
+            };
+
+            currentUtterance.onerror = function(event) {
+                console.error('Erro na síntese de voz:', event);
+                document.querySelectorAll('.audio-icon.playing').forEach(icon => {
+                    icon.classList.remove('playing');
+                });
+                mostrarMensagem('Erro ao reproduzir áudio. Verifique se seu navegador suporta síntese de voz.', 'error');
+            };
+
+            synth.speak(currentUtterance);
+        }
+
+        function mostrarMensagem(texto, tipo) {
+            messageElement.textContent = texto;
+            messageElement.className = `message ${tipo}`;
+            messageElement.style.display = 'block';
+            
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, 5000);
+        }
+
+        async function carregarConteudo() {
+            try {
+                loadingElement.style.display = 'block';
+                frasesContainer.style.display = 'none';
+                emptyStateElement.style.display = 'none';
+                resourcesSection.style.display = 'none';
+
+                await carregarTags();
+                await carregarCorrecoes();
+                
+                mostrarMensagem(`${todasFrases.length} correção(ões) carregada(s) com sucesso!`, 'success');
+                
+            } catch (error) {
+                console.error('Erro ao carregar conteúdo:', error);
+                mostrarMensagem('Erro ao carregar conteúdo do Firebase.', 'error');
+                loadingElement.style.display = 'none';
+                emptyStateElement.style.display = 'block';
+            }
+        }
+
+        async function carregarTags() {
+            try {
+                const snapshot = await db.collection('tags').orderBy('nome').get();
+                todasTags = [];
+                
+                snapshot.forEach(doc => {
+                    todasTags.push(doc.data().nome);
+                });
+
+                todasTags = [...new Set(todasTags)];
+                
+                if (todasTags.length > 0) {
+                    tagsFilterContainer.style.display = 'block';
+                    exibirFiltroTags();
+                }
+                
+            } catch (error) {
+                console.error('Erro ao carregar tags:', error);
+            }
+        }
+
+        function exibirFiltroTags() {
+            tagsFilter.innerHTML = '';
+            
+            todasTags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag-filter-item';
+                tagElement.textContent = tag;
+                tagElement.addEventListener('click', () => {
+                    tagElement.classList.toggle('selected');
+                    
+                    if (tagElement.classList.contains('selected')) {
+                        tagsSelecionadas.push(tag);
+                    } else {
+                        tagsSelecionadas = tagsSelecionadas.filter(t => t !== tag);
+                    }
+                    
+                    filtrarFrases();
+                });
+                
+                tagsFilter.appendChild(tagElement);
+            });
+        }
+
+        async function carregarCorrecoes() {
+            try {
+                const snapshot = await db.collection('correcoes').get();
+                todasFrases = [];
+                
+                snapshot.forEach(doc => {
+                    todasFrases.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                todasFrases.sort((a, b) => a.id.localeCompare(b.id));
+                
+                preencherFiltroCategorias();
+                exibirFrases(todasFrases);
+                
+            } catch (error) {
+                console.error('Erro ao carregar correções:', error);
+                throw error;
+            }
+        }
+
+        function preencherFiltroCategorias() {
+            const documentosMap = {};
+            
+            todasFrases.forEach(frase => {
+                const documento = frase.comparacao_direta?.frase_corrigida_completa;
+                
+                if (documento && documento.trim() !== '') {
+                    if (!documentosMap[documento]) {
+                        documentosMap[documento] = 0;
+                    }
+                    documentosMap[documento]++;
+                }
+            });
+            
+            const documentos = Object.keys(documentosMap).sort();
+            
+            const primeiraOpcao = categoriaFilter.options[0];
+            while (categoriaFilter.options.length > 0) {
+                categoriaFilter.remove(0);
+            }
+            
+            categoriaFilter.appendChild(primeiraOpcao);
+            primeiraOpcao.textContent = `Todas as categorias (${todasFrases.length})`;
+            
+            documentos.forEach(documento => {
+                const count = documentosMap[documento];
+                const option = document.createElement('option');
+                option.value = documento;
+                
+                const nomeAmigavel = documento.length > 50 ? 
+                    documento.substring(0, 50) + '...' : 
+                    documento;
+                
+                option.textContent = `(${count}) ${nomeAmigavel}`;
+                option.title = documento;
+                categoriaFilter.appendChild(option);
+            });
+        }
+
+        function exibirDetalhesCorrecao(fraseCard, frase) {
+            if (frase.erro_original || frase.explicacao_detalhada) {
+                let detalhesHTML = '';
+                
+                if (frase.erro_original) {
+                    detalhesHTML += `
+                        <div class="correcao-section">
+                            <div class="section-title">📝 Comparação</div>
+                            <div class="comparacao-item">
+                                <div class="erro-original">
+                                    <span class="label-erro">Sua frase:</span>
+                                    <span class="texto-erro">${frase.erro_original}</span>
+                                </div>
+                                <div class="seta-correcao">↓</div>
+                                <div class="correcao-correta">
+                                    <span class="label-correto">Correção:</span>
+                                    <span class="texto-correto">${frase.frase}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (frase.explicacao_detalhada && frase.explicacao_detalhada.erros) {
+                    detalhesHTML += `
+                        <div class="correcao-section">
+                            <div class="section-title">🔍 Análise dos Erros</div>
+                    `;
+                    
+                    for (const [key, erro] of Object.entries(frase.explicacao_detalhada.erros)) {
+                        detalhesHTML += `
+                            <div class="erro-item">
+                                <div class="erro-comparacao">
+                                    <span class="incorreto">❌ ${erro.seu_texto || erro.incorreto}</span>
+                                    <span class="seta">→</span>
+                                    <span class="correto">✅ ${erro.correto}</span>
+                                </div>
+                                <div class="explicacao-erro">${erro.explicacao}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    detalhesHTML += `</div>`;
+                }
+                
+                if (frase.frases_relacionadas && frase.frases_relacionadas.length > 0) {
+                    detalhesHTML += `
+                        <div class="correcao-section">
+                            <div class="section-title">📚 Frases Relacionadas</div>
+                    `;
+                    
+                    frase.frases_relacionadas.forEach(relacionada => {
+                        const fraseLimpa = relacionada.frase.replace(' 🔊', '');
+                        detalhesHTML += `
+                            <div class="frase-relacionada">
+                                <div class="frase-rel-frances">
+                                    <span class="audio-icon" onclick="falarTexto('${fraseLimpa.replace(/'/g, "\\'")}')">
+                                        <i class="fas fa-volume-up"></i>
+                                    </span>
+                                    ${relacionada.frase}
+                                </div>
+                                <div class="frase-rel-traducao">${relacionada.traducao}</div>
+                                ${relacionada.tempo ? `<div class="frase-rel-tempo">${relacionada.tempo}</div>` : ''}
+                            </div>
+                        `;
+                    });
+                    
+                    detalhesHTML += `</div>`;
+                }
+                
+                if (frase.conjugacao) {
+                    detalhesHTML += `
+                        <div class="correcao-section">
+                            <div class="section-title">📖 Conjugação</div>
+                    `;
+                    
+                    for (const [verbo, tempos] of Object.entries(frase.conjugacao)) {
+                        detalhesHTML += `<div class="verbo-titulo">Verbo: ${verbo}</div>`;
+                        
+                        for (const [tempo, conjugacoes] of Object.entries(tempos)) {
+                            detalhesHTML += `<div class="tempo-titulo">${tempo.replace('_', ' ')}:</div>`;
+                            detalhesHTML += `<div class="conjugacao-grid">`;
+                            
+                            for (const [pessoa, conjugacao] of Object.entries(conjugacoes)) {
+                                const conjugacaoProcessada = processarConjugacaoComAudio(conjugacao);
+                                
+                                if (conjugacaoProcessada.temAudio) {
+                                    detalhesHTML += `
+                                        <div class="conjugacao-item">
+                                            <span class="pessoa">${pessoa}:</span>
+                                            <span class="conjugacao">
+                                                <span class="conjugacao-audio">
+                                                    <span class="audio-icon" onclick="falarTexto('${conjugacaoProcessada.textoAudio.replace(/'/g, "\\'")}')">
+                                                        <i class="fas fa-volume-up"></i>
+                                                    </span>
+                                                    ${conjugacaoProcessada.texto}
+                                                </span>
+                                            </span>
+                                        </div>
+                                    `;
+                                } else {
+                                    detalhesHTML += `
+                                        <div class="conjugacao-item">
+                                            <span class="pessoa">${pessoa}:</span>
+                                            <span class="conjugacao">${conjugacaoProcessada.texto}</span>
+                                        </div>
+                                    `;
+                                }
+                            }
+                            
+                            detalhesHTML += `</div>`;
+                        }
+                    }
+                    
+                    detalhesHTML += `</div>`;
+                }
+                
+                if (frase.regra_gramatical) {
+                    detalhesHTML += `
+                        <div class="correcao-section">
+                            <div class="section-title">📘 Regra Gramatical</div>
+                            <div class="erro-item">
+                                <div class="explicacao-erro">${frase.regra_gramatical}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                const detalhesSection = document.createElement('div');
+                detalhesSection.className = 'detalhes-correcao';
+                detalhesSection.innerHTML = detalhesHTML;
+                fraseCard.appendChild(detalhesSection);
+            }
+        }
+
+        function exibirFrases(frases) {
+            loadingElement.style.display = 'none';
+            
+            if (frases.length === 0) {
+                frasesContainer.style.display = 'none';
+                emptyStateElement.style.display = 'block';
+                resourcesSection.style.display = 'none';
+                return;
+            }
+            
+            frasesContainer.style.display = 'flex';
+            emptyStateElement.style.display = 'none';
+            resourcesSection.style.display = 'none';
+            
+            frasesContainer.innerHTML = '';
+            
+            frases.forEach((frase, index) => {
+                const fraseCard = document.createElement('div');
+                fraseCard.className = 'frase-card correcao';
+                fraseCard.dataset.correctionId = frase.id;
+                
+                const nivelClass = `nivel-${frase.nivel || 'iniciante'}`;
+                
+                fraseCard.innerHTML = `
+                    <div class="frase-header">
+                        <div class="frase-texto">
+                            <div class="frase-frances">
+                                <span class="audio-icon" onclick="falarTexto('${frase.frase.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-volume-up"></i>
+                                </span>
+                                ${frase.frase}
+                            </div>
+                            <div class="frase-traducao">${frase.traducao}</div>
+                        </div>
+                        <div class="selection-indicator" style="display: none;">
+                            <i class="fas fa-check-circle"></i> Selecionada
+                        </div>
+                    </div>
+                    
+                    <div class="frase-detalhes">
+                        <div class="detalhe-item">
+                            <span class="detalhe-label">Pronúncia:</span>
+                            <span>${frase.pronuncia || 'Não informada'}</span>
+                        </div>
+                        
+                        <div class="detalhe-item">
+                            <span class="detalhe-label">Categoria:</span>
+                            <span class="categoria-tag">${frase.categoria}</span>
+                        </div>
+                        
+                        <div class="detalhe-item">
+                            <span class="detalhe-label">Nível:</span>
+                            <span class="nivel-tag ${nivelClass}">${frase.nivel || 'iniciante'}</span>
+                        </div>
+                        
+                        ${frase.explicacao ? `
+                        <div class="detalhe-item">
+                            <span class="detalhe-label">Explicação:</span>
+                            <span>${frase.explicacao}</span>
+                        </div>
+                        ` : ''}
+                        
+                        ${frase.notas ? `
+                        <div class="detalhe-item">
+                            <span class="detalhe-label">Notas:</span>
+                            <span>${frase.notas}</span>
+                        </div>
+                        ` : ''}
+                        
+                        ${frase.palavras_chave && frase.palavras_chave.length > 0 ? `
+                        <div class="detalhe-item">
+                            <span class="detalhe-label">Palavras-chave:</span>
+                            <div class="palavras-chave">
+                                ${frase.palavras_chave.map(palavra => 
+                                    `<span class="palavra-chave">${palavra}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                frasesContainer.appendChild(fraseCard);
+                exibirDetalhesCorrecao(fraseCard, frase);
+                
+                fraseCard.addEventListener('click', function() {
+                    selectCorrection(frase.id);
+                });
+                
+                if (index === 0 && !currentCorrectionId) {
+                    setTimeout(() => {
+                        selectCorrection(frase.id);
+                    }, 500);
+                }
+            });
+
+            if (currentCorrectionId) {
+                const previouslySelected = frases.find(f => f.id === currentCorrectionId);
+                if (previouslySelected) {
+                    selectCorrection(currentCorrectionId);
+                }
+            }
+        }
+
+        function filtrarFrases() {
+            const documentoSelecionado = categoriaFilter.value;
+            const nivel = nivelFilter.value;
+            const busca = searchInput.value.toLowerCase();
+            
+            if (currentCorrectionId) {
+                deselectCorrection();
+            }
+            
+            const frasesFiltradas = todasFrases.filter(frase => {
+                if (documentoSelecionado) {
+                    const docFrase = frase.comparacao_direta?.frase_corrigida_completa;
+                    if (docFrase !== documentoSelecionado) {
+                        return false;
+                    }
+                }
+                
+                if (nivel && frase.nivel !== nivel) {
+                    return false;
+                }
+                
+                if (busca) {
+                    const textoBusca = `${frase.frase} ${frase.traducao} ${frase.explicacao || ''} ${frase.notas || ''} ${frase.palavras_chave ? frase.palavras_chave.join(' ') : ''}`.toLowerCase();
+                    if (!textoBusca.includes(busca)) {
+                        return false;
+                    }
+                }
+                
+                if (tagsSelecionadas.length > 0) {
+                    const fraseTags = frase.palavras_chave || [];
+                    const temTagSelecionada = tagsSelecionadas.some(tag => 
+                        fraseTags.some(fraseTag => 
+                            fraseTag.toLowerCase().includes(tag.toLowerCase()) || 
+                            tag.toLowerCase().includes(fraseTag.toLowerCase())
+                        )
+                    );
+                    
+                    if (!temTagSelecionada) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            exibirFrases(frasesFiltradas);
+        }
+
+        // Event listeners para filtros
+        categoriaFilter.addEventListener('change', filtrarFrases);
+        nivelFilter.addEventListener('change', filtrarFrases);
+        searchInput.addEventListener('input', filtrarFrases);
+
+        // Verificar suporte à Web Speech API
+        window.addEventListener('load', function() {
+            if (!('speechSynthesis' in window)) {
+                mostrarMensagem('Seu navegador não suporta síntese de voz. A funcionalidade de áudio não estará disponível.', 'info');
+            }
+            
+            initializeUploadAreas();
+            carregarConteudo();
+        });
+
+        // Fechar menu de recursos ao clicar fora
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('resourceMenu');
+            const button = document.querySelector('.add-resource-btn');
+            
+            if (menu && button && !menu.contains(event.target) && !button.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
