@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Passé Composé - Francês Elegante</title>
+    <style>
+        :root {
+            --primary: #0055A4;
+            --secondary: #EF4135;
+            --accent: #F4F5F0;
+            --light: #f8f9fa;
+            --dark: #2C2C2C;
+            --gold: #FFD700;
+            --success: #28a745;
+            --purple: #6f42c1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8ecef 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Menu Lateral */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .menu {
+            list-style: none;
+        }
+        
+        .menu-item {
+            margin-bottom: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .menu-item.active a {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .menu-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 15px 0;
+        }
+        
+        /* Conteúdo Principal */
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), white, var(--secondary));
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+            font-style: italic;
+        }
+        
+        .lesson-series {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: var(--accent);
+            border-radius: 15px;
+            border: 2px dashed var(--primary);
+        }
+        
+        .lesson-series h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .lesson-series p {
+            color: var(--dark);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .lesson-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lesson-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .lesson-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .lesson-title {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .section-icon {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .section-content {
+            background: var(--accent);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .conjugation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .conjugation-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .conjugation-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .conjugation-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .french-text {
+            font-weight: bold;
+            color: var(--primary);
+            flex: 1;
+        }
+        
+        .portuguese-text {
+            flex: 1;
+        }
+        
+        .verb-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .avoir {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .etre {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .play-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .play-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .play-btn.playing {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .anatomy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .anatomy-table th {
+            background: var(--secondary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .anatomy-table tr:nth-child(even) {
+            background: #fff5f5;
+        }
+        
+        .anatomy-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ffe0e0;
+        }
+        
+        .quick-tip {
+            background: linear-gradient(135deg, var(--gold), #FFE55C);
+            color: #8B6B00;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #FFC400;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+        }
+        
+        .quick-tip h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 6px 20px rgba(0, 85, 164, 0.3);
+        }
+        
+        .summary h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .summary-icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .elegant-example {
+            background: white;
+            color: var(--dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-style: italic;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .example-text {
+            flex: 1;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--dark);
+            color: white;
+            border-top: 1px solid #444;
+            margin-top: 50px;
+        }
+        
+        .footer p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .audio-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .audio-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .warning-note {
+            background: linear-gradient(135deg, #ffc107, #ffca2c);
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffb300;
+        }
+        
+        .pattern-box {
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .pattern-title {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .dr-house-verbs {
+            background: linear-gradient(135deg, var(--purple), #8B5FBF);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #5E35B1;
+        }
+        
+        .verb-group {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .verb-example {
+            flex: 1;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 1100px) {
+            .lessons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+            
+            .menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .menu-item {
+                margin: 5px;
+            }
+            
+            .menu-item a {
+                padding: 8px 12px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .lesson-card {
+                padding: 25px;
+            }
+            
+            .conjugation-table td {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .play-btn {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 30px 25px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .lesson-card {
+                padding: 20px;
+            }
+            
+            .conjugation-table, .anatomy-table {
+                font-size: 0.9rem;
+            }
+            
+            .conjugation-table th, .conjugation-table td,
+            .anatomy-table th, .anatomy-table td {
+                padding: 8px 10px;
+            }
+            
+            .elegant-example {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Lateral -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>🇫🇷 Le Passé Composé</h1>
+                <p>O Passado Perfeito Francês</p>
+            </div>
+            <ul class="menu">
+                <li class="menu-item active"><a href="#intro"><span class="menu-icon">🏠</span> Introdução</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#lesson1"><span class="menu-icon">1️⃣</span> Estrutura Básica</a></li>
+                <li class="menu-item"><a href="#lesson2"><span class="menu-icon">2️⃣</span> Verbo AVOIR</a></li>
+                <li class="menu-item"><a href="#lesson3"><span class="menu-icon">3️⃣</span> Verbo ÊTRE</a></li>
+                <li class="menu-item"><a href="#lesson4"><span class="menu-icon">4️⃣</span> DR MRS VANDERTRAMP</a></li>
+                <li class="menu-item"><a href="#lesson5"><span class="menu-icon">5️⃣</span> Concordância</a></li>
+                <li class="menu-item"><a href="#lesson6"><span class="menu-icon">6️⃣</span> Exercício Prático</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#series"><span class="menu-icon">✨</span> Série Completa</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="content">
+            <div class="header" id="intro">
+                <h1>Le Passé Composé</h1>
+                <p>Domine o tempo verbal mais importante do francês para falar sobre o passado</p>
+            </div>
+            
+            <div class="lesson-series" id="series">
+                <h2>✨ O Passado Perfeito Francês</h2>
+                <p>Aprenda a estrutura, os auxiliares e as regras de concordância do passé composé</p>
+            </div>
+
+            <div class="audio-controls">
+                <button class="audio-btn" id="playAllFrench">🎵 Ouvir Todas as Frases</button>
+                <button class="audio-btn" id="stopAll">⏹️ Parar Pronúncia</button>
+            </div>
+            
+            <div class="lessons-grid">
+                <!-- Lição 1 -->
+                <div class="lesson-card" id="lesson1">
+                    <div class="lesson-number">1</div>
+                    <h2 class="lesson-title">Estrutura Básica do Passé Composé 🌿</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">📚</span>
+                            O que é o Passé Composé?
+                        </div>
+                        <div class="section-content">
+                            <p>O <strong>passé composé</strong> é o tempo verbal mais usado em francês para expressar ações concluídas no passado. Equivale ao pretérito perfeito em português.</p>
+                            
+                            <div class="quick-tip">
+                                <h4>💡 Analogia Perfeita</h4>
+                                <p>Assim como em português usamos "ter" + particípio (eu tenho comido), em francês usamos "avoir/être" + particípio passado</p>
+                            </div>
+                            
+                            <table class="conjugation-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                    <th>Estrutura</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">J'ai mangé</span>
+                                        <button class="play-btn" data-text="J'ai mangé">▶</button>
+                                    </td>
+                                    <td>Eu comi</td>
+                                    <td>Avoir + particípio</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Je suis allé</span>
+                                        <button class="play-btn" data-text="Je suis allé">▶</button>
+                                    </td>
+                                    <td>Eu fui</td>
+                                    <td>Être + particípio</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Nous avons parlé</span>
+                                        <button class="play-btn" data-text="Nous avons parlé">▶</button>
+                                    </td>
+                                    <td>Nós falamos</td>
+                                    <td>Avoir + particípio</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia do Passé Composé
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Componente</th>
+                                    <th>Função</th>
+                                    <th>Exemplo</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Sujeito</span>
+                                    </td>
+                                    <td>Quem pratica a ação</td>
+                                    <td>Je, Tu, Il/Elle, Nous, Vous, Ils/Elles</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Auxiliar</span>
+                                    </td>
+                                    <td>Avoir ou Être (conjugado)</td>
+                                    <td>ai, as, a, avons, avez, ont<br>suis, es, est, sommes, êtes, sont</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Particípio Passado</span>
+                                    </td>
+                                    <td>Verbo principal no particípio</td>
+                                    <td>mangé, parlé, fini, allé, venu</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="warning-note">
+                                <strong>⚠️ Atenção:</strong> A escolha entre AVOIR e ÊTRE como auxiliar é fundamental e segue regras específicas!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Passé Composé = Ações concluídas no passado</p>
+                        <p>Estrutura: Sujeito + Auxiliar (avoir/être) + Particípio Passado</p>
+                        <p>Equivale ao pretérito perfeito em português</p>
+                        <p>~90% dos verbos usam AVOIR como auxiliar</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Hier, j'ai travaillé et je suis allé au cinéma."<br>
+                                "Ontem, eu trabalhei e fui ao cinema."
+                            </div>
+                            <button class="play-btn" data-text="Hier, j'ai travaillé et je suis allé au cinéma">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 2 -->
+                <div class="lesson-card" id="lesson2">
+                    <div class="lesson-number">2</div>
+                    <h2 class="lesson-title">Verbo AVOIR como Auxiliar 📜</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Quando usar AVOIR?
+                        </div>
+                        <div class="section-content">
+                            <p>A grande maioria dos verbos franceses (cerca de 90%) usa <strong>AVOIR</strong> como verbo auxiliar no passé composé.</p>
+                            
+                            <div class="pattern-box">
+                                <div class="pattern-title">📋 Regra Geral:</div>
+                                <p>Use <strong>AVOIR</strong> para a maioria dos verbos, especialmente:</p>
+                                <ul>
+                                    <li>Verbos transitivos diretos (que têm objeto direto)</li>
+                                    <li>Verbos que expressam ações</li>
+                                    <li>Verbos que não envolvem movimento ou mudança de estado</li>
+                                </ul>
+                            </div>
+                            
+                            <table class="conjugation-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                    <th>Verbo</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">J'ai mangé</span>
+                                        <button class="play-btn" data-text="J'ai mangé">▶</button>
+                                    </td>
+                                    <td>Eu comi</td>
+                                    <td>manger</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Tu as parlé</span>
+                                        <button class="play-btn" data-text="Tu as parlé">▶</button>
+                                    </td>
+                                    <td>Você falou</td>
+                                    <td>parler</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Il a fini</span>
+                                        <button class="play-btn" data-text="Il a fini">▶</button>
+                                    </td>
+                                    <td>Ele terminou</td>
+                                    <td>finir</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Nous avons choisi</span>
+                                        <button class="play-btn" data-text="Nous avons choisi">▶</button>
+                                    </td>
+                                    <td>Nós escolhemos</td>
+                                    <td>choisir</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">✨</span>
+                            Conjugação de AVOIR no Presente
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Dica Rápida</h4>
+                                <p>AVOIR é irregular no presente! Memorize bem sua conjugação pois é essencial para o passé composé.</p>
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Sujeito</th>
+                                    <th>AVOIR (presente)</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>Je</td>
+                                    <td>ai</td>
+                                    <td>eu tenho</td>
+                                </tr>
+                                <tr>
+                                    <td>Tu</td>
+                                    <td>as</td>
+                                    <td>você tem</td>
+                                </tr>
+                                <tr>
+                                    <td>Il/Elle</td>
+                                    <td>a</td>
+                                    <td>ele/ela tem</td>
+                                </tr>
+                                <tr>
+                                    <td>Nous</td>
+                                    <td>avons</td>
+                                    <td>nós temos</td>
+                                </tr>
+                                <tr>
+                                    <td>Vous</td>
+                                    <td>avez</td>
+                                    <td>vocês têm</td>
+                                </tr>
+                                <tr>
+                                    <td>Ils/Elles</td>
+                                    <td>ont</td>
+                                    <td>eles/elas têm</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>AVOIR = auxiliar para ~90% dos verbos</p>
+                        <p>Use para verbos transitivos e ações</p>
+                        <p>Conjugação irregular: ai, as, a, avons, avez, ont</p>
+                        <p>Não há concordância com o sujeito</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "J'ai étudié le français pendant trois ans."<br>
+                                "Eu estudei francês durante três anos."
+                            </div>
+                            <button class="play-btn" data-text="J'ai étudié le français pendant trois ans">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 3 -->
+                <div class="lesson-card" id="lesson3">
+                    <div class="lesson-number">3</div>
+                    <h2 class="lesson-title">Verbo ÊTRE como Auxiliar 💫</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Quando usar ÊTRE?
+                        </div>
+                        <div class="section-content">
+                            <p>Apenas cerca de 15 verbos importantes usam <strong>ÊTRE</strong> como auxiliar no passé composé. São principalmente verbos de movimento e mudança de estado.</p>
+                            
+                            <div class="pattern-box">
+                                <div class="pattern-title">📋 Regra dos Verbos com ÊTRE:</div>
+                                <p>Use <strong>ÊTRE</strong> para verbos que expressam:</p>
+                                <ul>
+                                    <li>Movimento de ida e volta</li>
+                                    <li>Mudança de estado ou condição</li>
+                                    <li>Verbos reflexivos (sempre!)</li>
+                                </ul>
+                            </div>
+                            
+                            <table class="conjugation-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                    <th>Verbo</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Je suis allé(e)</span>
+                                        <button class="play-btn" data-text="Je suis allé">▶</button>
+                                    </td>
+                                    <td>Eu fui</td>
+                                    <td>aller</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Tu es venu(e)</span>
+                                        <button class="play-btn" data-text="Tu es venu">▶</button>
+                                    </td>
+                                    <td>Você veio</td>
+                                    <td>venir</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Il est né</span>
+                                        <button class="play-btn" data-text="Il est né">▶</button>
+                                    </td>
+                                    <td>Ele nasceu</td>
+                                    <td>naître</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Elle est morte</span>
+                                        <button class="play-btn" data-text="Elle est morte">▶</button>
+                                    </td>
+                                    <td>Ela morreu</td>
+                                    <td>mourir</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Conjugação de ÊTRE no Presente
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Sujeito</th>
+                                    <th>ÊTRE (presente)</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>Je</td>
+                                    <td>suis</td>
+                                    <td>eu sou/estou</td>
+                                </tr>
+                                <tr>
+                                    <td>Tu</td>
+                                    <td>es</td>
+                                    <td>você é/está</td>
+                                </tr>
+                                <tr>
+                                    <td>Il/Elle</td>
+                                    <td>est</td>
+                                    <td>ele/ela é/está</td>
+                                </tr>
+                                <tr>
+                                    <td>Nous</td>
+                                    <td>sommes</td>
+                                    <td>nós somos/estamos</td>
+                                </tr>
+                                <tr>
+                                    <td>Vous</td>
+                                    <td>êtes</td>
+                                    <td>vocês são/estão</td>
+                                </tr>
+                                <tr>
+                                    <td>Ils/Elles</td>
+                                    <td>sont</td>
+                                    <td>eles/elas são/estão</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="warning-note">
+                                <strong>⚠️ Importante:</strong> Com ÊTRE, o particípio passado concorda em gênero e número com o sujeito!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>ÊTRE = auxiliar para ~15 verbos + reflexivos</p>
+                        <p>Use para movimento e mudança de estado</p>
+                        <p>Conjugação irregular: suis, es, est, sommes, êtes, sont</p>
+                        <p>Concordância obrigatória com o sujeito</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Elle est arrivée à Paris hier soir."<br>
+                                "Ela chegou em Paris ontem à noite."
+                            </div>
+                            <button class="play-btn" data-text="Elle est arrivée à Paris hier soir">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 4 -->
+                <div class="lesson-card" id="lesson4">
+                    <div class="lesson-number">4</div>
+                    <h2 class="lesson-title">DR MRS VANDERTRAMP 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            A Mnemônica Perfeita
+                        </div>
+                        <div class="section-content">
+                            <p><strong>DR MRS VANDERTRAMP</strong> é uma mnemônica famosa para lembrar os verbos que usam ÊTRE como auxiliar no passé composé.</p>
+                            
+                            <div class="dr-house-verbs">
+                                <h4>🏠 DR MRS VANDERTRAMP</h4>
+                                <p>Cada letra representa um verbo que usa ÊTRE:</p>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>D</strong>evenir → to become
+                                    </div>
+                                    <button class="play-btn" data-text="devenir">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>R</strong>evenir → to come back
+                                    </div>
+                                    <button class="play-btn" data-text="revenir">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>M</strong>onter → to go up
+                                    </div>
+                                    <button class="play-btn" data-text="monter">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>R</strong>ester → to stay
+                                    </div>
+                                    <button class="play-btn" data-text="rester">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>S</strong>ortir → to go out
+                                    </div>
+                                    <button class="play-btn" data-text="sortir">▶</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Completando a Lista
+                        </div>
+                        <div class="section-content">
+                            <div class="dr-house-verbs">
+                                <h4>🚶‍♂️ VANDERTRAMP</h4>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>V</strong>enir → to come
+                                    </div>
+                                    <button class="play-btn" data-text="venir">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>A</strong>ller → to go
+                                    </div>
+                                    <button class="play-btn" data-text="aller">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>N</strong>aître → to be born
+                                    </div>
+                                    <button class="play-btn" data-text="naître">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>D</strong>escendre → to go down
+                                    </div>
+                                    <button class="play-btn" data-text="descendre">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>E</strong>ntrer → to enter
+                                    </div>
+                                    <button class="play-btn" data-text="entrer">▶</button>
+                                </div>
+                            </div>
+                            
+                            <div class="dr-house-verbs">
+                                <h4>🔄 TRAMP</h4>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>T</strong>omber → to fall
+                                    </div>
+                                    <button class="play-btn" data-text="tomber">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>R</strong>entrer → to return
+                                    </div>
+                                    <button class="play-btn" data-text="rentrer">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>A</strong>rriver → to arrive
+                                    </div>
+                                    <button class="play-btn" data-text="arriver">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>M</strong>ourir → to die
+                                    </div>
+                                    <button class="play-btn" data-text="mourir">▶</button>
+                                </div>
+                                
+                                <div class="verb-group">
+                                    <div class="verb-example">
+                                        <strong>P</strong>artir → to leave
+                                    </div>
+                                    <button class="play-btn" data-text="partir">▶</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>DR MRS VANDERTRAMP = verbos com ÊTRE</p>
+                        <p>13 verbos principais + seus derivados</p>
+                        <p>Mais verbos reflexivos (sempre com ÊTRE)</p>
+                        <p>Mnemônica essencial para memorização</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Je suis devenu médecin et tu es parti en France."<br>
+                                "Eu me tornei médico e você partiu para a França."
+                            </div>
+                            <button class="play-btn" data-text="Je suis devenu médecin et tu es parti en France">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 5 -->
+                <div class="lesson-card" id="lesson5">
+                    <div class="lesson-number">5</div>
+                    <h2 class="lesson-title">Regras de Concordância 🌟</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Concordância com ÊTRE
+                        </div>
+                        <div class="section-content">
+                            <p>Com o auxiliar <strong>ÊTRE</strong>, o particípio passado deve concordar em gênero e número com o sujeito da frase.</p>
+                            
+                            <table class="conjugation-table">
+                                <tr>
+                                    <th>Sujeito</th>
+                                    <th>Passé Composé</th>
+                                    <th>Tradução</th>
+                                    <th>Concordância</th>
+                                </tr>
+                                <tr>
+                                    <td>Je (masc)</td>
+                                    <td>
+                                        <span class="french-text">Je suis allé</span>
+                                        <button class="play-btn" data-text="Je suis allé">▶</button>
+                                    </td>
+                                    <td>Eu fui</td>
+                                    <td>✅</td>
+                                </tr>
+                                <tr>
+                                    <td>Je (fem)</td>
+                                    <td>
+                                        <span class="french-text">Je suis allée</span>
+                                        <button class="play-btn" data-text="Je suis allée">▶</button>
+                                    </td>
+                                    <td>Eu fui</td>
+                                    <td>+e</td>
+                                </tr>
+                                <tr>
+                                    <td>Nous (masc)</td>
+                                    <td>
+                                        <span class="french-text">Nous sommes allés</span>
+                                        <button class="play-btn" data-text="Nous sommes allés">▶</button>
+                                    </td>
+                                    <td>Nós fomos</td>
+                                    <td>+s</td>
+                                </tr>
+                                <tr>
+                                    <td>Nous (fem)</td>
+                                    <td>
+                                        <span class="french-text">Nous sommes allées</span>
+                                        <button class="play-btn" data-text="Nous sommes allées">▶</button>
+                                    </td>
+                                    <td>Nós fomos</td>
+                                    <td>+es</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Concordância com AVOIR
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Regra Especial</h4>
+                                <p>Com AVOIR, só há concordância quando o objeto direto vem ANTES do verbo na frase.</p>
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Situação</th>
+                                    <th>Exemplo</th>
+                                    <th>Concordância</th>
+                                </tr>
+                                <tr>
+                                    <td>Objeto depois</td>
+                                    <td>J'ai mangé la pomme</td>
+                                    <td>❌ Não</td>
+                                </tr>
+                                <tr>
+                                    <td>Objeto antes</td>
+                                    <td>La pomme que j'ai mangée</td>
+                                    <td>✅ Sim (+e)</td>
+                                </tr>
+                                <tr>
+                                    <td>Pronome antes</td>
+                                    <td>Je l'ai mangée</td>
+                                    <td>✅ Sim (+e)</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="warning-note">
+                                <strong>📚 Resumo Prático:</strong> Com ÊTRE → sempre concorda com sujeito. Com AVOIR → só concorda se objeto direto vier antes.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Com ÊTRE: particípio concorda com sujeito</p>
+                        <p>Feminino: +e | Plural: +s | Feminino plural: +es</p>
+                        <p>Com AVOIR: só concorda se OD vier antes</p>
+                        <p>Pronomes OD (le, la, les) sempre vêm antes</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Les fleurs que j'ai achetées sont belles."<br>
+                                "As flores que eu comprei são bonitas."
+                            </div>
+                            <button class="play-btn" data-text="Les fleurs que j'ai achetées sont belles">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 6 -->
+                <div class="lesson-card" id="lesson6">
+                    <div class="lesson-number">6</div>
+                    <h2 class="lesson-title">Exercício Prático 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Complete com o Auxiliar Correto
+                        </div>
+                        <div class="section-content">
+                            <p>Escolha entre AVOIR e ÊTRE para completar as frases no passé composé.</p>
+                            
+                            <div id="quiz-container">
+                                <div class="quiz-question">
+                                    <p>1. Hier, je _____ mangé au restaurant.</p>
+                                    <button class="audio-btn" onclick="checkAnswer('ai', 1)">ai</button>
+                                    <button class="audio-btn" onclick="checkAnswer('suis', 1)">suis</button>
+                                    <span id="result-1" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>2. Elle _____ allée à Paris la semaine dernière.</p>
+                                    <button class="audio-btn" onclick="checkAnswer('a', 2)">a</button>
+                                    <button class="audio-btn" onclick="checkAnswer('est', 2)">est</button>
+                                    <span id="result-2" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>3. Nous _____ arrivés à l'heure.</p>
+                                    <button class="audio-btn" onclick="checkAnswer('avons', 3)">avons</button>
+                                    <button class="audio-btn" onclick="checkAnswer('sommes', 3)">sommes</button>
+                                    <span id="result-3" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>4. Tu _____ fini tes devoirs?</p>
+                                    <button class="audio-btn" onclick="checkAnswer('as', 4)">as</button>
+                                    <button class="audio-btn" onclick="checkAnswer('es', 4)">es</button>
+                                    <span id="result-4" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>5. Ils _____ nés en France.</p>
+                                    <button class="audio-btn" onclick="checkAnswer('ont', 5)">ont</button>
+                                    <button class="audio-btn" onclick="checkAnswer('sont', 5)">sont</button>
+                                    <span id="result-5" style="margin-left: 10px;"></span>
+                                </div>
+                            </div>
+                            
+                            <button class="audio-btn" onclick="resetQuiz()" style="margin-top: 15px;">🔄 Reiniciar Quiz</button>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Desafio de Tradução
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>🎯 Para Consolidar o Aprendizado</h4>
+                                <p>Tente traduzir estas frases para o francês usando o passé composé:</p>
+                            </div>
+                            
+                            <div class="pattern-box">
+                                <p><strong>1.</strong> "Eu comi uma maçã."</p>
+                                <p><strong>2.</strong> "Ela foi ao cinema."</p>
+                                <p><strong>3.</strong> "Nós falamos com o professor."</p>
+                                <p><strong>4.</strong> "Você chegou cedo?"</p>
+                                <p><strong>5.</strong> "Eles nasceram no Brasil."</p>
+                            </div>
+                            
+                            <div class="warning-note">
+                                <strong>💡 Respostas:</strong> 1. J'ai mangé une pomme. 2. Elle est allée au cinéma. 3. Nous avons parlé au professeur. 4. Tu es arrivé(e) tôt? 5. Ils sont nés au Brésil.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Manger → j'ai mangé (AVOIR)</p>
+                        <p>Aller → je suis allé(e) (ÊTRE)</p>
+                        <p>Arriver → nous sommes arrivés (ÊTRE)</p>
+                        <p>Finir → tu as fini (AVOIR)</p>
+                        <p>Naître → ils sont nés (ÊTRE)</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "J'ai étudié, je suis allé en France et je suis devenu bilingue!"
+                            </div>
+                            <button class="play-btn" data-text="J'ai étudié, je suis allé en France et je suis devenu bilingue">▶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>✨ Mini Aulas de Francês Elegante • Domine o Passé Composé como um nativo ✨</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuração da API de síntese de voz para francês
+        let speech = null;
+        let currentUtterance = null;
+        
+        // Inicializar a síntese de voz
+        function initSpeech() {
+            if ('speechSynthesis' in window) {
+                speech = window.speechSynthesis;
+                return true;
+            } else {
+                console.error("Seu navegador não suporta a API de síntese de voz.");
+                return false;
+            }
+        }
+        
+        // Função para falar o texto em francês
+        function speakText(text, onEndCallback = null) {
+            if (!speech) return null;
+            
+            // Parar qualquer fala em andamento
+            speech.cancel();
+            
+            // Criar uma nova instância de SpeechSynthesisUtterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Configurar a voz para francês
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.9; // Velocidade um pouco mais lenta para melhor compreensão
+            utterance.pitch = 1.0;
+            
+            // Tentar encontrar uma voz francesa
+            const voices = speech.getVoices();
+            const frenchVoice = voices.find(voice => 
+                voice.lang.includes('fr-FR') || voice.lang.includes('fr')
+            );
+            
+            if (frenchVoice) {
+                utterance.voice = frenchVoice;
+            }
+            
+            // Configurar callbacks
+            if (onEndCallback) {
+                utterance.onend = onEndCallback;
+            }
+            
+            utterance.onerror = function() {
+                console.error("Erro na síntese de voz");
+                removeAllPlayingStates();
+            };
+            
+            // Iniciar a fala
+            speech.speak(utterance);
+            currentUtterance = utterance;
+            
+            return utterance;
+        }
+        
+        // Remover todos os estados de reprodução
+        function removeAllPlayingStates() {
+            document.querySelectorAll('.playing').forEach(element => {
+                element.classList.remove('playing');
+            });
+        }
+        
+        // Funções para o quiz
+        function checkAnswer(answer, questionNumber) {
+            const correctAnswers = {
+                1: 'ai',
+                2: 'est', 
+                3: 'sommes',
+                4: 'as',
+                5: 'sont'
+            };
+            
+            const resultElement = document.getElementById(`result-${questionNumber}`);
+            
+            if (answer === correctAnswers[questionNumber]) {
+                resultElement.innerHTML = '✅ Correto!';
+                resultElement.style.color = 'green';
+            } else {
+                resultElement.innerHTML = '❌ Tente novamente';
+                resultElement.style.color = 'red';
+            }
+        }
+        
+        function resetQuiz() {
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`result-${i}`).innerHTML = '';
+            }
+        }
+        
+        // Adicionar funcionalidade aos botões de play
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar a síntese de voz
+            if (!initSpeech()) {
+                alert("Seu navegador não suporta a funcionalidade de áudio. Tente usar Chrome, Firefox ou Edge.");
+                return;
+            }
+            
+            // Adicionar evento de clique a todos os botões de play
+            document.querySelectorAll('.play-btn').forEach(button => {
+                // Verificar se o botão não é do quiz
+                if (!button.hasAttribute('onclick')) {
+                    button.addEventListener('click', function() {
+                        const text = this.getAttribute('data-text');
+                        
+                        // Remover a classe 'playing' de todos os botões
+                        document.querySelectorAll('.play-btn').forEach(btn => {
+                            if (!btn.hasAttribute('onclick')) {
+                                btn.classList.remove('playing');
+                                btn.innerHTML = '▶';
+                            }
+                        });
+                        
+                        // Adicionar a classe 'playing' ao botão atual
+                        this.classList.add('playing');
+                        this.innerHTML = '⏸';
+                        
+                        // Falar o texto
+                        const utterance = speakText(text, function() {
+                            button.classList.remove('playing');
+                            button.innerHTML = '▶';
+                        });
+                    });
+                }
+            });
+            
+            // Botão para reproduzir todas as frases em francês
+            document.getElementById('playAllFrench').addEventListener('click', function() {
+                const allTexts = Array.from(document.querySelectorAll('.play-btn'))
+                    .map(btn => btn.getAttribute('data-text'))
+                    .filter(text => text && text.length > 0);
+                
+                let index = 0;
+                
+                function playNext() {
+                    if (index < allTexts.length) {
+                        const text = allTexts[index];
+                        speakText(text, function() {
+                            index++;
+                            setTimeout(playNext, 1000); // Pequena pausa entre frases
+                        });
+                    }
+                }
+                
+                removeAllPlayingStates();
+                playNext();
+            });
+            
+            // Botão para parar toda a reprodução
+            document.getElementById('stopAll').addEventListener('click', function() {
+                speech.cancel();
+                removeAllPlayingStates();
+            });
+            
+            // Ativar item do menu quando clicado
+            document.querySelectorAll('.menu-item a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    document.querySelectorAll('.menu-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.parentElement.classList.add('active');
+                });
+            });
+            
+            // Ativar item do menu baseado na rolagem
+            window.addEventListener('scroll', function() {
+                const sections = document.querySelectorAll('.lesson-card, .header, .lesson-series');
+                const menuItems = document.querySelectorAll('.menu-item');
+                
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                menuItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.querySelector('a').getAttribute('href') === '#' + current) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+            
+            // Carregar as vozes disponíveis (necessário para alguns navegadores)
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = function() {
+                    initSpeech();
+                };
+            }
+        });
+    </script>
+</body>
+</html>

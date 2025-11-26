@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Substantivos Franceses - Gênero Diferente</title>
+    <style>
+        :root {
+            --primary: #0055A4;
+            --secondary: #EF4135;
+            --accent: #F4F5F0;
+            --light: #f8f9fa;
+            --dark: #2C2C2C;
+            --gold: #FFD700;
+            --success: #28a745;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8ecef 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Menu Lateral */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .menu {
+            list-style: none;
+        }
+        
+        .menu-item {
+            margin-bottom: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .menu-item.active a {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .menu-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 15px 0;
+        }
+        
+        /* Conteúdo Principal */
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), white, var(--secondary));
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+            font-style: italic;
+        }
+        
+        .lesson-series {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: var(--accent);
+            border-radius: 15px;
+            border: 2px dashed var(--primary);
+        }
+        
+        .lesson-series h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .lesson-series p {
+            color: var(--dark);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .lesson-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lesson-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .lesson-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .lesson-title {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .section-icon {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .section-content {
+            background: var(--accent);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .gender-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .gender-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .gender-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .gender-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .french-text {
+            font-weight: bold;
+            color: var(--primary);
+            flex: 1;
+        }
+        
+        .portuguese-text {
+            flex: 1;
+        }
+        
+        .gender-marker {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .masculine {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .feminine {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .play-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .play-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .play-btn.playing {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .anatomy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .anatomy-table th {
+            background: var(--secondary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .anatomy-table tr:nth-child(even) {
+            background: #fff5f5;
+        }
+        
+        .anatomy-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ffe0e0;
+        }
+        
+        .quick-tip {
+            background: linear-gradient(135deg, var(--gold), #FFE55C);
+            color: #8B6B00;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #FFC400;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+        }
+        
+        .quick-tip h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 6px 20px rgba(0, 85, 164, 0.3);
+        }
+        
+        .summary h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .summary-icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .elegant-example {
+            background: white;
+            color: var(--dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-style: italic;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .example-text {
+            flex: 1;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--dark);
+            color: white;
+            border-top: 1px solid #444;
+            margin-top: 50px;
+        }
+        
+        .footer p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .audio-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .audio-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .warning-note {
+            background: linear-gradient(135deg, #ffc107, #ffca2c);
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffb300;
+        }
+        
+        .pattern-box {
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .pattern-title {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 1100px) {
+            .lessons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+            
+            .menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .menu-item {
+                margin: 5px;
+            }
+            
+            .menu-item a {
+                padding: 8px 12px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .lesson-card {
+                padding: 25px;
+            }
+            
+            .gender-table td {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .play-btn {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 30px 25px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .lesson-card {
+                padding: 20px;
+            }
+            
+            .gender-table, .anatomy-table {
+                font-size: 0.9rem;
+            }
+            
+            .gender-table th, .gender-table td,
+            .anatomy-table th, .anatomy-table td {
+                padding: 8px 10px;
+            }
+            
+            .elegant-example {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Lateral -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>🇫🇷 Mini Aulas</h1>
+                <p>Substantivos Franceses</p>
+            </div>
+            <ul class="menu">
+                <li class="menu-item active"><a href="#intro"><span class="menu-icon">🏠</span> Introdução</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#lesson1"><span class="menu-icon">1️⃣</span> Conceito Básico</a></li>
+                <li class="menu-item"><a href="#lesson2"><span class="menu-icon">2️⃣</span> Padrões Masculinos</a></li>
+                <li class="menu-item"><a href="#lesson3"><span class="menu-icon">3️⃣</span> Padrões Femininos</a></li>
+                <li class="menu-item"><a href="#lesson4"><span class="menu-icon">4️⃣</span> Exceções Comuns</a></li>
+                <li class="menu-item"><a href="#lesson5"><span class="menu-icon">5️⃣</span> Dicas de Memorização</a></li>
+                <li class="menu-item"><a href="#lesson6"><span class="menu-icon">6️⃣</span> Exercício Prático</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#series"><span class="menu-icon">✨</span> Série Completa</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="content">
+            <div class="header" id="intro">
+                <h1>Substantivos Franceses com Gênero Diferente</h1>
+                <p>Domine os substantivos que trocam de gênero entre francês e português</p>
+            </div>
+            
+            <div class="lesson-series" id="series">
+                <h2>✨ A Armadilha do Gênero Gramatical</h2>
+                <p>Descubra por que "la table" é feminina, mas "o table" não existe em português</p>
+            </div>
+
+            <div class="audio-controls">
+                <button class="audio-btn" id="playAllFrench">🎵 Ouvir Todas as Frases</button>
+                <button class="audio-btn" id="stopAll">⏹️ Parar Pronúncia</button>
+            </div>
+            
+            <div class="lessons-grid">
+                <!-- Lição 1 -->
+                <div class="lesson-card" id="lesson1">
+                    <div class="lesson-number">1</div>
+                    <h2 class="lesson-title">O Conceito Básico do Gênero 🌿</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">📚</span>
+                            O que é Gênero Gramatical?
+                        </div>
+                        <div class="section-content">
+                            <p>Em francês, assim como em português, todos os substantivos possuem gênero (masculino ou feminino). Porém, aproximadamente 20% dos substantivos têm gênero diferente entre os dois idiomas.</p>
+                            
+                            <div class="warning-note">
+                                <strong>⚠️ Atenção:</strong> O gênero gramatical não tem relação com o sexo biológico. É uma característica puramente linguística.
+                            </div>
+                            
+                            <table class="gender-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le livre</span>
+                                        <span class="gender-marker masculine">masc</span>
+                                        <button class="play-btn" data-text="le livre">▶</button>
+                                    </td>
+                                    <td>
+                                        <span class="portuguese-text">o livro</span>
+                                        <span class="gender-marker masculine">masc</span>
+                                    </td>
+                                    <td>o livro</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">la table</span>
+                                        <span class="gender-marker feminine">fem</span>
+                                        <button class="play-btn" data-text="la table">▶</button>
+                                    </td>
+                                    <td>
+                                        <span class="portuguese-text">a mesa</span>
+                                        <span class="gender-marker feminine">fem</span>
+                                    </td>
+                                    <td>a mesa</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le voyage</span>
+                                        <span class="gender-marker masculine">masc</span>
+                                        <button class="play-btn" data-text="le voyage">▶</button>
+                                    </td>
+                                    <td>
+                                        <span class="portuguese-text">a viagem</span>
+                                        <span class="gender-marker feminine">fem</span>
+                                    </td>
+                                    <td>a viagem</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Por que os Gêneros Diferem?
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Explicação Histórica</h4>
+                                <p>O francês e português evoluíram do latim de formas diferentes. Algumas palavras mantiveram o gênero original, outras mudaram por influência cultural ou fonética.</p>
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Latim</th>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                    <th>Evolução</th>
+                                </tr>
+                                <tr>
+                                    <td>viaticum (neutro)</td>
+                                    <td>le voyage (masc)</td>
+                                    <td>a viagem (fem)</td>
+                                    <td>Neutro latino → masc/fem</td>
+                                </tr>
+                                <tr>
+                                    <td>florem (masc)</td>
+                                    <td>la fleur (fem)</td>
+                                    <td>a flor (fem)</td>
+                                    <td>Masc latino → fem romance</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Gênero gramatical ≠ Sexo biológico</p>
+                        <p>~20% dos substantivos têm gênero diferente</p>
+                        <p>Diferenças vêm da evolução do latim</p>
+                        <p>Artigo definido indica o gênero: le (masc) / la (fem)</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Le soleil brille, la lune scintille."<br>
+                                "O sol brilha, a lua cintila."
+                            </div>
+                            <button class="play-btn" data-text="Le soleil brille, la lune scintille">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 2 -->
+                <div class="lesson-card" id="lesson2">
+                    <div class="lesson-number">2</div>
+                    <h2 class="lesson-title">Substantivos Masculinos em Francês 📜</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Masculino no FR → Feminino no PT
+                        </div>
+                        <div class="section-content">
+                            <p>Estes são os substantivos que causam mais confusão: masculinos em francês, mas femininos em português.</p>
+                            
+                            <table class="gender-table">
+                                <tr>
+                                    <th>Francês (masc)</th>
+                                    <th>Português (fem)</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le voyage</span>
+                                        <button class="play-btn" data-text="le voyage">▶</button>
+                                    </td>
+                                    <td>a viagem</td>
+                                    <td>a viagem</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le livre</span>
+                                        <button class="play-btn" data-text="le livre">▶</button>
+                                    </td>
+                                    <td>o livro</td>
+                                    <td>o livro</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le tableau</span>
+                                        <button class="play-btn" data-text="le tableau">▶</button>
+                                    </td>
+                                    <td>o quadro</td>
+                                    <td>o quadro</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le soleil</span>
+                                        <button class="play-btn" data-text="le soleil">▶</button>
+                                    </td>
+                                    <td>o sol</td>
+                                    <td>o sol</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le fromage</span>
+                                        <button class="play-btn" data-text="le fromage">▶</button>
+                                    </td>
+                                    <td>o queijo</td>
+                                    <td>o queijo</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le musée</span>
+                                        <button class="play-btn" data-text="le musée">▶</button>
+                                    </td>
+                                    <td>o museu</td>
+                                    <td>o museu</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">✨</span>
+                            Padrões de Terminação Masculina
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Dica rápida</h4>
+                                <p>Substantivos terminados em -age são geralmente masculinos em francês, mesmo quando femininos em português</p>
+                            </div>
+                            
+                            <div class="pattern-box">
+                                <div class="pattern-title">Terminações tipicamente masculinas:</div>
+                                <ul>
+                                    <li><strong>-age</strong> → le voyage, le fromage, le paysage</li>
+                                    <li><strong>-ment</strong> → le gouvernement, le département</li>
+                                    <li><strong>-eau</strong> → le tableau, le château, le bateau</li>
+                                    <li><strong>-isme</strong> → le tourisme, le capitalisme</li>
+                                </ul>
+                            </div>
+                            
+                            <p><em>Exceção notável:</em> "la plage" (a praia) é feminina em ambos os idiomas.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Muitos -age, -ment, -eau são masculinos</p>
+                        <p>Sol, queijo, museu: masculinos em ambos</p>
+                        <p>Viagem, amor, quadro: cuidado com o gênero!</p>
+                        <p>Artigo "le" indica masculino</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Le fromage et le vin sont délicieux."<br>
+                                "O queijo e o vinho são deliciosos."
+                            </div>
+                            <button class="play-btn" data-text="Le fromage et le vin sont délicieux">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 3 -->
+                <div class="lesson-card" id="lesson3">
+                    <div class="lesson-number">3</div>
+                    <h2 class="lesson-title">Substantivos Femininos em Francês 💫</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Feminino no FR → Masculino no PT
+                        </div>
+                        <div class="section-content">
+                            <p>Aqui estão os substantivos femininos em francês que são masculinos em português - outro grupo que causa confusão.</p>
+                            
+                            <table class="gender-table">
+                                <tr>
+                                    <th>Francês (fem)</th>
+                                    <th>Português (masc)</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">la mer</span>
+                                        <button class="play-btn" data-text="la mer">▶</button>
+                                    </td>
+                                    <td>o mar</td>
+                                    <td>o mar</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">la forêt</span>
+                                        <button class="play-btn" data-text="la forêt">▶</button>
+                                    </td>
+                                    <td>a floresta</td>
+                                    <td>a floresta</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">la pluie</span>
+                                        <button class="play-btn" data-text="la pluie">▶</button>
+                                    </td>
+                                    <td>a chuva</td>
+                                    <td>a chuva</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">la fleur</span>
+                                        <button class="play-btn" data-text="la fleur">▶</button>
+                                    </td>
+                                    <td>a flor</td>
+                                    <td>a flor</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">la table</span>
+                                        <button class="play-btn" data-text="la table">▶</button>
+                                    </td>
+                                    <td>a mesa</td>
+                                    <td>a mesa</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">la voiture</span>
+                                        <button class="play-btn" data-text="la voiture">▶</button>
+                                    </td>
+                                    <td>o carro</td>
+                                    <td>o carro</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Padrões de Terminação Feminina
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Terminação</th>
+                                    <th>Exemplos</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">-tion</span>
+                                    </td>
+                                    <td>la nation, la situation</td>
+                                    <td>Quase sempre feminina</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">-sion</span>
+                                    </td>
+                                    <td>la télévision, la passion</td>
+                                    <td>Sempre feminina</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">-ure</span>
+                                    </td>
+                                    <td>la voiture, la culture</td>
+                                    <td>Geralmente feminina</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">-ette</span>
+                                    </td>
+                                    <td>la fourchette, la chaussette</td>
+                                    <td>Diminutivo feminino</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="quick-tip">
+                                <h4>📘 Curiosidade</h4>
+                                <p>"La voiture" (o carro) vem do latim "vehiculum" (neutro), mas tornou-se feminina no francês, enquanto em português "o veículo" é masculino.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>-tion, -sion são sempre femininas</p>
+                        <p>Mar, floresta, chuva: femininos em francês</p>
+                        <p>Carro, livro: cuidado com a diferença!</p>
+                        <p>Artigo "la" indica feminino</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "La mer et la pluie m'inspirent."<br>
+                                "O mar e a chuva me inspiram."
+                            </div>
+                            <button class="play-btn" data-text="La mer et la pluie m'inspirent">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 4 -->
+                <div class="lesson-card" id="lesson4">
+                    <div class="lesson-number">4</div>
+                    <h2 class="lesson-title">Exceções e Casos Especiais 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Os Casos Mais Problemáticos
+                        </div>
+                        <div class="section-content">
+                            <p>Alguns substantivos são particularmente traiçoeiros porque seu gênero é contra-intuitivo para falantes de português.</p>
+                            
+                            <table class="gender-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                    <th>Dica</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le amour</span>
+                                        <button class="play-btn" data-text="le amour">▶</button>
+                                    </td>
+                                    <td>o amor</td>
+                                    <td>Masculino singular, feminino plural!</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">la chance</span>
+                                        <button class="play-btn" data-text="la chance">▶</button>
+                                    </td>
+                                    <td>a sorte</td>
+                                    <td>Feminina em ambos</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le déluge</span>
+                                        <button class="play-btn" data-text="le déluge">▶</button>
+                                    </td>
+                                    <td>o dilúvio</td>
+                                    <td>Masculino em ambos</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">la fin</span>
+                                        <button class="play-btn" data-text="la fin">▶</button>
+                                    </td>
+                                    <td>o fim</td>
+                                    <td>Feminino no FR, masculino no PT</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">le choix</span>
+                                        <button class="play-btn" data-text="le choix">▶</button>
+                                    </td>
+                                    <td>a escolha</td>
+                                    <td>Masculino no FR, feminino no PT</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Caso Especial: "Amour"
+                        </div>
+                        <div class="section-content">
+                            <div class="warning-note">
+                                <strong>⚠️ Caso único:</strong> "Amour" é masculino no singular, mas feminino no plural! "Un amour éternel" (um amor eterno) vs "Les amours adolescentes" (os amores adolescentes).
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Forma</th>
+                                    <th>Gênero</th>
+                                    <th>Exemplo</th>
+                                </tr>
+                                <tr>
+                                    <td>Singular</td>
+                                    <td>Masculino</td>
+                                    <td>Le premier amour</td>
+                                </tr>
+                                <tr>
+                                    <td>Plural</td>
+                                    <td>Feminino</td>
+                                    <td>Les amours impossibles</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="quick-tip">
+                                <h4>💡 Dica de Mestre</h4>
+                                <p>Lembre-se: "No singular, amour é masculino; no plural, vira feminino. É a única palavra francesa com essa característica!"</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Amour: masc singular, fem plural (único!)</p>
+                        <p>Fin, choix: gêneros opostos</p>
+                        <p>Chance, déluge: mesmo gênero</p>
+                        <p>Atenção às exceções memoráveis</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Le premier amour et les amours suivantes."<br>
+                                "O primeiro amor e os amores seguintes."
+                            </div>
+                            <button class="play-btn" data-text="Le premier amour et les amours suivantes">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 5 -->
+                <div class="lesson-card" id="lesson5">
+                    <div class="lesson-number">5</div>
+                    <h2 class="lesson-title">Dicas de Memorização 🌟</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Técnicas para Lembrar
+                        </div>
+                        <div class="section-content">
+                            <p>Memorizar todos os gêneros parece difícil, mas com as técnicas certas fica mais fácil.</p>
+                            
+                            <table class="gender-table">
+                                <tr>
+                                    <th>Técnica</th>
+                                    <th>Como Funciona</th>
+                                    <th>Exemplo</th>
+                                </tr>
+                                <tr>
+                                    <td>Associação Mental</td>
+                                    <td>Crie imagens absurdas</td>
+                                    <td>"La table" → uma mesa usando vestido</td>
+                                </tr>
+                                <tr>
+                                    <td>Agrupamento</td>
+                                    <td>Estude por categorias</td>
+                                    <td>Todos os -age juntos</td>
+                                </tr>
+                                <tr>
+                                    <td>Flashcards</td>
+                                    <td>Cartões de repetição</td>
+                                    <td>Frente: "livre", Verso: "le livre"</td>
+                                </tr>
+                                <tr>
+                                    <td>Frases Completas</td>
+                                    <td>Aprenda em contexto</td>
+                                    <td>"J'aime le fromage"</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Método das Terminações
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Método Eficiente</h4>
+                                <p>Memorize as terminações mais comuns para cada gênero. Isso cobre cerca de 80% dos casos.</p>
+                            </div>
+                            
+                            <div class="pattern-box">
+                                <div class="pattern-title">📋 Cheat Sheet Rápida:</div>
+                                <p><strong>Feminino (-e, -tion, -sion, -ure):</strong> la table, la nation, la television, la voiture</p>
+                                <p><strong>Masculino (-age, -ment, -isme):</strong> le voyage, le gouvernement, le tourisme</p>
+                                <p><strong>Exceções importantes:</strong> le musée, le soleil, la mer, la pluie</p>
+                            </div>
+                            
+                            <div class="warning-note">
+                                <strong>📚 Prática Diária:</strong> Dedique 5 minutos por dia para revisar 10 substantivos com gênero diferente. Em um mês, você dominará os 300 mais importantes!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Use associações mentais criativas</p>
+                        <p>Agrupe por terminações comuns</p>
+                        <p>Pratique com flashcards</p>
+                        <p>5 minutos diários = grande progresso</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "A prática constante transforma desafios em conquistas."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 6 -->
+                <div class="lesson-card" id="lesson6">
+                    <div class="lesson-number">6</div>
+                    <h2 class="lesson-title">Exercício Prático 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Teste Seu Conhecimento
+                        </div>
+                        <div class="section-content">
+                            <p>Complete com o artigo correto (le/la) para cada substantivo. Depois verifique as respostas.</p>
+                            
+                            <div id="quiz-container">
+                                <div class="quiz-question">
+                                    <p>1. ___ table (a mesa)</p>
+                                    <button class="audio-btn" onclick="checkAnswer('la', 1)">la</button>
+                                    <button class="audio-btn" onclick="checkAnswer('le', 1)">le</button>
+                                    <span id="result-1" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>2. ___ voyage (a viagem)</p>
+                                    <button class="audio-btn" onclick="checkAnswer('la', 2)">la</button>
+                                    <button class="audio-btn" onclick="checkAnswer('le', 2)">le</button>
+                                    <span id="result-2" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>3. ___ mer (o mar)</p>
+                                    <button class="audio-btn" onclick="checkAnswer('la', 3)">la</button>
+                                    <button class="audio-btn" onclick="checkAnswer('le', 3)">le</button>
+                                    <span id="result-3" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>4. ___ fromage (o queijo)</p>
+                                    <button class="audio-btn" onclick="checkAnswer('la', 4)">la</button>
+                                    <button class="audio-btn" onclick="checkAnswer('le', 4)">le</button>
+                                    <span id="result-4" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>5. ___ amour (o amor) - singular</p>
+                                    <button class="audio-btn" onclick="checkAnswer('la', 5)">la</button>
+                                    <button class="audio-btn" onclick="checkAnswer('le', 5)">le</button>
+                                    <span id="result-5" style="margin-left: 10px;"></span>
+                                </div>
+                            </div>
+                            
+                            <button class="audio-btn" onclick="resetQuiz()" style="margin-top: 15px;">🔄 Reiniciar Quiz</button>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Desafio Avançado
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>🎯 Para Levar para a Vida Real</h4>
+                                <p>Tente formar frases completas usando os substantivos que aprendeu, prestando atenção aos artigos e adjetivos que concordam em gênero.</p>
+                            </div>
+                            
+                            <div class="pattern-box">
+                                <p><strong>Exemplo de desafio:</strong></p>
+                                <p>"Le beau voyage en France était merveilleux."</p>
+                                <p>"La grande table en bois est ancienne."</p>
+                                <p>"Le fromage délicieux et le vin rouge..."</p>
+                            </div>
+                            
+                            <p><em>Dica:</em> Grave-se falando essas frases e ouça para corrigir a pronúncia e o uso dos artigos.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Table: la table (mesmo gênero)</p>
+                        <p>Voyage: le voyage (cuidado!)</p>
+                        <p>Mer: la mer (feminino no FR)</p>
+                        <p>Fromage: le fromage (masculino)</p>
+                        <p>Amour: le amour (singular)</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Le voyage à la mer avec le fromage et l'amour."
+                            </div>
+                            <button class="play-btn" data-text="Le voyage à la mer avec le fromage et l'amour">▶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>✨ Mini Aulas de Francês Elegante • Domine os substantivos de gênero diferente ✨</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuração da API de síntese de voz para francês
+        let speech = null;
+        let currentUtterance = null;
+        
+        // Inicializar a síntese de voz
+        function initSpeech() {
+            if ('speechSynthesis' in window) {
+                speech = window.speechSynthesis;
+                return true;
+            } else {
+                console.error("Seu navegador não suporta a API de síntese de voz.");
+                return false;
+            }
+        }
+        
+        // Função para falar o texto em francês
+        function speakText(text, onEndCallback = null) {
+            if (!speech) return null;
+            
+            // Parar qualquer fala em andamento
+            speech.cancel();
+            
+            // Criar uma nova instância de SpeechSynthesisUtterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Configurar a voz para francês
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.9; // Velocidade um pouco mais lenta para melhor compreensão
+            utterance.pitch = 1.0;
+            
+            // Tentar encontrar uma voz francesa
+            const voices = speech.getVoices();
+            const frenchVoice = voices.find(voice => 
+                voice.lang.includes('fr-FR') || voice.lang.includes('fr')
+            );
+            
+            if (frenchVoice) {
+                utterance.voice = frenchVoice;
+            }
+            
+            // Configurar callbacks
+            if (onEndCallback) {
+                utterance.onend = onEndCallback;
+            }
+            
+            utterance.onerror = function() {
+                console.error("Erro na síntese de voz");
+                removeAllPlayingStates();
+            };
+            
+            // Iniciar a fala
+            speech.speak(utterance);
+            currentUtterance = utterance;
+            
+            return utterance;
+        }
+        
+        // Remover todos os estados de reprodução
+        function removeAllPlayingStates() {
+            document.querySelectorAll('.playing').forEach(element => {
+                element.classList.remove('playing');
+            });
+        }
+        
+        // Funções para o quiz
+        function checkAnswer(answer, questionNumber) {
+            const correctAnswers = {
+                1: 'la',
+                2: 'le', 
+                3: 'la',
+                4: 'le',
+                5: 'le'
+            };
+            
+            const resultElement = document.getElementById(`result-${questionNumber}`);
+            
+            if (answer === correctAnswers[questionNumber]) {
+                resultElement.innerHTML = '✅ Correto!';
+                resultElement.style.color = 'green';
+            } else {
+                resultElement.innerHTML = '❌ Tente novamente';
+                resultElement.style.color = 'red';
+            }
+        }
+        
+        function resetQuiz() {
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`result-${i}`).innerHTML = '';
+            }
+        }
+        
+        // Adicionar funcionalidade aos botões de play
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar a síntese de voz
+            if (!initSpeech()) {
+                alert("Seu navegador não suporta a funcionalidade de áudio. Tente usar Chrome, Firefox ou Edge.");
+                return;
+            }
+            
+            // Adicionar evento de clique a todos os botões de play
+            document.querySelectorAll('.play-btn').forEach(button => {
+                // Verificar se o botão não é do quiz
+                if (!button.hasAttribute('onclick')) {
+                    button.addEventListener('click', function() {
+                        const text = this.getAttribute('data-text');
+                        
+                        // Remover a classe 'playing' de todos os botões
+                        document.querySelectorAll('.play-btn').forEach(btn => {
+                            if (!btn.hasAttribute('onclick')) {
+                                btn.classList.remove('playing');
+                                btn.innerHTML = '▶';
+                            }
+                        });
+                        
+                        // Adicionar a classe 'playing' ao botão atual
+                        this.classList.add('playing');
+                        this.innerHTML = '⏸';
+                        
+                        // Falar o texto
+                        const utterance = speakText(text, function() {
+                            button.classList.remove('playing');
+                            button.innerHTML = '▶';
+                        });
+                    });
+                }
+            });
+            
+            // Botão para reproduzir todas as frases em francês
+            document.getElementById('playAllFrench').addEventListener('click', function() {
+                const allTexts = Array.from(document.querySelectorAll('.play-btn'))
+                    .map(btn => btn.getAttribute('data-text'))
+                    .filter(text => text && text.length > 0);
+                
+                let index = 0;
+                
+                function playNext() {
+                    if (index < allTexts.length) {
+                        const text = allTexts[index];
+                        speakText(text, function() {
+                            index++;
+                            setTimeout(playNext, 1000); // Pequena pausa entre frases
+                        });
+                    }
+                }
+                
+                removeAllPlayingStates();
+                playNext();
+            });
+            
+            // Botão para parar toda a reprodução
+            document.getElementById('stopAll').addEventListener('click', function() {
+                speech.cancel();
+                removeAllPlayingStates();
+            });
+            
+            // Ativar item do menu quando clicado
+            document.querySelectorAll('.menu-item a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    document.querySelectorAll('.menu-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.parentElement.classList.add('active');
+                });
+            });
+            
+            // Ativar item do menu baseado na rolagem
+            window.addEventListener('scroll', function() {
+                const sections = document.querySelectorAll('.lesson-card, .header, .lesson-series');
+                const menuItems = document.querySelectorAll('.menu-item');
+                
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                menuItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.querySelector('a').getAttribute('href') === '#' + current) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+            
+            // Carregar as vozes disponíveis (necessário para alguns navegadores)
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = function() {
+                    initSpeech();
+                };
+            }
+        });
+    </script>
+</body>
+</html>

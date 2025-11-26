@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Aulas de Francês Elegante</title>
+    <style>
+        :root {
+            --primary: #0055A4;
+            --secondary: #EF4135;
+            --accent: #F4F5F0;
+            --light: #f8f9fa;
+            --dark: #2C2C2C;
+            --gold: #FFD700;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8ecef 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Menu Lateral */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .menu {
+            list-style: none;
+        }
+        
+        .menu-item {
+            margin-bottom: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .menu-item.active a {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .menu-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 15px 0;
+        }
+        
+        /* Conteúdo Principal */
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), white, var(--secondary));
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+            font-style: italic;
+        }
+        
+        .lesson-series {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: var(--accent);
+            border-radius: 15px;
+            border: 2px dashed var(--primary);
+        }
+        
+        .lesson-series h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .lesson-series p {
+            color: var(--dark);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .lesson-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lesson-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .lesson-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .lesson-title {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .section-icon {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .section-content {
+            background: var(--accent);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .examples-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .examples-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .examples-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .examples-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .french-text {
+            font-weight: bold;
+            color: var(--primary);
+            flex: 1;
+        }
+        
+        .play-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .play-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .play-btn.playing {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .anatomy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .anatomy-table th {
+            background: var(--secondary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .anatomy-table tr:nth-child(even) {
+            background: #fff5f5;
+        }
+        
+        .anatomy-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ffe0e0;
+        }
+        
+        .quick-tip {
+            background: linear-gradient(135deg, var(--gold), #FFE55C);
+            color: #8B6B00;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #FFC400;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+        }
+        
+        .quick-tip h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 6px 20px rgba(0, 85, 164, 0.3);
+        }
+        
+        .summary h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .summary-icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .elegant-example {
+            background: white;
+            color: var(--dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-style: italic;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .example-text {
+            flex: 1;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--dark);
+            color: white;
+            border-top: 1px solid #444;
+            margin-top: 50px;
+        }
+        
+        .footer p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .audio-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .audio-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 1100px) {
+            .lessons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+            
+            .menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .menu-item {
+                margin: 5px;
+            }
+            
+            .menu-item a {
+                padding: 8px 12px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .lesson-card {
+                padding: 25px;
+            }
+            
+            .examples-table td {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .play-btn {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 30px 25px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .lesson-card {
+                padding: 20px;
+            }
+            
+            .examples-table, .anatomy-table {
+                font-size: 0.9rem;
+            }
+            
+            .examples-table th, .examples-table td,
+            .anatomy-table th, .anatomy-table td {
+                padding: 8px 10px;
+            }
+            
+            .elegant-example {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Lateral -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>🇫🇷 Mini Aulas</h1>
+                <p>Francês Elegante</p>
+            </div>
+            <ul class="menu">
+                <li class="menu-item active"><a href="#intro"><span class="menu-icon">🏠</span> Introdução</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#lesson1"><span class="menu-icon">1️⃣</span> CE - Masculino Singular</a></li>
+                <li class="menu-item"><a href="#lesson2"><span class="menu-icon">2️⃣</span> CET - Masculino Especial</a></li>
+                <li class="menu-item"><a href="#lesson3"><span class="menu-icon">3️⃣</span> CETTE - Feminino Singular</a></li>
+                <li class="menu-item"><a href="#lesson4"><span class="menu-icon">4️⃣</span> CES - Plural</a></li>
+                <li class="menu-item"><a href="#lesson5"><span class="menu-icon">5️⃣</span> C'EST - Este é</a></li>
+                <li class="menu-item"><a href="#lesson6"><span class="menu-icon">6️⃣</span> Resumo Prático</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#series"><span class="menu-icon">✨</span> Série Completa</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="content">
+            <div class="header" id="intro">
+                <h1>Os Demonstrativos Franceses</h1>
+                <p>CE, CET, CETTE, CES e C'EST - Domine a elegância dos adjetivos demonstrativos</p>
+            </div>
+            
+            <div class="lesson-series" id="series">
+                <h2>✨ Os Demonstrativos do Francês</h2>
+                <p>Cada lição é uma joia de clareza, beleza e compreensão — perfeita para aprendizes com sensibilidade linguística</p>
+            </div>
+
+            <div class="audio-controls">
+                <button class="audio-btn" id="playAllFrench">🎵 Ouvir Todas as Frases</button>
+                <button class="audio-btn" id="stopAll">⏹️ Parar Pronúncia</button>
+            </div>
+            
+            <div class="lessons-grid">
+                <!-- Lição 1 -->
+                <div class="lesson-card" id="lesson1">
+                    <div class="lesson-number">1</div>
+                    <h2 class="lesson-title">"CE" - Masculino Singular 🌿</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">📚</span>
+                            Contexto e Significado
+                        </div>
+                        <div class="section-content">
+                            <p>"CE" é o adjetivo demonstrativo masculino singular, equivalente a "este", "esse" ou "aquele" em português.</p>
+                            <p><strong>Uso:</strong> Antes de substantivos masculinos singulares que começam com consoante</p>
+                            <p><strong>Tradução:</strong> "este/esse" (masculino)</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ce livre est intéressant.</span>
+                                        <button class="play-btn" data-text="Ce livre est intéressant">▶</button>
+                                    </td>
+                                    <td>Este livro é interessante.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ce garçon est mon frère.</span>
+                                        <button class="play-btn" data-text="Ce garçon est mon frère">▶</button>
+                                    </td>
+                                    <td>Este menino é meu irmão.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ce professeur est excellent.</span>
+                                        <button class="play-btn" data-text="Ce professeur est excellent">▶</button>
+                                    </td>
+                                    <td>Este professor é excelente.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Expressão
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Dica rápida</h4>
+                                <p>Use "CE" antes de substantivos masculinos que começam com consoante</p>
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Parte</th>
+                                    <th>Função</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ce</span>
+                                        <button class="play-btn" data-text="Ce" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Demonstrativo masculino</td>
+                                    <td>Equivale a "este/esse"</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">livre</span>
+                                        <button class="play-btn" data-text="livre" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Substantivo masculino</td>
+                                    <td>Começa com consoante</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>CE = demonstrativo masculino singular</p>
+                        <p>Usado antes de substantivos masculinos com consoante inicial</p>
+                        <p>Equivale a "este/esse" em português</p>
+                        <p>Forma básica dos demonstrativos franceses</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Ce moment est parfait."<br>
+                                "Este momento é perfeito."
+                            </div>
+                            <button class="play-btn" data-text="Ce moment est parfait">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 2 -->
+                <div class="lesson-card" id="lesson2">
+                    <div class="lesson-number">2</div>
+                    <h2 class="lesson-title">"CET" - Masculino Especial 📜</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Significado e Uso
+                        </div>
+                        <div class="section-content">
+                            <p>"CET" é a forma especial do demonstrativo masculino singular, usada antes de substantivos que começam com vogal ou "H" mudo.</p>
+                            <p><strong>Uso:</strong> Antes de substantivos masculinos com vogal ou H mudo</p>
+                            <p><strong>Tradução:</strong> "este/esse" (masculino)</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Cet arbre est grand.</span>
+                                        <button class="play-btn" data-text="Cet arbre est grand">▶</button>
+                                    </td>
+                                    <td>Esta árvore é grande.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Cet homme est gentil.</span>
+                                        <button class="play-btn" data-text="Cet homme est gentil">▶</button>
+                                    </td>
+                                    <td>Este homem é gentil.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Cet hôtel est cher.</span>
+                                        <button class="play-btn" data-text="Cet hôtel est cher">▶</button>
+                                    </td>
+                                    <td>Este hotel é caro.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">✨</span>
+                            Por que "CET" existe?
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Dica rápida</h4>
+                                <p>"CET" evita o encontro de vogais, facilitando a pronúncia</p>
+                            </div>
+                            
+                            <p><strong>CE + arbre</strong> → "Ce arbre" ❌ (encontro de vogais)</p>
+                            <p><strong>CET + arbre</strong> → "Cet arbre" ✅ (pronúncia fluida)</p>
+                            
+                            <p><em>Curiosidade fonética:</em> O francês evita encontros de vogais (hiato) para manter a fluência da fala. "CET" serve como ponte fonética.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>CET = demonstrativo masculino especial</p>
+                        <p>Usado antes de vogais e H mudo</p>
+                        <p>Facilita a pronúncia evitando hiatos</p>
+                        <p>Mesmo significado que "CE"</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Cet ami est très fidèle."<br>
+                                "Este amigo é muito fiel."
+                            </div>
+                            <button class="play-btn" data-text="Cet ami est très fidèle">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 3 -->
+                <div class="lesson-card" id="lesson3">
+                    <div class="lesson-number">3</div>
+                    <h2 class="lesson-title">"CETTE" - Feminino Singular 💫</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Contexto e Significado
+                        </div>
+                        <div class="section-content">
+                            <p>"CETTE" é o adjetivo demonstrativo feminino singular, equivalente a "esta", "essa" ou "aquela" em português.</p>
+                            <p><strong>Uso:</strong> Antes de todos os substantivos femininos singulares</p>
+                            <p><strong>Tradução:</strong> "esta/essa" (feminino)</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Cette femme est belle.</span>
+                                        <button class="play-btn" data-text="Cette femme est belle">▶</button>
+                                    </td>
+                                    <td>Esta mulher é bonita.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Cette maison est grande.</span>
+                                        <button class="play-btn" data-text="Cette maison est grande">▶</button>
+                                    </td>
+                                    <td>Esta casa é grande.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Cette idée est géniale.</span>
+                                        <button class="play-btn" data-text="Cette idée est géniale">▶</button>
+                                    </td>
+                                    <td>Esta ideia é genial.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Frase
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Palavra</th>
+                                    <th>Função</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Cette</span>
+                                        <button class="play-btn" data-text="Cette" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Demonstrativo feminino</td>
+                                    <td>Usado com todos os femininos</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">femme</span>
+                                        <button class="play-btn" data-text="femme" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Substantivo feminino</td>
+                                    <td>Começa com consoante</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">idée</span>
+                                        <button class="play-btn" data-text="idée" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Substantivo feminino</td>
+                                    <td>Começa com vogal</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>CETTE = demonstrativo feminino singular</p>
+                        <p>Usado com todos os substantivos femininos</p>
+                        <p>Não muda com vogais (diferente do masculino)</p>
+                        <p>Equivale a "esta/essa" em português</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Cette histoire est émouvante."<br>
+                                "Esta história é emocionante."
+                            </div>
+                            <button class="play-btn" data-text="Cette histoire est émouvante">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 4 -->
+                <div class="lesson-card" id="lesson4">
+                    <div class="lesson-number">4</div>
+                    <h2 class="lesson-title">"CES" - Plural 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Contexto e Significado
+                        </div>
+                        <div class="section-content">
+                            <p>"CES" é o adjetivo demonstrativo plural, usado para ambos os gêneros, equivalente a "estes/esses" ou "estas/essas" em português.</p>
+                            <p><strong>Uso:</strong> Antes de todos os substantivos no plural</p>
+                            <p><strong>Tradução:</strong> "estes/estas" ou "esses/essas"</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ces livres sont intéressants.</span>
+                                        <button class="play-btn" data-text="Ces livres sont intéressants">▶</button>
+                                    </td>
+                                    <td>Estes livros são interessantes.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ces femmes sont belles.</span>
+                                        <button class="play-btn" data-text="Ces femmes sont belles">▶</button>
+                                    </td>
+                                    <td>Estas mulheres são bonitas.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ces arbres sont grands.</span>
+                                        <button class="play-btn" data-text="Ces arbres sont grands">▶</button>
+                                    </td>
+                                    <td>Estas árvores são grandes.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Frase
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Palavra</th>
+                                    <th>Função</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ces</span>
+                                        <button class="play-btn" data-text="Ces" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Demonstrativo plural</td>
+                                    <td>Única forma para plural</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">livres</span>
+                                        <button class="play-btn" data-text="livres" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Substantivo masculino plural</td>
+                                    <td>Termina com -s</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">femmes</span>
+                                        <button class="play-btn" data-text="femmes" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Substantivo feminino plural</td>
+                                    <td>Termina com -s</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>CES = demonstrativo plural</p>
+                        <p>Usado com todos os substantivos no plural</p>
+                        <p>Não faz distinção de gênero no plural</p>
+                        <p>Equivale a "estes/estas" em português</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Ces moments sont précieux."<br>
+                                "Estes momentos são preciosos."
+                            </div>
+                            <button class="play-btn" data-text="Ces moments sont précieux">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 5 -->
+                <div class="lesson-card" id="lesson5">
+                    <div class="lesson-number">5</div>
+                    <h2 class="lesson-title">"C'EST" - Este é 🌟</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Significado e Contexto
+                        </div>
+                        <div class="section-content">
+                            <p>"C'EST" é uma contração de "Cela est" (isto é), usada para apresentar ou identificar algo/s alguém.</p>
+                            <p><strong>Uso:</strong> Para apresentações e identificações</p>
+                            <p><strong>Tradução:</strong> "Isto é", "Este é", "Esta é"</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Situação</th>
+                                    <th>Exemplo Francês</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>Apresentação</td>
+                                    <td>
+                                        <span class="french-text">C'est mon ami.</span>
+                                        <button class="play-btn" data-text="C'est mon ami">▶</button>
+                                    </td>
+                                    <td>Este é meu amigo.</td>
+                                </tr>
+                                <tr>
+                                    <td>Identificação</td>
+                                    <td>
+                                        <span class="french-text">C'est un livre.</span>
+                                        <button class="play-btn" data-text="C'est un livre">▶</button>
+                                    </td>
+                                    <td>Isto é um livro.</td>
+                                </tr>
+                                <tr>
+                                    <td>Opinião</td>
+                                    <td>
+                                        <span class="french-text">C'est magnifique!</span>
+                                        <button class="play-btn" data-text="C'est magnifique">▶</button>
+                                    </td>
+                                    <td>Isto é magnífico!</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Expressão
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Dica rápida</h4>
+                                <p>"C'est" é uma expressão fixa muito comum no francês falado</p>
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Parte</th>
+                                    <th>Função</th>
+                                    <th>Observação</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">C'</span>
+                                        <button class="play-btn" data-text="C'" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Contração de "Cela"</td>
+                                    <td>Significa "isto"</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">est</span>
+                                        <button class="play-btn" data-text="est" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Verbo être</td>
+                                    <td>Forma de "é"</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>C'EST = "Isto é" / "Este é"</p>
+                        <p>Contração de "Cela est"</p>
+                        <p>Usado para apresentações e identificações</p>
+                        <p>Expressão muito comum no francês falado</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "C'est la vie!"<br>
+                                "Assim é a vida!"
+                            </div>
+                            <button class="play-btn" data-text="C'est la vie">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 6 -->
+                <div class="lesson-card" id="lesson6">
+                    <div class="lesson-number">6</div>
+                    <h2 class="lesson-title">Resumo Prático 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Tabela de Referência Rápida
+                        </div>
+                        <div class="section-content">
+                            <p>Resumo completo dos demonstrativos franceses para consulta rápida.</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Demonstrativo</th>
+                                    <th>Uso</th>
+                                    <th>Exemplo</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">CE</span>
+                                    </td>
+                                    <td>Masculino singular + consoante</td>
+                                    <td>
+                                        <span class="french-text">ce livre</span>
+                                        <button class="play-btn" data-text="ce livre" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>este livro</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">CET</span>
+                                    </td>
+                                    <td>Masculino singular + vogal/H mudo</td>
+                                    <td>
+                                        <span class="french-text">cet arbre</span>
+                                        <button class="play-btn" data-text="cet arbre" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>esta árvore</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">CETTE</span>
+                                    </td>
+                                    <td>Feminino singular</td>
+                                    <td>
+                                        <span class="french-text">cette femme</span>
+                                        <button class="play-btn" data-text="cette femme" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>esta mulher</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">CES</span>
+                                    </td>
+                                    <td>Plural (todos os gêneros)</td>
+                                    <td>
+                                        <span class="french-text">ces livres</span>
+                                        <button class="play-btn" data-text="ces livres" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>estes livros</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">C'EST</span>
+                                    </td>
+                                    <td>Apresentação/identificação</td>
+                                    <td>
+                                        <span class="french-text">c'est mon ami</span>
+                                        <button class="play-btn" data-text="c'est mon ami" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>este é meu amigo</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Regra Mnemônica
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>📘 Dica de Memorização</h4>
+                                <p>Lembre-se: "CE antes de consoante, CET antes de vogal, CETTE para feminino, CES para plural"</p>
+                            </div>
+                            
+                            <p><strong>Para praticar:</strong></p>
+                            <ul style="margin-left: 20px;">
+                                <li>___ homme (homem) → <strong>CET</strong> (vogal)</li>
+                                <li>___ femme (mulher) → <strong>CETTE</strong> (feminino)</li>
+                                <li>___ livre (livro) → <strong>CE</strong> (consoante)</li>
+                                <li>___ amis (amigos) → <strong>CES</strong> (plural)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>CE → masculino + consoante</p>
+                        <p>CET → masculino + vogal/H mudo</p>
+                        <p>CETTE → feminino singular</p>
+                        <p>CES → plural (todos os gêneros)</p>
+                        <p>C'EST → apresentações/identificações</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Ce jour, cet instant, cette émotion, ces souvenirs... c'est la vie!"<br>
+                                "Este dia, este instante, esta emoção, estas lembranças... isto é a vida!"
+                            </div>
+                            <button class="play-btn" data-text="Ce jour, cet instant, cette émotion, ces souvenirs... c'est la vie">▶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>✨ Mini Aulas de Francês Elegante • Beleza didática unida à estrutura lógica ✨</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuração da API de síntese de voz para francês
+        let speech = null;
+        let currentUtterance = null;
+        
+        // Inicializar a síntese de voz
+        function initSpeech() {
+            if ('speechSynthesis' in window) {
+                speech = window.speechSynthesis;
+                return true;
+            } else {
+                console.error("Seu navegador não suporta a API de síntese de voz.");
+                return false;
+            }
+        }
+        
+        // Função para falar o texto em francês
+        function speakText(text, onEndCallback = null) {
+            if (!speech) return null;
+            
+            // Parar qualquer fala em andamento
+            speech.cancel();
+            
+            // Criar uma nova instância de SpeechSynthesisUtterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Configurar a voz para francês
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.9; // Velocidade um pouco mais lenta para melhor compreensão
+            utterance.pitch = 1.0;
+            
+            // Tentar encontrar uma voz francesa
+            const voices = speech.getVoices();
+            const frenchVoice = voices.find(voice => 
+                voice.lang.includes('fr-FR') || voice.lang.includes('fr')
+            );
+            
+            if (frenchVoice) {
+                utterance.voice = frenchVoice;
+            }
+            
+            // Configurar callbacks
+            if (onEndCallback) {
+                utterance.onend = onEndCallback;
+            }
+            
+            utterance.onerror = function() {
+                console.error("Erro na síntese de voz");
+                removeAllPlayingStates();
+            };
+            
+            // Iniciar a fala
+            speech.speak(utterance);
+            currentUtterance = utterance;
+            
+            return utterance;
+        }
+        
+        // Remover todos os estados de reprodução
+        function removeAllPlayingStates() {
+            document.querySelectorAll('.playing').forEach(element => {
+                element.classList.remove('playing');
+            });
+        }
+        
+        // Adicionar funcionalidade aos botões de play
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar a síntese de voz
+            if (!initSpeech()) {
+                alert("Seu navegador não suporta a funcionalidade de áudio. Tente usar Chrome, Firefox ou Edge.");
+                return;
+            }
+            
+            // Adicionar evento de clique a todos os botões de play
+            document.querySelectorAll('.play-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const text = this.getAttribute('data-text');
+                    
+                    // Remover a classe 'playing' de todos os botões
+                    document.querySelectorAll('.play-btn').forEach(btn => {
+                        btn.classList.remove('playing');
+                        btn.innerHTML = '▶';
+                    });
+                    
+                    // Adicionar a classe 'playing' ao botão atual
+                    this.classList.add('playing');
+                    this.innerHTML = '⏸';
+                    
+                    // Falar o texto
+                    const utterance = speakText(text, function() {
+                        button.classList.remove('playing');
+                        button.innerHTML = '▶';
+                    });
+                });
+            });
+            
+            // Botão para reproduzir todas as frases em francês
+            document.getElementById('playAllFrench').addEventListener('click', function() {
+                const allTexts = Array.from(document.querySelectorAll('.play-btn'))
+                    .map(btn => btn.getAttribute('data-text'))
+                    .filter(text => text.length > 0);
+                
+                let index = 0;
+                
+                function playNext() {
+                    if (index < allTexts.length) {
+                        const text = allTexts[index];
+                        speakText(text, function() {
+                            index++;
+                            setTimeout(playNext, 1000); // Pequena pausa entre frases
+                        });
+                    }
+                }
+                
+                removeAllPlayingStates();
+                playNext();
+            });
+            
+            // Botão para parar toda a reprodução
+            document.getElementById('stopAll').addEventListener('click', function() {
+                speech.cancel();
+                removeAllPlayingStates();
+            });
+            
+            // Ativar item do menu quando clicado
+            document.querySelectorAll('.menu-item a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    document.querySelectorAll('.menu-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.parentElement.classList.add('active');
+                });
+            });
+            
+            // Ativar item do menu baseado na rolagem
+            window.addEventListener('scroll', function() {
+                const sections = document.querySelectorAll('.lesson-card, .header, .lesson-series');
+                const menuItems = document.querySelectorAll('.menu-item');
+                
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                menuItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.querySelector('a').getAttribute('href') === '#' + current) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+            
+            // Carregar as vozes disponíveis (necessário para alguns navegadores)
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = function() {
+                    initSpeech();
+                };
+            }
+        });
+    </script>
+</body>
+</html>
