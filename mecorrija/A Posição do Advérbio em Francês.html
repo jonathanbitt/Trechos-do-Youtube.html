@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posição do Advérbio em Francês</title>
+    <style>
+        :root {
+            --primary: #0055A4;
+            --secondary: #EF4135;
+            --accent: #F4F5F0;
+            --light: #f8f9fa;
+            --dark: #2C2C2C;
+            --gold: #FFD700;
+            --success: #28a745;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8ecef 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Menu Lateral */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .menu {
+            list-style: none;
+        }
+        
+        .menu-item {
+            margin-bottom: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .menu-item.active a {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .menu-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 15px 0;
+        }
+        
+        /* Conteúdo Principal */
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), white, var(--secondary));
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+            font-style: italic;
+        }
+        
+        .lesson-series {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: var(--accent);
+            border-radius: 15px;
+            border: 2px dashed var(--primary);
+        }
+        
+        .lesson-series h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .lesson-series p {
+            color: var(--dark);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .lesson-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lesson-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .lesson-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .lesson-title {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+            font-weight: 400;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .section-icon {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .section-content {
+            background: var(--accent);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .examples-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .examples-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .examples-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .examples-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .french-text {
+            font-weight: bold;
+            color: var(--primary);
+            flex: 1;
+        }
+        
+        .portuguese-text {
+            flex: 1;
+        }
+        
+        .adverb-highlight {
+            background-color: #FFEAA7;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .verb-highlight {
+            background-color: #D4EDDA;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .play-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .play-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .play-btn.playing {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .anatomy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .anatomy-table th {
+            background: var(--secondary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .anatomy-table tr:nth-child(even) {
+            background: #fff5f5;
+        }
+        
+        .anatomy-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ffe0e0;
+        }
+        
+        .quick-tip {
+            background: linear-gradient(135deg, var(--gold), #FFE55C);
+            color: #8B6B00;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #FFC400;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+        }
+        
+        .quick-tip h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, var(--primary), #1A6FC4);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 6px 20px rgba(0, 85, 164, 0.3);
+        }
+        
+        .summary h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .summary-icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .elegant-example {
+            background: white;
+            color: var(--dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-style: italic;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .example-text {
+            flex: 1;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--dark);
+            color: white;
+            border-top: 1px solid #444;
+            margin-top: 50px;
+        }
+        
+        .footer p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .audio-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .audio-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .warning-note {
+            background: linear-gradient(135deg, #ffc107, #ffca2c);
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffb300;
+        }
+        
+        .pattern-box {
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .pattern-title {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: center;
+        }
+        
+        .comparison-table td {
+            padding: 12px 15px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+        
+        .correct {
+            background-color: #d4edda;
+        }
+        
+        .incorrect {
+            background-color: #f8d7da;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 1100px) {
+            .lessons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+            
+            .menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .menu-item {
+                margin: 5px;
+            }
+            
+            .menu-item a {
+                padding: 8px 12px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .lesson-card {
+                padding: 25px;
+            }
+            
+            .examples-table td {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .play-btn {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 30px 25px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .lesson-card {
+                padding: 20px;
+            }
+            
+            .examples-table, .anatomy-table {
+                font-size: 0.9rem;
+            }
+            
+            .examples-table th, .examples-table td,
+            .anatomy-table th, .anatomy-table td {
+                padding: 8px 10px;
+            }
+            
+            .elegant-example {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Lateral -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>🇫🇷 Mini Aulas</h1>
+                <p>Posição do Advérbio</p>
+            </div>
+            <ul class="menu">
+                <li class="menu-item active"><a href="#intro"><span class="menu-icon">🏠</span> Introdução</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#lesson1"><span class="menu-icon">1️⃣</span> Passé Composé</a></li>
+                <li class="menu-item"><a href="#lesson2"><span class="menu-icon">2️⃣</span> Outros Tempos Compostos</a></li>
+                <li class="menu-item"><a href="#lesson3"><span class="menu-icon">3️⃣</span> Advérbios Curtos vs Longos</a></li>
+                <li class="menu-item"><a href="#lesson4"><span class="menu-icon">4️⃣</span> Comparação com Português</a></li>
+                <li class="menu-item"><a href="#lesson5"><span class="menu-icon">5️⃣</span> Exceções Importantes</a></li>
+                <li class="menu-item"><a href="#lesson6"><span class="menu-icon">6️⃣</span> Exercício Prático</a></li>
+                
+                <div class="menu-divider"></div>
+                
+                <li class="menu-item"><a href="#series"><span class="menu-icon">✨</span> Série Completa</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Conteúdo Principal -->
+        <main class="content">
+            <div class="header" id="intro">
+                <h1>A Posição do Advérbio em Francês</h1>
+                <p>Domine a regra: "J'ai <span class="adverb-highlight">très bien</span> dormi" - O advérbio entre auxiliar e particípio</p>
+            </div>
+            
+            <div class="lesson-series" id="series">
+                <h2>✨ O Segredo da Ordem das Palavras</h2>
+                <p>Descubra por que em francês o advérbio vem entre o verbo auxiliar e o particípio passado</p>
+            </div>
+
+            <div class="audio-controls">
+                <button class="audio-btn" id="playAllFrench">🎵 Ouvir Todas as Frases</button>
+                <button class="audio-btn" id="stopAll">⏹️ Parar Pronúncia</button>
+            </div>
+            
+            <div class="lessons-grid">
+                <!-- Lição 1 -->
+                <div class="lesson-card" id="lesson1">
+                    <div class="lesson-number">1</div>
+                    <h2 class="lesson-title">A Regra do Passé Composé 🌿</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">📚</span>
+                            A Estrutura Fundamental
+                        </div>
+                        <div class="section-content">
+                            <p>No <strong>passé composé</strong> (equivalente ao pretérito perfeito), o advérbio se posiciona entre o verbo auxiliar (avoir/être) e o particípio passado.</p>
+                            
+                            <div class="quick-tip">
+                                <h4>💡 Fórmula Mágica</h4>
+                                <p>Sujeito + Auxiliar + <span class="adverb-highlight">ADVÉRBIO</span> + Particípio Passado</p>
+                            </div>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">J'ai <span class="adverb-highlight">très bien</span> dormi.</span>
+                                        <button class="play-btn" data-text="J'ai très bien dormi">▶</button>
+                                    </td>
+                                    <td>Eu dormi muito bem.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Elle a <span class="adverb-highlight">rapidement</span> compris.</span>
+                                        <button class="play-btn" data-text="Elle a rapidement compris">▶</button>
+                                    </td>
+                                    <td>Ela entendeu rapidamente.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Nous avons <span class="adverb-highlight">souvent</span> voyagé.</span>
+                                        <button class="play-btn" data-text="Nous avons souvent voyagé">▶</button>
+                                    </td>
+                                    <td>Nós viajamos frequentemente.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ils ont <span class="adverb-highlight">malheureusement</span> perdu.</span>
+                                        <button class="play-btn" data-text="Ils ont malheureusement perdu">▶</button>
+                                    </td>
+                                    <td>Eles perderam infelizmente.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Anatomia da Frase
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Elemento</th>
+                                    <th>Função</th>
+                                    <th>Exemplo</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">J'</span>
+                                        <button class="play-btn" data-text="J'" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Sujeito</td>
+                                    <td>Eu</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">ai</span>
+                                        <button class="play-btn" data-text="ai" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Verbo auxiliar</td>
+                                    <td>Forma de "avoir"</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">très bien</span>
+                                        <button class="play-btn" data-text="très bien" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Advérbio</td>
+                                    <td>Muito bem</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">dormi</span>
+                                        <button class="play-btn" data-text="dormi" style="margin-left: 5px; width: 28px; height: 28px;">▶</button>
+                                    </td>
+                                    <td>Particípio passado</td>
+                                    <td>dormido</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>No passé composé: Sujeito + Auxiliar + ADVÉRBIO + Particípio</p>
+                        <p>Advérbio sempre entre auxiliar e particípio</p>
+                        <p>Vale para auxiliares "avoir" e "être"</p>
+                        <p>Diferente do português, onde o advérbio vai depois</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "J'ai toujours aimé la musique française."<br>
+                                "Eu sempre amei a música francesa."
+                            </div>
+                            <button class="play-btn" data-text="J'ai toujours aimé la musique française">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 2 -->
+                <div class="lesson-card" id="lesson2">
+                    <div class="lesson-number">2</div>
+                    <h2 class="lesson-title">Outros Tempos Compostos 📜</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            A Regra se Aplica a Todos os Tempos Compostos
+                        </div>
+                        <div class="section-content">
+                            <p>A mesma regra vale para todos os tempos verbais compostos em francês, não apenas o passé composé.</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Tempo Verbal</th>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>Plus-que-parfait</td>
+                                    <td>
+                                        <span class="french-text">J'avais <span class="adverb-highlight">déjà</span> fini.</span>
+                                        <button class="play-btn" data-text="J'avais déjà fini">▶</button>
+                                    </td>
+                                    <td>Eu já tinha terminado.</td>
+                                </tr>
+                                <tr>
+                                    <td>Futur antérieur</td>
+                                    <td>
+                                        <span class="french-text">Tu auras <span class="adverb-highlight">probablement</span> réussi.</span>
+                                        <button class="play-btn" data-text="Tu auras probablement réussi">▶</button>
+                                    </td>
+                                    <td>Você provavelmente terá conseguido.</td>
+                                </tr>
+                                <tr>
+                                    <td>Conditionnel passé</td>
+                                    <td>
+                                        <span class="french-text">Nous aurions <span class="adverb-highlight">facilement</span> gagné.</span>
+                                        <button class="play-btn" data-text="Nous aurions facilement gagné">▶</button>
+                                    </td>
+                                    <td>Nós teríamos ganhado facilmente.</td>
+                                </tr>
+                                <tr>
+                                    <td>Passé antérieur</td>
+                                    <td>
+                                        <span class="french-text">Quand il eut <span class="adverb-highlight">enfin</span> terminé...</span>
+                                        <button class="play-btn" data-text="Quand il eut enfin terminé">▶</button>
+                                    </td>
+                                    <td>Quando ele finalmente terminou...</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">✨</span>
+                            Com Verbo Auxiliar Être
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Dica rápida</h4>
+                                <p>A regra é a mesma com o auxiliar "être" - o advérbio ainda vem entre o auxiliar e o particípio</p>
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Francês</th>
+                                    <th>Análise</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Elle est <span class="adverb-highlight">tranquillement</span> arrivée.</span>
+                                        <button class="play-btn" data-text="Elle est tranquillement arrivée">▶</button>
+                                    </td>
+                                    <td>sujeito + être + advérbio + particípio</td>
+                                    <td>Ela chegou tranquilamente.</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">Ils sont <span class="adverb-highlight">rapidement</span> partis.</span>
+                                        <button class="play-btn" data-text="Ils sont rapidement partis">▶</button>
+                                    </td>
+                                    <td>sujeito + être + advérbio + particípio</td>
+                                    <td>Eles partiram rapidamente.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Regra vale para TODOS os tempos compostos</p>
+                        <p>Plus-que-parfait, futur antérieur, etc.</p>
+                        <p>Funciona com ambos auxiliares: avoir e être</p>
+                        <p>Posição fixa: entre auxiliar e particípio</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Elle sera certainement venue."<br>
+                                "Ela certamente terá vindo."
+                            </div>
+                            <button class="play-btn" data-text="Elle sera certainement venue">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 3 -->
+                <div class="lesson-card" id="lesson3">
+                    <div class="lesson-number">3</div>
+                    <h2 class="lesson-title">Advérbios Curtos vs Longos 💫</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Exceção para Advérbios Curtos
+                        </div>
+                        <div class="section-content">
+                            <p>Advérbios curtos (como <strong>bien, mal, beaucoup, peu</strong>) podem aparecer APÓS o particípio em alguns casos, especialmente quando o particípio é muito curto.</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Situação</th>
+                                    <th>Francês</th>
+                                    <th>Português</th>
+                                </tr>
+                                <tr>
+                                    <td>Advérbio curto (mais comum)</td>
+                                    <td>
+                                        <span class="french-text">J'ai <span class="adverb-highlight">beaucoup</span> aimé.</span>
+                                        <button class="play-btn" data-text="J'ai beaucoup aimé">▶</button>
+                                    </td>
+                                    <td>Eu gostei muito.</td>
+                                </tr>
+                                <tr>
+                                    <td>Advérbio curto (alternativa)</td>
+                                    <td>
+                                        <span class="french-text">J'ai aimé <span class="adverb-highlight">beaucoup</span>.</span>
+                                        <button class="play-btn" data-text="J'ai aimé beaucoup">▶</button>
+                                    </td>
+                                    <td>Eu gostei muito.</td>
+                                </tr>
+                                <tr>
+                                    <td>Advérbio longo (só uma posição)</td>
+                                    <td>
+                                        <span class="french-text">J'ai <span class="adverb-highlight">sincèrement</span> apprécié.</span>
+                                        <button class="play-btn" data-text="J'ai sincèrement apprécié">▶</button>
+                                    </td>
+                                    <td>Eu sinceramente apreciei.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Lista de Advérbios Curtos Flexíveis
+                        </div>
+                        <div class="section-content">
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Advérbio</th>
+                                    <th>Significado</th>
+                                    <th>Exemplo</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">bien</span>
+                                    </td>
+                                    <td>bem</td>
+                                    <td>J'ai bien dormi / J'ai dormi bien</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">mal</span>
+                                    </td>
+                                    <td>mal</td>
+                                    <td>Il a mal compris / Il a compris mal</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">beaucoup</span>
+                                    </td>
+                                    <td>muito</td>
+                                    <td>J'ai beaucoup mangé / J'ai mangé beaucoup</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="french-text">peu</span>
+                                    </td>
+                                    <td>pouco</td>
+                                    <td>Elle a peu travaillé / Elle a travaillé peu</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="warning-note">
+                                <strong>⚠️ Atenção:</strong> Advérbios longos como "rapidement", "sérieusement", "probablement" NÃO podem ir depois do particípio. Devem ficar sempre entre auxiliar e particípio.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Advérbios curtos: posição flexível</p>
+                        <p>Advérbios longos: só entre auxiliar e particípio</p>
+                        <p>Bien, mal, beaucoup, peu = flexíveis</p>
+                        <p>Rapidement, sérieusement = posição fixa</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Il a beaucoup parlé." ou "Il a parlé beaucoup."<br>
+                                "Ele falou muito."
+                            </div>
+                            <button class="play-btn" data-text="Il a beaucoup parlé">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 4 -->
+                <div class="lesson-card" id="lesson4">
+                    <div class="lesson-number">4</div>
+                    <h2 class="lesson-title">Comparação com Português 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Diferenças Fundamentais
+                        </div>
+                        <div class="section-content">
+                            <p>Em português, o advérbio geralmente vem depois do verbo principal, enquanto em francês vem entre auxiliar e particípio.</p>
+                            
+                            <table class="comparison-table">
+                                <tr>
+                                    <th>Português</th>
+                                    <th>Francês (Correto)</th>
+                                    <th>Francês (Incorreto)</th>
+                                </tr>
+                                <tr>
+                                    <td>Eu <strong>dormi muito bem</strong></td>
+                                    <td class="correct">J'ai <strong>très bien dormi</strong></td>
+                                    <td class="incorrect">J'ai dormi très bien</td>
+                                </tr>
+                                <tr>
+                                    <td>Ela <strong>entendeu rapidamente</strong></td>
+                                    <td class="correct">Elle a <strong>rapidement compris</strong></td>
+                                    <td class="incorrect">Elle a compris rapidement</td>
+                                </tr>
+                                <tr>
+                                    <td>Nós <strong>viajamos frequentemente</strong></td>
+                                    <td class="correct">Nous avons <strong>souvent voyagé</strong></td>
+                                    <td class="incorrect">Nous avons voyagé souvent</td>
+                                </tr>
+                                <tr>
+                                    <td>Eles <strong>perderam infelizmente</strong></td>
+                                    <td class="correct">Ils ont <strong>malheureusement perdu</strong></td>
+                                    <td class="incorrect">Ils ont perdu malheureusement</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Dica para Falantes de Português
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Mnemônica Prática</h4>
+                                <p>Pense: "Em francês, o advérbio fica PRESO entre o auxiliar e o particípio, não tem como escapar!"</p>
+                            </div>
+                            
+                            <div class="pattern-box">
+                                <div class="pattern-title">📋 Tradução Mental:</div>
+                                <p>Quando pensar em português: "Eu <strong>comi rapidamente</strong>"</p>
+                                <p>Traduza para francês: "J'ai <strong>rapidement mangé</strong>"</p>
+                                <p><strong>Note:</strong> O advérbio "pula" para antes do verbo principal</p>
+                            </div>
+                            
+                            <div class="warning-note">
+                                <strong>🎯 Erro Comum:</strong> Falantes de português tendem a colocar o advérbio no final, como fazem naturalmente. Fique atento!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Português: verbo + advérbio</p>
+                        <p>Francês: auxiliar + advérbio + particípio</p>
+                        <p>Cuidado com a transferência do português</p>
+                        <p>Advérbio "presa" no meio na estrutura francesa</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Ela já chegou" → "Elle est déjà arrivée"<br>
+                                (não "Elle est arrivée déjà")
+                            </div>
+                            <button class="play-btn" data-text="Elle est déjà arrivée">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 5 -->
+                <div class="lesson-card" id="lesson5">
+                    <div class="lesson-number">5</div>
+                    <h2 class="lesson-title">Exceções Importantes 🌟</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Quando a Regra Não se Aplica
+                        </div>
+                        <div class="section-content">
+                            <p>Algumas exceções importantes à regra geral da posição do advérbio.</p>
+                            
+                            <table class="examples-table">
+                                <tr>
+                                    <th>Caso</th>
+                                    <th>Exemplo Francês</th>
+                                    <th>Explicação</th>
+                                </tr>
+                                <tr>
+                                    <td>Advérbios de lugar</td>
+                                    <td>
+                                        <span class="french-text">J'ai mis le livre <span class="adverb-highlight">ici</span>.</span>
+                                        <button class="play-btn" data-text="J'ai mis le livre ici">▶</button>
+                                    </td>
+                                    <td>Advérbios de lugar vão no final</td>
+                                </tr>
+                                <tr>
+                                    <td>Advérbios de tempo definido</td>
+                                    <td>
+                                        <span class="french-text">Je l'ai vu <span class="adverb-highlight">hier</span>.</span>
+                                        <button class="play-btn" data-text="Je l'ai vu hier">▶</button>
+                                    </td>
+                                    <td>Advérbios de tempo definido vão no final</td>
+                                </tr>
+                                <tr>
+                                    <td>Com pronomes</td>
+                                    <td>
+                                        <span class="french-text">Je les ai <span class="adverb-highlight">tous</span> vus.</span>
+                                        <button class="play-btn" data-text="Je les ai tous vus">▶</button>
+                                    </td>
+                                    <td>"Tous" vem entre auxiliar e particípio</td>
+                                </tr>
+                                <tr>
+                                    <td>Negação</td>
+                                    <td>
+                                        <span class="french-text">Je n'ai <span class="adverb-highlight">pas</span> mangé.</span>
+                                        <button class="play-btn" data-text="Je n'ai pas mangé">▶</button>
+                                    </td>
+                                    <td>"Pas" vem entre auxiliar e particípio</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Casos Especiais com Pronomes
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>💡 Ordem com Múltiplos Elementos</h4>
+                                <p>Quando há pronomes e advérbios, a ordem é: Sujeito + Pronome + Auxiliar + Advérbio + Particípio</p>
+                            </div>
+                            
+                            <table class="anatomy-table">
+                                <tr>
+                                    <th>Elementos</th>
+                                    <th>Ordem Correta</th>
+                                    <th>Tradução</th>
+                                </tr>
+                                <tr>
+                                    <td>Sujeito + Pronome + Aux + Adv + Part</td>
+                                    <td>Je le lui ai déjà donné</td>
+                                    <td>Eu já o dei a ele/ela</td>
+                                </tr>
+                                <tr>
+                                    <td>Sujeito + Neg + Aux + Adv + Part</td>
+                                    <td>Je n'ai pas encore fini</td>
+                                    <td>Eu ainda não terminei</td>
+                                </tr>
+                                <tr>
+                                    <td>Sujeito + Pron + Aux + Adv + Part</td>
+                                    <td>Nous les avons bien reçus</td>
+                                    <td>Nós os recebemos bem</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Advérbios de lugar/tempo: final da frase</p>
+                        <p>Com pronomes: ordem específica</p>
+                        <p>Negação (pas): entre auxiliar e particípio</p>
+                        <p>"Tous" segue a regra geral</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "Je les ai tous immédiatement compris."<br>
+                                "Eu os entendi todos imediatamente."
+                            </div>
+                            <button class="play-btn" data-text="Je les ai tous immédiatement compris">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lição 6 -->
+                <div class="lesson-card" id="lesson6">
+                    <div class="lesson-number">6</div>
+                    <h2 class="lesson-title">Exercício Prático 🎭</h2>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🌿</span>
+                            Coloque o Advérbio na Posição Correta
+                        </div>
+                        <div class="section-content">
+                            <p>Reescreva as frases colocando o advérbio entre parênteses na posição correta em francês.</p>
+                            
+                            <div id="quiz-container">
+                                <div class="quiz-question">
+                                    <p>1. J'ai compris la leçon. (facilement)</p>
+                                    <input type="text" id="answer1" placeholder="Escreva a frase corrigida" style="width: 100%; padding: 8px; margin: 5px 0;">
+                                    <button class="audio-btn" onclick="checkAnswer(1)">Verificar</button>
+                                    <span id="result-1" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>2. Elle a mangé le gâteau. (rapidement)</p>
+                                    <input type="text" id="answer2" placeholder="Escreva a frase corrigida" style="width: 100%; padding: 8px; margin: 5px 0;">
+                                    <button class="audio-btn" onclick="checkAnswer(2)">Verificar</button>
+                                    <span id="result-2" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>3. Nous avons visité Paris. (souvent)</p>
+                                    <input type="text" id="answer3" placeholder="Escreva a frase corrigida" style="width: 100%; padding: 8px; margin: 5px 0;">
+                                    <button class="audio-btn" onclick="checkAnswer(3)">Verificar</button>
+                                    <span id="result-3" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>4. Tu as fini ton travail. (enfin)</p>
+                                    <input type="text" id="answer4" placeholder="Escreva a frase corrigida" style="width: 100%; padding: 8px; margin: 5px 0;">
+                                    <button class="audio-btn" onclick="checkAnswer(4)">Verificar</button>
+                                    <span id="result-4" style="margin-left: 10px;"></span>
+                                </div>
+                                
+                                <div class="quiz-question">
+                                    <p>5. Ils ont parlé français. (couramment)</p>
+                                    <input type="text" id="answer5" placeholder="Escreva a frase corrigida" style="width: 100%; padding: 8px; margin: 5px 0;">
+                                    <button class="audio-btn" onclick="checkAnswer(5)">Verificar</button>
+                                    <span id="result-5" style="margin-left: 10px;"></span>
+                                </div>
+                            </div>
+                            
+                            <button class="audio-btn" onclick="resetQuiz()" style="margin-top: 15px;">🔄 Reiniciar Exercício</button>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">
+                            <span class="section-icon">🔍</span>
+                            Para Praticar no Dia a Dia
+                        </div>
+                        <div class="section-content">
+                            <div class="quick-tip">
+                                <h4>🎯 Dica de Pronúncia</h4>
+                                <p>Pratique estas frases em voz alta, prestando atenção na entonação. O advérbio geralmente recebe uma leve ênfase.</p>
+                            </div>
+                            
+                            <div class="pattern-box">
+                                <p><strong>Frases para praticar:</strong></p>
+                                <p>"J'ai bien dormi cette nuit." → "Eu dormi bem esta noite."</p>
+                                <p>"Elle a rapidement compris la situation." → "Ela entendeu rapidamente a situação."</p>
+                                <p>"Nous avons souvent visité ce musée." → "Nós visitamos frequentemente este museu."</p>
+                                <p>"Ils ont finalement réussi." → "Eles finalmente conseguiram."</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <h4><span class="summary-icon">📝</span> Resumindo</h4>
+                        <p>Lembre-se: Auxiliar + ADVÉRBIO + Particípio</p>
+                        <p>Advérbios longos: posição fixa no meio</p>
+                        <p>Advérbios curtos: podem ser flexíveis</p>
+                        <p>Pratique com frases do dia a dia</p>
+                        
+                        <div class="elegant-example">
+                            <div class="example-text">
+                                "J'ai finalement compris la règle!"<br>
+                                "Eu finalmente entendi a regra!"
+                            </div>
+                            <button class="play-btn" data-text="J'ai finalement compris la règle">▶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>✨ Mini Aulas de Francês Elegante • Domine a posição do advérbio ✨</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuração da API de síntese de voz para francês
+        let speech = null;
+        let currentUtterance = null;
+        
+        // Inicializar a síntese de voz
+        function initSpeech() {
+            if ('speechSynthesis' in window) {
+                speech = window.speechSynthesis;
+                return true;
+            } else {
+                console.error("Seu navegador não suporta a API de síntese de voz.");
+                return false;
+            }
+        }
+        
+        // Função para falar o texto em francês
+        function speakText(text, onEndCallback = null) {
+            if (!speech) return null;
+            
+            // Parar qualquer fala em andamento
+            speech.cancel();
+            
+            // Criar uma nova instância de SpeechSynthesisUtterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Configurar a voz para francês
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.9; // Velocidade um pouco mais lenta para melhor compreensão
+            utterance.pitch = 1.0;
+            
+            // Tentar encontrar uma voz francesa
+            const voices = speech.getVoices();
+            const frenchVoice = voices.find(voice => 
+                voice.lang.includes('fr-FR') || voice.lang.includes('fr')
+            );
+            
+            if (frenchVoice) {
+                utterance.voice = frenchVoice;
+            }
+            
+            // Configurar callbacks
+            if (onEndCallback) {
+                utterance.onend = onEndCallback;
+            }
+            
+            utterance.onerror = function() {
+                console.error("Erro na síntese de voz");
+                removeAllPlayingStates();
+            };
+            
+            // Iniciar a fala
+            speech.speak(utterance);
+            currentUtterance = utterance;
+            
+            return utterance;
+        }
+        
+        // Remover todos os estados de reprodução
+        function removeAllPlayingStates() {
+            document.querySelectorAll('.playing').forEach(element => {
+                element.classList.remove('playing');
+            });
+        }
+        
+        // Funções para o quiz
+        function checkAnswer(questionNumber) {
+            const correctAnswers = {
+                1: "J'ai facilement compris la leçon.",
+                2: "Elle a rapidement mangé le gâteau.", 
+                3: "Nous avons souvent visité Paris.",
+                4: "Tu as enfin fini ton travail.",
+                5: "Ils ont couramment parlé français."
+            };
+            
+            const userAnswer = document.getElementById(`answer-${questionNumber}`).value.trim();
+            const resultElement = document.getElementById(`result-${questionNumber}`);
+            
+            if (userAnswer.toLowerCase() === correctAnswers[questionNumber].toLowerCase()) {
+                resultElement.innerHTML = '✅ Correto!';
+                resultElement.style.color = 'green';
+            } else {
+                resultElement.innerHTML = `❌ A resposta correta é: "${correctAnswers[questionNumber]}"`;
+                resultElement.style.color = 'red';
+            }
+        }
+        
+        function resetQuiz() {
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`answer-${i}`).value = '';
+                document.getElementById(`result-${i}`).innerHTML = '';
+            }
+        }
+        
+        // Adicionar funcionalidade aos botões de play
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar a síntese de voz
+            if (!initSpeech()) {
+                alert("Seu navegador não suporta a funcionalidade de áudio. Tente usar Chrome, Firefox ou Edge.");
+                return;
+            }
+            
+            // Adicionar evento de clique a todos os botões de play
+            document.querySelectorAll('.play-btn').forEach(button => {
+                // Verificar se o botão não é do quiz
+                if (!button.hasAttribute('onclick') || button.getAttribute('onclick').includes('data-text')) {
+                    button.addEventListener('click', function() {
+                        const text = this.getAttribute('data-text');
+                        
+                        // Remover a classe 'playing' de todos os botões
+                        document.querySelectorAll('.play-btn').forEach(btn => {
+                            if (!btn.hasAttribute('onclick') || btn.getAttribute('onclick').includes('data-text')) {
+                                btn.classList.remove('playing');
+                                btn.innerHTML = '▶';
+                            }
+                        });
+                        
+                        // Adicionar a classe 'playing' ao botão atual
+                        this.classList.add('playing');
+                        this.innerHTML = '⏸';
+                        
+                        // Falar o texto
+                        const utterance = speakText(text, function() {
+                            button.classList.remove('playing');
+                            button.innerHTML = '▶';
+                        });
+                    });
+                }
+            });
+            
+            // Botão para reproduzir todas as frases em francês
+            document.getElementById('playAllFrench').addEventListener('click', function() {
+                const allTexts = Array.from(document.querySelectorAll('.play-btn'))
+                    .map(btn => btn.getAttribute('data-text'))
+                    .filter(text => text && text.length > 0);
+                
+                let index = 0;
+                
+                function playNext() {
+                    if (index < allTexts.length) {
+                        const text = allTexts[index];
+                        speakText(text, function() {
+                            index++;
+                            setTimeout(playNext, 1000); // Pequena pausa entre frases
+                        });
+                    }
+                }
+                
+                removeAllPlayingStates();
+                playNext();
+            });
+            
+            // Botão para parar toda a reprodução
+            document.getElementById('stopAll').addEventListener('click', function() {
+                speech.cancel();
+                removeAllPlayingStates();
+            });
+            
+            // Ativar item do menu quando clicado
+            document.querySelectorAll('.menu-item a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    document.querySelectorAll('.menu-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.parentElement.classList.add('active');
+                });
+            });
+            
+            // Ativar item do menu baseado na rolagem
+            window.addEventListener('scroll', function() {
+                const sections = document.querySelectorAll('.lesson-card, .header, .lesson-series');
+                const menuItems = document.querySelectorAll('.menu-item');
+                
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                menuItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.querySelector('a').getAttribute('href') === '#' + current) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+            
+            // Carregar as vozes disponíveis (necessário para alguns navegadores)
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = function() {
+                    initSpeech();
+                };
+            }
+        });
+    </script>
+</body>
+</html>
